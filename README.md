@@ -99,22 +99,24 @@ package main
 
 import (
 	shifu "github.com/emvi/shifu/pkg"
+	"log/slog"
+	"html/template"
 )
-
-// Define a custom FuncMap to load and render blog articles from an external source.
-var customFuncMap = template.FuncMap{
-    "blogArticle": loadAndRenderBlogArticle,
-}
 
 func loadAndRenderBlogArticle() string {
     return "TODO"
 }
 
 func main() {
+	// Define a custom FuncMap to load and render blog articles from an external source.
+	customFuncMap := template.FuncMap{
+		"blogArticle": loadAndRenderBlogArticle,
+	}
+		
     // Start Shifu from the content/dir directory and pass your own template.FuncMap.
     // The FuncMap will be merged with the default FuncMap of Shifu.
 	if err := shifu.Start("content/dir", customFuncMap); err != nil {
-		log.Printf("Error starting Shifu: %s", err)
+		slog.Error("Error starting Shifu", "error", err)
 	}
 }
 ```
