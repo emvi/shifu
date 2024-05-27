@@ -30,11 +30,11 @@ func main() {
 	switch cmd {
 	case "run":
 		if err := shifu.Start(dir, nil); err != nil {
-			slog.Error("Error starting Shifu: %s", err)
+			slog.Error("Error starting Shifu", "error", err)
 		}
 	case "init":
 		if err := shifu.Init(dir); err != nil {
-			slog.Error("Error initializing new Shifu project: %s", err)
+			slog.Error("Error initializing new Shifu project", "error", err)
 		}
 	case "version":
 		slog.Info("Shifu version", "version", shifu.Version())
