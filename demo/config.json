@@ -1,0 +1,21 @@
+{
+    "server": {
+        "host": "localhost",
+        "port": 8080
+    },
+    "sass": {
+        "dir": "assets",
+        "entrypoint": "style.scss",
+        "out": "static/style.css",
+        "out_source_map": "static/style.css.map",
+        "watch": true,
+        "compiler": "sass"
+    },
+    "js": {
+        "dir": "assets",
+        "entrypoint": "entrypoint.js",
+        "out": "static/bundle.js",
+        "out_source_map": "static/bundle.js.map",
+        "watch": true
+    }
+}

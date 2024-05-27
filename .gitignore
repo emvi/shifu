@@ -1,0 +1,7 @@
+.idea/
+pkg/js/in/
+pkg/js/out/
+pkg/sass/in/
+pkg/sass/out/
+pkg/cfg/config.json
+pkg/tpl/test/
