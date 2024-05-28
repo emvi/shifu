@@ -88,13 +88,6 @@ func (cache *Cache) loadTemplate() error {
 		return err
 	}
 
-	// TODO
-	/*t, err := template.New("template").Funcs(cache.funcMap).ParseGlob(cache.dir)
-
-	if err != nil {
-		return err
-	}*/
-
 	cache.temp = *t
 	cache.loaded = true
 	return nil

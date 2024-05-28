@@ -24,15 +24,15 @@ type Config struct {
 	BaseDir string           `json:"-"`
 	FuncMap template.FuncMap `json:"-"`
 
-	Dev       bool            `json:"dev"`
-	Server    ServerConfig    `json:"server"`
-	Sass      SassConfig      `json:"sass"`
-	JS        JSConfig        `json:"js"`
-	Analytics AnalyticsConfig `json:"analytics"`
+	Dev       bool      `json:"dev"`
+	Server    Server    `json:"server"`
+	Sass      Sass      `json:"sass"`
+	JS        JS        `json:"js"`
+	Analytics Analytics `json:"analytics"`
 }
 
-// ServerConfig is the HTTP server configuration.
-type ServerConfig struct {
+// Server is the HTTP server configuration.
+type Server struct {
 	Host             string `json:"host"`
 	Port             int    `json:"port"`
 	ShutdownTimeout  int    `json:"shutdown_time"`
@@ -45,8 +45,8 @@ type ServerConfig struct {
 	CookieDomainName string `json:"cookie_domain_name"`
 }
 
-// SassConfig is the sass compiler configuration.
-type SassConfig struct {
+// Sass is the sass compiler configuration.
+type Sass struct {
 	Entrypoint   string `json:"entrypoint"`
 	Dir          string `json:"dir"`
 	Watch        bool   `json:"watch"`
@@ -54,8 +54,8 @@ type SassConfig struct {
 	OutSourceMap string `json:"out_source_map"`
 }
 
-// JSConfig is the JavaScript compiler configuration.
-type JSConfig struct {
+// JS is the JavaScript compiler configuration.
+type JS struct {
 	Entrypoint string `json:"entrypoint"`
 	Dir        string `json:"dir"`
 	Watch      bool   `json:"watch"`
@@ -63,8 +63,8 @@ type JSConfig struct {
 	SourceMap  bool   `json:"source_map"`
 }
 
-// AnalyticsConfig is the web analytics configuration.
-type AnalyticsConfig struct {
+// Analytics is the web analytics configuration.
+type Analytics struct {
 	Provider     string   `json:"provider"`
 	ClientID     string   `json:"client_id"`
 	ClientSecret string   `json:"client_secret"`
