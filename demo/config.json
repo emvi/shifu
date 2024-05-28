@@ -4,9 +4,6 @@
         "host": "localhost",
         "port": 8080
     },
-    "cors": {
-        "origins": "*"
-    },
     "sass": {
         "dir": "assets",
         "entrypoint": "style.scss",

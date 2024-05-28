@@ -21,3 +21,8 @@ build_linux: test
 
 demo:
 	go run cmd/shifu/main.go run demo
+
+init:
+	rm -r -f test
+	go run cmd/shifu/main.go init test
+	go run cmd/shifu/main.go run test

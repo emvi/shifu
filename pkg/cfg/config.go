@@ -26,6 +26,7 @@ type Config struct {
 
 	Dev       bool      `json:"dev"`
 	Server    Server    `json:"server"`
+	Content   Content   `json:"content"`
 	CORS      CORS      `json:"cors"`
 	Sass      Sass      `json:"sass"`
 	JS        JS        `json:"js"`
@@ -44,6 +45,13 @@ type Server struct {
 	Hostname         string `json:"hostname"`
 	SecureCookies    bool   `json:"secure_cookies"`
 	CookieDomainName string `json:"cookie_domain_name"`
+}
+
+// Content is the content and source configuration.
+type Content struct {
+	Provider      string `json:"provider"`
+	UpdateSeconds int    `json:"update_seconds"`
+	Repository    string `json:"repository"`
 }
 
 // CORS is the HTTP CORS configuration.
@@ -105,6 +113,14 @@ func Load(dir string, funcMap template.FuncMap) error {
 
 	if cfg.Server.ReadTimeout == 0 {
 		cfg.Server.ReadTimeout = 5
+	}
+
+	if cfg.Content.Provider == "" {
+		cfg.Content.Provider = "fs"
+	}
+
+	if cfg.CORS.Origins == "" {
+		cfg.CORS.Origins = "*"
 	}
 
 	cfg.BaseDir = dir

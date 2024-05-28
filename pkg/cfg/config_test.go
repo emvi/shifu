@@ -24,6 +24,11 @@ const (
 		"secure_cookies": true,
 		"cookie_domain_name": "example.com"
     },
+	"content": {
+		"provider": "fs",
+	    "update_seconds": 600,
+		"repository": "https//github.com/foo/bar"
+	},
 	"cors": {
 		"origins": "*",
 		"loglevel": "info"
@@ -74,6 +79,9 @@ func TestLoadConfig(t *testing.T) {
 	assert.Equal(t, "example.com", cfg.Server.Hostname)
 	assert.True(t, cfg.Server.SecureCookies)
 	assert.Equal(t, "example.com", cfg.Server.CookieDomainName)
+	assert.Equal(t, "fs", cfg.Content.Provider)
+	assert.Equal(t, 600, cfg.Content.UpdateSeconds)
+	assert.Equal(t, "https//github.com/foo/bar", cfg.Content.Repository)
 	assert.Equal(t, "*", cfg.CORS.Origins)
 	assert.Equal(t, "info", cfg.CORS.Loglevel)
 	assert.Equal(t, "style.scss", cfg.Sass.Entrypoint)

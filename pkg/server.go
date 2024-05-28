@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/emvi/shifu/pkg/analytics"
 	"github.com/emvi/shifu/pkg/cfg"
@@ -19,6 +20,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -44,7 +46,21 @@ func Start(dir string, funcMap template.FuncMap) error {
 		return err
 	}
 
-	provider := source.NewFS(dir, 0) // TODO provider from config
+	config := cfg.Get().Content
+	var provider source.Provider
+
+	switch strings.ToLower(config.Provider) {
+	case "fs":
+		provider = source.NewFS(dir, config.UpdateSeconds)
+		break
+	case "git":
+		provider = source.NewGit(dir, config.Repository, config.UpdateSeconds)
+		break
+	default:
+		cancel()
+		return errors.New("content provider not found")
+	}
+
 	sm := sitemap.New()
 	content := cms.NewCMS(cms.Options{
 		Ctx:       ctx,

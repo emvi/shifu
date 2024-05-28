@@ -13,21 +13,21 @@ import (
 type Git struct {
 	dir           string
 	repository    string
-	updateMinutes int
+	updateSeconds int
 	lastUpdate    time.Time
 	m             sync.RWMutex
 }
 
 // NewGit creates a new Provider for Git.
-func NewGit(dir, repository string, updateMinutes int) *Git {
-	if updateMinutes == 0 {
-		updateMinutes = 15
+func NewGit(dir, repository string, updateSeconds int) *Git {
+	if updateSeconds == 0 {
+		updateSeconds = 15 * 60
 	}
 
 	provider := &Git{
 		dir:           dir,
 		repository:    repository,
-		updateMinutes: updateMinutes,
+		updateSeconds: updateSeconds,
 	}
 	provider.init()
 	return provider
@@ -37,7 +37,7 @@ func NewGit(dir, repository string, updateMinutes int) *Git {
 func (provider *Git) Update(ctx context.Context, update func()) {
 	if provider.repository != "" {
 		go func() {
-			timerDuration := time.Minute * time.Duration(provider.updateMinutes)
+			timerDuration := time.Second * time.Duration(provider.updateSeconds)
 			timer := time.NewTimer(timerDuration)
 			defer timer.Stop()
 
