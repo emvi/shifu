@@ -29,6 +29,7 @@ const (
                 "tpl": "main",
                 "copy": {
                     "en": {
+						"title": "Shifu Website",
                         "headline": "Welcome to Shifu!"
                     }
                 }
@@ -44,10 +45,10 @@ const (
     <meta charset="UTF-8" />
     <link rel="stylesheet" type="text/css" href="static/main.css" />
     <script type="text/javascript" src="static/main.min.js"></script>
-    <title>Welcome to Shifu</title>
+    <title>{{copy .Page .Content "title"}}</title>
 </head>
 <body>
-    <h1>Welcome to Shifu!</h1>
+    <h1>{{copy .Page .Content "headline"}}</h1>
 </body>
 </html>
 `
@@ -101,6 +102,9 @@ func Init(path string) error {
 			ShutdownTimeout: 30,
 			WriteTimeout:    5,
 			ReadTimeout:     5,
+		},
+		Content: cfg.Content{
+			Provider: "fs",
 		},
 		Sass: cfg.Sass{
 			Entrypoint:   "main.scss",
