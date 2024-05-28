@@ -5,6 +5,9 @@ import (
 	"html/template"
 	"log/slog"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 	"sync"
 )
 
@@ -71,11 +74,26 @@ func (cache *Cache) Get() *template.Template {
 func (cache *Cache) loadTemplate() error {
 	cache.m.Lock()
 	defer cache.m.Unlock()
-	t, err := template.New("template").Funcs(cache.funcMap).ParseGlob(cache.dir)
+	t := template.New("").Funcs(cache.funcMap)
+
+	if err := filepath.Walk(cache.dir, func(path string, info os.FileInfo, err error) error {
+		if strings.Contains(path, ".html") {
+			if _, err = t.ParseFiles(path); err != nil {
+				return err
+			}
+		}
+
+		return err
+	}); err != nil {
+		return err
+	}
+
+	// TODO
+	/*t, err := template.New("template").Funcs(cache.funcMap).ParseGlob(cache.dir)
 
 	if err != nil {
 		return err
-	}
+	}*/
 
 	cache.temp = *t
 	cache.loaded = true

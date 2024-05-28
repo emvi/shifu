@@ -1,0 +1,8 @@
+{{$headline := copy .Page .Content "headline"}}
+
+<section>
+    <article>
+        {{if $headline}}<h1>{{$headline}}</h1>{{end}}
+        {{html (copy .Page .Content "text")}}
+    </article>
+</section>

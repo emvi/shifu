@@ -64,7 +64,7 @@ func NewCMS(options Options) *CMS {
 		handler:         make(map[string]Handler),
 		pageExperiments: make(map[string][]string),
 	}
-	cms.tpl = NewCache(filepath.Join(options.BaseDir, "tpl/*"), options.FuncMap, options.HotReload)
+	cms.tpl = NewCache(filepath.Join(options.BaseDir, "tpl"), options.FuncMap, options.HotReload)
 	cms.source.Update(options.Ctx, func() {
 		cms.m.Lock()
 		defer cms.m.Unlock()
@@ -441,7 +441,7 @@ func (cms *CMS) updateContent() {
 			}
 		}
 
-		return nil
+		return err
 	}); err != nil {
 		slog.Error("Error reading website content directory", "error", err)
 	}

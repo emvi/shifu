@@ -7,8 +7,8 @@
     "sass": {
         "dir": "assets",
         "entrypoint": "style.scss",
-        "out": "static/style.css",
-        "out_source_map": "static/style.css.map",
+        "out": "static/bundle.css",
+        "out_source_map": "static/bundle.css.map",
         "watch": true,
         "compiler": "sass"
     },

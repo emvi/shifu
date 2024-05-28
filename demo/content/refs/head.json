@@ -2,6 +2,7 @@
     "tpl": "head",
     "copy": {
         "en": {
+            "copyright": "Emvi Software GmbH",
             "title": "Default Title",
             "meta_description": "Default meta description."
         }

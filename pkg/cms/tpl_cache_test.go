@@ -7,7 +7,7 @@ import (
 )
 
 func TestCache(t *testing.T) {
-	cache := NewCache("cache_test/*", nil, false)
+	cache := NewCache("cache_test", nil, false)
 	data := "World!"
 	recorder := httptest.NewRecorder()
 	cache.Execute(recorder, "test.html", data)

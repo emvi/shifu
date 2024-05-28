@@ -18,11 +18,45 @@
             },
             {
                 "tpl": "text",
+                "analytics": {
+                    "experiment": {
+                        "name": "headline",
+                        "variant": "a"
+                    }
+                },
                 "copy": {
                     "en": {
-                        "text": "Hello from Shifu!"
+                        "headline": "Shifu Demo",
+                        "text": "<p>Hello from Shifu! See the repository on <a href='https://github.com/emvi/shifu' target='_blank'>GitHub</a>. This is variant A for the A/B test of this element.</p>"
                     }
                 }
+            },
+            {
+                "tpl": "text",
+                "analytics": {
+                    "experiment": {
+                        "name": "headline",
+                        "variant": "b"
+                    }
+                },
+                "copy": {
+                    "en": {
+                        "headline": "Shifu Content Mangagement System",
+                        "text": "<p>Hello from Shifu! See the repository on <a href='https://github.com/emvi/shifu' target='_blank'>GitHub</a>. This is variant B for the A/B test of this element.</p>"
+                    }
+                }
+            },
+            {
+                "tpl": "img",
+                "data": {
+                    "src": "/static/img/test.jpg"
+                },
+                "copy": {
+                    "en": {
+                        "alt": "Test Image"
+                    }
+                }
+
             },
             {"ref": "end"}
         ]
