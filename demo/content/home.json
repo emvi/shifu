@@ -1,0 +1,30 @@
+{
+    "path": {
+        "en": "/"
+    },
+    "sitemap": {
+        "priority": "1.0"
+    },
+    "content": {
+        "content": [
+            {
+                "ref": "head",
+                "copy": {
+                    "en": {
+                        "title": "Shifu Demo",
+                        "meta_description": "This is the Shifu demo."
+                    }
+                }
+            },
+            {
+                "tpl": "text",
+                "copy": {
+                    "en": {
+                        "text": "Hello from Shifu!"
+                    }
+                }
+            },
+            {"ref": "end"}
+        ]
+    }
+}

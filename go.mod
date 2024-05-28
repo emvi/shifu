@@ -6,6 +6,7 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/evanw/esbuild v0.21.4
 	github.com/fsnotify/fsnotify v1.7.0
+	github.com/go-chi/chi/v5 v5.0.12
 	github.com/gorilla/mux v1.8.1
 	github.com/klauspost/compress v1.17.8
 	github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.3.0

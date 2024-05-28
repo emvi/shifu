@@ -5,12 +5,7 @@ deps:
 	go mod vendor
 
 test:
-	go test -cover ./pkg/analytics
-	go test -cover ./pkg/cfg
-	go test -cover ./pkg/js
-	go test -cover ./pkg/sass
-	go test -cover ./pkg/source
-	go test -cover ./pkg/tpl
+	go test -cover ./pkg/...
 
 build_mac: test
 	GOOS=darwin go build -a -installsuffix cgo -ldflags "-s -w" cmd/shifu/main.go

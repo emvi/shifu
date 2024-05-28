@@ -1,4 +1,4 @@
-package tpl
+package cms
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -53,4 +53,67 @@ func TestRenderMarkdownBlock(t *testing.T) {
 		"var",
 	})
 	assert.Equal(t, template.HTML("<h2>Hello World var</h2>\n"), out)
+}
+
+func TestShuffle(t *testing.T) {
+	list := shuffle([]any{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 5)
+	assert.Len(t, list, 5)
+}
+
+func TestFormatFloat(t *testing.T) {
+	input := []float64{
+		0,
+		1,
+		42,
+		98.7,
+		12.56,
+		99.1949,
+		123.4567,
+		1234.56789,
+	}
+	output := []string{
+		"0.00",
+		"1.00",
+		"42.00",
+		"98.70",
+		"12.56",
+		"99.19",
+		"123.46",
+		"1234.57",
+	}
+
+	for i, in := range input {
+		assert.Equal(t, output[i], formatFloat(in))
+	}
+}
+
+func TestFormatInt(t *testing.T) {
+	input := []int{
+		-1,
+		0,
+		1,
+		42,
+		987,
+		1000,
+		1256,
+		991949,
+		1234567,
+		123456789,
+	}
+	output := []string{
+		"-1",
+		"0",
+		"1",
+		"42",
+		"987",
+		"1,000",
+		"1,256",
+		"991,949",
+		"1,234,567",
+		"123,456,789",
+	}
+
+	for i, in := range input {
+		assert.Equal(t, output[i], formatInt(in))
+	}
 }

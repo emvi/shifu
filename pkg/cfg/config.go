@@ -24,21 +24,25 @@ type Config struct {
 	BaseDir string           `json:"-"`
 	FuncMap template.FuncMap `json:"-"`
 
-	Server ServerConfig `json:"server"`
-	Sass   SassConfig   `json:"sass"`
-	JS     JSConfig     `json:"js"`
-	Pirsch PirschConfig `json:"pirsch"`
+	Dev       bool            `json:"dev"`
+	Server    ServerConfig    `json:"server"`
+	Sass      SassConfig      `json:"sass"`
+	JS        JSConfig        `json:"js"`
+	Analytics AnalyticsConfig `json:"analytics"`
 }
 
 // ServerConfig is the HTTP server configuration.
 type ServerConfig struct {
-	Host            string `json:"host"`
-	Port            int    `json:"port"`
-	ShutdownTimeout int    `json:"shutdown_time"`
-	WriteTimeout    int    `json:"write_timeout"`
-	ReadTimeout     int    `json:"read_timeout"`
-	TLSCertFile     string `json:"tls_cert_file"`
-	TLSKeyFile      string `json:"tls_key_file"`
+	Host             string `json:"host"`
+	Port             int    `json:"port"`
+	ShutdownTimeout  int    `json:"shutdown_time"`
+	WriteTimeout     int    `json:"write_timeout"`
+	ReadTimeout      int    `json:"read_timeout"`
+	TLSCertFile      string `json:"tls_cert_file"`
+	TLSKeyFile       string `json:"tls_key_file"`
+	Hostname         string `json:"hostname"`
+	SecureCookies    bool   `json:"secure_cookies"`
+	CookieDomainName string `json:"cookie_domain_name"`
 }
 
 // SassConfig is the sass compiler configuration.
@@ -59,8 +63,9 @@ type JSConfig struct {
 	SourceMap  bool   `json:"source_map"`
 }
 
-// PirschConfig is the configuration for pirsch.io.
-type PirschConfig struct {
+// AnalyticsConfig is the web analytics configuration.
+type AnalyticsConfig struct {
+	Provider     string   `json:"provider"`
 	ClientID     string   `json:"client_id"`
 	ClientSecret string   `json:"client_secret"`
 	Subnets      []string `json:"subnets"`

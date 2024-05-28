@@ -81,10 +81,14 @@ Shifu comes with a number of template functions that can be used within template
 | Function      | Description                                                                                                        | Example                                                    |
 |---------------|--------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
 | config        | Exposes the Oogway configuration.                                                                                  | `{{config.Server.Host}}`                                   |
+| hostname      | Returns the hostname from configuration.                                                                           | `{{hostname}}`                                             |
+| copy          | Returns the copy (text) for given page, content, and key.                                                          | `{{copy .Page .Content "meta_description"}}`               |
+| get           | Returns the variable for given content and key.                                                                    | `{{get .Content "img"}}`                                   |
 | markdown      | Renders given markdown file as HTML using Go text templates. Use the full path for the template name.              | `{{markdown "static/blog/article.md" .}}`                  |
 | markdownBlock | Renders a block from given markdown file as HTML using Go text templates. Use the full path for the template name. | `{{markdownBlock "static/blog/article.md" "blockName" .}}` |
 | int           | Converts given string to an integer.                                                                               | `{{int "123"}}`                                            |
 | uint64        | Converts given int to an uint64.                                                                                   | `{{uint64 123}}`                                           |
+| shuffle       | Shuffles given list and returns up to n results if n > 0.                                                          | `{{shuffle .List 10}}`                                     |
 
 For more template functions, see the [Sprig documentation](github.com/Masterminds/sprig).
 

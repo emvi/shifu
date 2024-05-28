@@ -1,0 +1,9 @@
+{
+    "tpl": "head",
+    "copy": {
+        "en": {
+            "title": "Default Title",
+            "meta_description": "Default meta description."
+        }
+    }
+}

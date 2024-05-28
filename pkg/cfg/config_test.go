@@ -11,6 +11,7 @@ import (
 
 const (
 	sampleConfig = `{
+	"dev": true,
     "server": {
         "host": "localhost",
         "port": 8080,
@@ -18,7 +19,10 @@ const (
         "write_timeout": 10,
         "read_timeout": 11,
         "tls_cert_file": "cert/file.pem",
-        "tls_key_file": "key/file.pem"
+        "tls_key_file": "key/file.pem",
+		"hostname": "example.com",
+		"secure_cookies": true,
+		"cookie_domain_name": "example.com"
     },
     "sass": {
         "entrypoint": "style.scss",
@@ -34,7 +38,8 @@ const (
         "out": "assets/bundle.js",
         "source_map": true
     },
-    "pirsch": {
+    "analytics": {
+		"provider": "pirsch",
         "client_id": "id",
         "client_secret": "secret",
         "subnets": [
@@ -54,6 +59,7 @@ func TestLoadConfig(t *testing.T) {
 	assert.NoError(t, os.RemoveAll("config.json"))
 	assert.NoError(t, os.WriteFile("config.json", []byte(sampleConfig), 0644))
 	assert.NoError(t, Load(".", nil))
+	assert.True(t, cfg.Dev)
 	assert.Equal(t, "localhost", cfg.Server.Host)
 	assert.Equal(t, 8080, cfg.Server.Port)
 	assert.Equal(t, 9, cfg.Server.ShutdownTimeout)
@@ -61,6 +67,9 @@ func TestLoadConfig(t *testing.T) {
 	assert.Equal(t, 11, cfg.Server.ReadTimeout)
 	assert.Equal(t, "cert/file.pem", cfg.Server.TLSCertFile)
 	assert.Equal(t, "key/file.pem", cfg.Server.TLSKeyFile)
+	assert.Equal(t, "example.com", cfg.Server.Hostname)
+	assert.True(t, cfg.Server.SecureCookies)
+	assert.Equal(t, "example.com", cfg.Server.CookieDomainName)
 	assert.Equal(t, "style.scss", cfg.Sass.Entrypoint)
 	assert.Equal(t, "assets/scss", cfg.Sass.Dir)
 	assert.True(t, cfg.Sass.Watch)
@@ -71,14 +80,15 @@ func TestLoadConfig(t *testing.T) {
 	assert.True(t, cfg.JS.Watch)
 	assert.Equal(t, "assets/bundle.js", cfg.JS.Out)
 	assert.True(t, cfg.JS.SourceMap)
-	assert.Equal(t, "id", cfg.Pirsch.ClientID)
-	assert.Equal(t, "secret", cfg.Pirsch.ClientSecret)
-	assert.Len(t, cfg.Pirsch.Subnets, 2)
-	assert.Equal(t, "10.1.0.0/16", cfg.Pirsch.Subnets[0])
-	assert.Equal(t, "10.2.0.0/8", cfg.Pirsch.Subnets[1])
-	assert.Len(t, cfg.Pirsch.Header, 2)
-	assert.Equal(t, "X-Forwarded-For", cfg.Pirsch.Header[0])
-	assert.Equal(t, "Forwarded", cfg.Pirsch.Header[1])
+	assert.Equal(t, "pirsch", cfg.Analytics.Provider)
+	assert.Equal(t, "id", cfg.Analytics.ClientID)
+	assert.Equal(t, "secret", cfg.Analytics.ClientSecret)
+	assert.Len(t, cfg.Analytics.Subnets, 2)
+	assert.Equal(t, "10.1.0.0/16", cfg.Analytics.Subnets[0])
+	assert.Equal(t, "10.2.0.0/8", cfg.Analytics.Subnets[1])
+	assert.Len(t, cfg.Analytics.Header, 2)
+	assert.Equal(t, "X-Forwarded-For", cfg.Analytics.Header[0])
+	assert.Equal(t, "Forwarded", cfg.Analytics.Header[1])
 }
 
 func TestLoadConfigNotExists(t *testing.T) {

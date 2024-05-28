@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"github.com/emvi/shifu/pkg/analytics"
 	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/emvi/shifu/pkg/cms"
 	"github.com/emvi/shifu/pkg/js"
 	"github.com/emvi/shifu/pkg/sass"
-	"github.com/emvi/shifu/pkg/tpl"
-	"github.com/gorilla/mux"
+	"github.com/emvi/shifu/pkg/sitemap"
+	"github.com/emvi/shifu/pkg/source"
+	"github.com/go-chi/chi/v5"
 	"github.com/klauspost/compress/gzhttp"
 	"html/template"
 	"log/slog"
@@ -19,17 +21,14 @@ import (
 	"time"
 )
 
-const (
-	staticDir = "static"
-)
-
 // Start starts the Shifu server for given directory.
 // The second argument is an optional template.FuncMap that will be merged with Shifu's funcmap.
 func Start(dir string, funcMap template.FuncMap) error {
 	slog.Info("Starting Shifu", "version", version, "directory", dir)
+	funcMap = cms.Merge(funcMap)
 	ctx, cancel := context.WithCancel(context.Background())
 
-	if err := cfg.Watch(ctx, dir, tpl.Merge(funcMap)); err != nil {
+	if err := cfg.Watch(ctx, dir, funcMap); err != nil {
 		cancel()
 		return err
 	}
@@ -44,35 +43,38 @@ func Start(dir string, funcMap template.FuncMap) error {
 		return err
 	}
 
-	// TODO
-	/*if err := watchPartials(ctx, dir, tplFuncMap); err != nil {
-		cancel()
-		return err
-	}
-
-	if err := watchContent(ctx, dir, tplFuncMap); err != nil {
-		cancel()
-		return err
-	}*/
-
+	provider := source.NewFS(dir, 0) // TODO provider from config
+	sm := sitemap.New()
+	content := cms.NewCMS(cms.Options{
+		Ctx:       ctx,
+		BaseDir:   dir,
+		HotReload: cfg.Get().Dev,
+		FuncMap:   funcMap,
+		Source:    provider,
+		Sitemap:   sm,
+	})
 	analytics.Init()
-	router := setupRouter(dir)
+	router := setupRouter(dir, content, sm)
 	<-startServer(router, cancel)
 	return nil
 }
 
-func setupRouter(dir string) *mux.Router {
-	router := mux.NewRouter()
-	// TODO
-	//serveSitemap(router)
+func setupRouter(dir string, cms *cms.CMS, sm *sitemap.Sitemap) chi.Router {
+	router := chi.NewRouter()
+	/*router.Use( TODO middlewares
+		server.Cors(),
+		server.Gzip(),
+	)
+	serveRobotsTxt(router)*/
+	sm.Serve(router)
 	serveStaticDir(router, dir)
-	//servePage(router)
+	router.Handle("/*", http.HandlerFunc(cms.Serve))
 	return router
 }
 
-func serveStaticDir(router *mux.Router, dir string) {
-	fs := http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join(dir, staticDir))))
-	router.PathPrefix("/static/").Handler(gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func serveStaticDir(router chi.Router, dir string) {
+	fs := http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join(dir, "static"))))
+	router.Handle("/static/*", gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fs.ServeHTTP(w, r)
 	})))
 }
