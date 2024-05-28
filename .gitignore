@@ -7,4 +7,5 @@ pkg/cfg/config.json
 pkg/cms/test/
 test/
 ./shifu
+./shifu.exe
 ./main

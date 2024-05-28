@@ -13,7 +13,7 @@ build_mac: test
 
 build_windows: test
 	GOOS=windows GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" -o shifu.exe cmd/shifu/main.go
-	mv main shifu
+	mv main.exe shifu.exe
 
 build_linux: test
 	GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" cmd/shifu/main.go
