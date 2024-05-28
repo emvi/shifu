@@ -1,10 +1,6 @@
 {{- $copyright := copy .Page .Content "copyright" -}}
 {{- $title := copy .Page .Content "title" -}}
 {{- $metaDescription := copy .Page .Content "meta_description" -}}
-{{- $previewImage := fmt "%s/static/img/og-image.png" hostname -}}
-{{- if (get .Page "preview_img") -}}
-{{- $previewImage = fmt "%s%s" hostname (get .Page "preview_img") -}}
-{{- end -}}
 <!DOCTYPE html>
 <html lang="{{.Page.Language}}">
 <head>
