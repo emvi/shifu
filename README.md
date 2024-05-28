@@ -64,7 +64,16 @@ Shifu is configured using a single `config.json` file inside the project directo
         "port": 8080,
         "shutdown_time": 30, // time before the server is forcefully shut down (optional)
         "write_timeout": 5, // request write timeout
-        "read_timeout": 5 // request read timeout
+        "read_timeout": 5, // request read timeout
+        "tls_cert_file": "cert/file.pem",
+        "tls_key_file": "key/file.pem",
+        "hostname": "example.com",
+        "secure_cookies": true,
+        "cookie_domain_name": "example.com"
+    },
+    "cors": {
+        "origins": "*",
+        "loglevel": "info"
     },
     "sass": { // optional configuration to compile sass
         "dir": "assets", // asset directory path
@@ -81,8 +90,17 @@ Shifu is configured using a single `config.json` file inside the project directo
         "watch": true
     },
     "pirsch": { // optional configuration for Pirsch Analytics (pirsch.io)
+        "provider": "pirsch",
         "client_id": "...", // optional when using an access key (recommended) instead of oAuth
-        "client_secret": "..." // required
+        "client_secret": "...", // required
+        "subnets": [
+            "10.1.0.0/16",
+            "10.2.0.0/8"
+        ],
+        "header": [
+            "X-Forwarded-For",
+            "Forwarded"
+        ]
     }
 }
 ```

@@ -26,6 +26,7 @@ type Config struct {
 
 	Dev       bool      `json:"dev"`
 	Server    Server    `json:"server"`
+	CORS      CORS      `json:"cors"`
 	Sass      Sass      `json:"sass"`
 	JS        JS        `json:"js"`
 	Analytics Analytics `json:"analytics"`
@@ -43,6 +44,12 @@ type Server struct {
 	Hostname         string `json:"hostname"`
 	SecureCookies    bool   `json:"secure_cookies"`
 	CookieDomainName string `json:"cookie_domain_name"`
+}
+
+// CORS is the HTTP CORS configuration.
+type CORS struct {
+	Origins  string `json:"origins"`
+	Loglevel string `json:"loglevel"`
 }
 
 // Sass is the sass compiler configuration.

@@ -102,6 +102,10 @@ func Init(path string) error {
 			WriteTimeout:    5,
 			ReadTimeout:     5,
 		},
+		CORS: cfg.CORS{
+			Origins:  "*",
+			Loglevel: "info",
+		},
 		Sass: cfg.Sass{
 			Entrypoint:   "main.scss",
 			Dir:          "assets/scss",

@@ -46,6 +46,9 @@ github.com/fsnotify/fsnotify
 # github.com/go-chi/chi/v5 v5.0.12
 ## explicit; go 1.14
 github.com/go-chi/chi/v5
+# github.com/go-chi/cors v1.2.1
+## explicit; go 1.14
+github.com/go-chi/cors
 # github.com/google/uuid v1.6.0
 ## explicit
 github.com/google/uuid

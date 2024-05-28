@@ -7,6 +7,7 @@ import (
 	"github.com/emvi/shifu/pkg/cfg"
 	"github.com/emvi/shifu/pkg/cms"
 	"github.com/emvi/shifu/pkg/js"
+	"github.com/emvi/shifu/pkg/middleware"
 	"github.com/emvi/shifu/pkg/sass"
 	"github.com/emvi/shifu/pkg/sitemap"
 	"github.com/emvi/shifu/pkg/source"
@@ -61,15 +62,27 @@ func Start(dir string, funcMap template.FuncMap) error {
 
 func setupRouter(dir string, cms *cms.CMS, sm *sitemap.Sitemap) chi.Router {
 	router := chi.NewRouter()
-	/*router.Use( TODO middlewares
-		server.Cors(),
-		server.Gzip(),
+	router.Use(
+		middleware.Cors(),
+		middleware.Gzip(),
 	)
-	serveRobotsTxt(router)*/
 	sm.Serve(router)
+	serveRobotsTxt(router)
 	serveStaticDir(router, dir)
 	router.Handle("/*", http.HandlerFunc(cms.Serve))
 	return router
+}
+
+func serveRobotsTxt(router chi.Router) {
+	robotsTxt := fmt.Sprintf("User-agent: *\nDisallow:\n\nSitemap: %s/sitemap.xml\n", cfg.Get().Server.Hostname)
+	router.Handle("/robots.txt", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "text/plain")
+		w.Header().Add("Cache-Control", "max-age=86400")
+
+		if _, err := w.Write([]byte(robotsTxt)); err != nil {
+			slog.Debug("Error serving robots.txt", "error", err)
+		}
+	}))
 }
 
 func serveStaticDir(router chi.Router, dir string) {
