@@ -84,7 +84,7 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 
 	cms.m.RLock()
 	defer cms.m.RUnlock()
-	path := strings.ToLower(r.URL.Path)
+	path := r.URL.Path
 	page, ok := cms.pages[path]
 
 	if !ok {
