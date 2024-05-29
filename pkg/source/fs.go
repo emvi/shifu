@@ -17,7 +17,7 @@ type FS struct {
 // NewFS creates a new Provider for the file system.
 func NewFS(dir string, updateSeconds int) *FS {
 	if updateSeconds == 0 {
-		updateSeconds = 15
+		updateSeconds = 60
 	}
 
 	return &FS{
@@ -47,6 +47,8 @@ func (provider *FS) Update(ctx context.Context, update func()) {
 			}
 		}
 	}()
+
+	update()
 }
 
 // LastUpdate implements the Provider interface.

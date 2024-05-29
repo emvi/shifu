@@ -58,6 +58,8 @@ func (provider *Git) Update(ctx context.Context, update func()) {
 			}
 		}()
 	}
+
+	update()
 }
 
 // LastUpdate implements the Provider interface.
