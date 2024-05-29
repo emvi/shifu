@@ -42,7 +42,6 @@ Description=Shifu Website
 
 [Service]
 Type=simple
-Environment="PATH=/root:$PATH"
 ExecStart=/root/example.com/shifu
 WorkingDirectory=/root/example.com
 
