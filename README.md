@@ -34,23 +34,20 @@ After that you can run Shifu from the command line with the `shifu` command.
 * `shifu init <path>` will initialize a new project in the given directory.
 * `shifu version` will print the version number of Shifu.
 
-Or through Docker:
+systemd sample configuration:
 
-```yaml
-version: "3"
+```ini
+[Unit]
+Description=Shifu Website
 
-volumes:
-  shifu-data:
+[Service]
+Type=simple
+Environment="PATH=/root:$PATH"
+ExecStart=/root/example.com/shifu
+WorkingDirectory=/root/example.com
 
-services:
-  shifu:
-    image: emvicom/shifu
-    container_name: shifu
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-    volumes:
-      - shifu-data:/app/data
+[Install]
+WantedBy=multi-user.target
 ```
 
 ## Configuration
