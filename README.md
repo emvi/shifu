@@ -259,7 +259,7 @@ func main() {
     })
 	
 	// Start the server. The router and cancel function are optional.
-	if err := server.Start(nil, nil); err != nil {
+	if err := server.Start(nil); err != nil {
 		slog.Error("Error starting Shifu", "error", err)
 	}
 }

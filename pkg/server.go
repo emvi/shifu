@@ -39,10 +39,7 @@ type Server struct {
 	// Content is the CMS content.
 	Content *cms.CMS
 
-	// Router is the router for the server.
-	// It has a CORS and gzip middleware, as well as a route for robots.txt, the static directory, and any unmatched path (/*) by default.
-	Router chi.Router
-
+	router  chi.Router
 	dir     string
 	funcMap template.FuncMap
 }
@@ -51,7 +48,7 @@ type Server struct {
 // The second argument is an optional template.FuncMap that will be merged with Shifu's funcmap.
 func NewServer(dir string, options ServerOptions) *Server {
 	return &Server{
-		Router:  options.Router,
+		router:  options.Router,
 		dir:     dir,
 		funcMap: options.FuncMap,
 	}
@@ -59,7 +56,7 @@ func NewServer(dir string, options ServerOptions) *Server {
 
 // Start starts the Shifu server.
 // The context.CancelFunc is optional and will be called on server shutdown or error if set.
-func (server *Server) Start(router chi.Router, cancel context.CancelFunc) error {
+func (server *Server) Start(cancel context.CancelFunc) error {
 	slog.Info("Starting Shifu", "version", version, "directory", server.dir)
 	server.funcMap = cms.Merge(server.funcMap)
 	ctx, cancelServer := context.WithCancel(context.Background())
@@ -112,28 +109,40 @@ func (server *Server) Start(router chi.Router, cancel context.CancelFunc) error 
 	})
 	analytics.Init()
 	server.setupRouter(server.dir, server.Content, sm)
-	<-server.startServer(server.Router, stop)
+	<-server.startServer(server.router, stop)
 	return nil
 }
 
 func (server *Server) setupRouter(dir string, cms *cms.CMS, sm *sitemap.Sitemap) {
-	var router chi.Router
-
-	if server.Router != nil {
-		router = server.Router
-	} else {
-		router = chi.NewRouter()
-	}
-
+	router := chi.NewRouter()
 	router.Use(
 		middleware.Cors(),
 		middleware.Gzip(),
 	)
+
+	if server.router != nil {
+		slog.Info("Merging router with Shifu router...")
+
+		for _, route := range server.router.Routes() {
+			for method, handler := range route.Handlers {
+				if method == "*" {
+					router.Handle(route.Pattern, handler)
+				} else {
+					router.Method(method, route.Pattern, handler)
+				}
+			}
+		}
+	}
+
 	sm.Serve(router)
 	server.serveRobotsTxt(router)
 	server.serveStaticDir(router, dir)
 	router.Handle("/*", http.HandlerFunc(cms.Serve))
-	server.Router = router
+	server.router = router
+
+	for _, route := range router.Routes() {
+		slog.Info("Added route", "route", route.Pattern)
+	}
 }
 
 func (server *Server) serveRobotsTxt(router chi.Router) {
