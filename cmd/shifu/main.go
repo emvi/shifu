@@ -31,7 +31,7 @@ func main() {
 	case "run":
 		server := shifu.NewServer(dir, shifu.ServerOptions{})
 
-		if err := server.Start(nil); err != nil {
+		if err := server.Start(nil, nil); err != nil {
 			slog.Error("Error starting Shifu", "error", err)
 		}
 	case "init":

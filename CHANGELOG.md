@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+
+* added optional router to server options
+
 ## 0.5.0
 
 * exported new server struct

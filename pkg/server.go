@@ -26,6 +26,10 @@ import (
 
 // ServerOptions are the options for the Shifu Server.
 type ServerOptions struct {
+	// Router is the router used by the server. If set, it will be used to attach the Shifu handlers.
+	// Otherwise, a new router will be created.
+	Router chi.Router
+
 	// FuncMap will be merged with the default Shifu template function map.
 	FuncMap template.FuncMap
 }
@@ -47,6 +51,7 @@ type Server struct {
 // The second argument is an optional template.FuncMap that will be merged with Shifu's funcmap.
 func NewServer(dir string, options ServerOptions) *Server {
 	return &Server{
+		Router:  options.Router,
 		dir:     dir,
 		funcMap: options.FuncMap,
 	}
@@ -54,7 +59,7 @@ func NewServer(dir string, options ServerOptions) *Server {
 
 // Start starts the Shifu server.
 // The context.CancelFunc is optional and will be called on server shutdown or error if set.
-func (server *Server) Start(cancel context.CancelFunc) error {
+func (server *Server) Start(router chi.Router, cancel context.CancelFunc) error {
 	slog.Info("Starting Shifu", "version", version, "directory", server.dir)
 	server.funcMap = cms.Merge(server.funcMap)
 	ctx, cancelServer := context.WithCancel(context.Background())
@@ -106,13 +111,20 @@ func (server *Server) Start(cancel context.CancelFunc) error {
 		Sitemap:   sm,
 	})
 	analytics.Init()
-	server.Router = server.setupRouter(server.dir, server.Content, sm)
+	server.setupRouter(server.dir, server.Content, sm)
 	<-server.startServer(server.Router, stop)
 	return nil
 }
 
-func (server *Server) setupRouter(dir string, cms *cms.CMS, sm *sitemap.Sitemap) chi.Router {
-	router := chi.NewRouter()
+func (server *Server) setupRouter(dir string, cms *cms.CMS, sm *sitemap.Sitemap) {
+	var router chi.Router
+
+	if server.Router != nil {
+		router = server.Router
+	} else {
+		router = chi.NewRouter()
+	}
+
 	router.Use(
 		middleware.Cors(),
 		middleware.Gzip(),
@@ -121,7 +133,6 @@ func (server *Server) setupRouter(dir string, cms *cms.CMS, sm *sitemap.Sitemap)
 	server.serveRobotsTxt(router)
 	server.serveStaticDir(router, dir)
 	router.Handle("/*", http.HandlerFunc(cms.Serve))
-	return router
 }
 
 func (server *Server) serveRobotsTxt(router chi.Router) {
