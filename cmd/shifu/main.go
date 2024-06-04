@@ -2,9 +2,7 @@ package main
 
 import (
 	shifu "github.com/emvi/shifu/pkg"
-	"github.com/go-chi/chi/v5"
 	"log/slog"
-	"net/http"
 	"os"
 	"strings"
 )
@@ -31,14 +29,12 @@ func main() {
 
 	switch cmd {
 	case "run":
-		r := chi.NewRouter()
-		r.HandleFunc("/debug", func(w http.ResponseWriter, _ *http.Request) {
-			w.Write([]byte("HELLO WORLD!"))
-		})
+		server, err := shifu.NewServer(dir, shifu.ServerOptions{})
 
-		server := shifu.NewServer(dir, shifu.ServerOptions{
-			Router: r,
-		})
+		if err != nil {
+			slog.Error("Error setting up Shifu server", "error", err)
+			return
+		}
 
 		if err := server.Start(nil); err != nil {
 			slog.Error("Error starting Shifu", "error", err)

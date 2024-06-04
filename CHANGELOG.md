@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.2
+
+* fixed server setup
+
 ## 0.7.1
 
 * fixed sitemap setup

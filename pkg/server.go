@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/emvi/shifu/pkg/analytics"
 	"github.com/emvi/shifu/pkg/cfg"
@@ -45,46 +44,17 @@ type Server struct {
 	router  chi.Router
 	dir     string
 	funcMap template.FuncMap
+	ctx     context.Context
+	cancel  context.CancelFunc
 }
 
 // NewServer creates a new Shifu server for given directory.
 // The second argument is an optional template.FuncMap that will be merged with Shifu's funcmap.
-func NewServer(dir string, options ServerOptions) *Server {
-	return &Server{
-		Sitemap: sitemap.New(),
-		router:  options.Router,
-		dir:     dir,
-		funcMap: options.FuncMap,
-	}
-}
+func NewServer(dir string, options ServerOptions) (*Server, error) {
+	options.FuncMap = cms.Merge(options.FuncMap)
 
-// Start starts the Shifu server.
-// The context.CancelFunc is optional and will be called on server shutdown or error if set.
-func (server *Server) Start(cancel context.CancelFunc) error {
-	slog.Info("Starting Shifu", "version", version, "directory", server.dir)
-	server.funcMap = cms.Merge(server.funcMap)
-	ctx, cancelServer := context.WithCancel(context.Background())
-	stop := func() {
-		cancelServer()
-
-		if cancel != nil {
-			cancel()
-		}
-	}
-
-	if err := cfg.Watch(ctx, server.dir, server.funcMap); err != nil {
-		stop()
-		return err
-	}
-
-	if err := sass.Watch(ctx, server.dir); err != nil {
-		stop()
-		return err
-	}
-
-	if err := js.Watch(ctx, server.dir); err != nil {
-		stop()
-		return err
+	if err := cfg.Load(dir, options.FuncMap); err != nil {
+		return nil, err
 	}
 
 	config := cfg.Get().Content
@@ -92,24 +62,63 @@ func (server *Server) Start(cancel context.CancelFunc) error {
 
 	switch strings.ToLower(config.Provider) {
 	case "fs":
-		provider = source.NewFS(server.dir, config.UpdateSeconds)
+		provider = source.NewFS(dir, config.UpdateSeconds)
 		break
 	case "git":
-		provider = source.NewGit(server.dir, config.Repository, config.UpdateSeconds)
+		provider = source.NewGit(dir, config.Repository, config.UpdateSeconds)
 		break
 	default:
-		stop()
-		return errors.New("content provider not found")
+		return nil, fmt.Errorf("content provider '%s' not found", config.Provider)
 	}
 
-	server.Content = cms.NewCMS(cms.Options{
+	sm := sitemap.New()
+	ctx, cancel := context.WithCancel(context.Background())
+	content := cms.NewCMS(cms.Options{
 		Ctx:       ctx,
-		BaseDir:   server.dir,
+		BaseDir:   dir,
 		HotReload: cfg.Get().Dev,
-		FuncMap:   server.funcMap,
+		FuncMap:   options.FuncMap,
 		Source:    provider,
-		Sitemap:   server.Sitemap,
+		Sitemap:   sm,
 	})
+	return &Server{
+		Content: content,
+		Sitemap: sm,
+		router:  options.Router,
+		dir:     dir,
+		funcMap: options.FuncMap,
+		ctx:     ctx,
+		cancel:  cancel,
+	}, nil
+}
+
+// Start starts the Shifu server.
+// The context.CancelFunc is optional and will be called on server shutdown or error if set.
+func (server *Server) Start(cancel context.CancelFunc) error {
+	slog.Info("Starting Shifu", "version", version, "directory", server.dir)
+	stop := func() {
+		server.cancel()
+
+		if cancel != nil {
+			cancel()
+		}
+	}
+
+	if err := cfg.Watch(server.ctx, server.dir, server.funcMap); err != nil {
+		stop()
+		return err
+	}
+
+	if err := sass.Watch(server.ctx, server.dir); err != nil {
+		stop()
+		return err
+	}
+
+	if err := js.Watch(server.ctx, server.dir); err != nil {
+		stop()
+		return err
+	}
+
 	analytics.Init()
 	server.setupRouter()
 	<-server.startServer(server.router, stop)
