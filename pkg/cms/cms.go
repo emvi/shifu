@@ -393,6 +393,8 @@ func (cms *CMS) updateTpl() {
 
 func (cms *CMS) updateContent() {
 	slog.Info("Updating website content...")
+	cms.m.Lock()
+	defer cms.m.Unlock()
 	cms.pages = make(map[string]Content)
 	cms.refs = make(map[string]Content)
 	cms.pageExperiments = make(map[string][]string)

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+* fixed concurrency issue
+
 ## 0.3.0
 
 * fixed loading templates if dev is set to false
