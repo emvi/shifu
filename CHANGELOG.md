@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1
+
+* fixed sitemap setup
+
 ## 0.7.0
 
 * exposed server sitemap

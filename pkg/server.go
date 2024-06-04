@@ -51,6 +51,7 @@ type Server struct {
 // The second argument is an optional template.FuncMap that will be merged with Shifu's funcmap.
 func NewServer(dir string, options ServerOptions) *Server {
 	return &Server{
+		Sitemap: sitemap.New(),
 		router:  options.Router,
 		dir:     dir,
 		funcMap: options.FuncMap,
@@ -101,7 +102,6 @@ func (server *Server) Start(cancel context.CancelFunc) error {
 		return errors.New("content provider not found")
 	}
 
-	server.Sitemap = sitemap.New()
 	server.Content = cms.NewCMS(cms.Options{
 		Ctx:       ctx,
 		BaseDir:   server.dir,
