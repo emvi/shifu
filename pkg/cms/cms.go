@@ -66,8 +66,6 @@ func NewCMS(options Options) *CMS {
 	}
 	cms.tpl = NewCache(filepath.Join(options.BaseDir, "tpl"), options.FuncMap, options.HotReload)
 	cms.source.Update(options.Ctx, func() {
-		cms.m.Lock()
-		defer cms.m.Unlock()
 		cms.updateTpl()
 		cms.updateContent()
 		cms.updateSitemap()

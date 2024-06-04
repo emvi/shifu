@@ -29,7 +29,9 @@ func main() {
 
 	switch cmd {
 	case "run":
-		if err := shifu.Start(dir, nil); err != nil {
+		server := shifu.NewServer(dir, shifu.ServerOptions{})
+
+		if err := server.Start(nil); err != nil {
 			slog.Error("Error starting Shifu", "error", err)
 		}
 	case "init":

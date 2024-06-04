@@ -24,25 +24,60 @@ import (
 	"time"
 )
 
-// Start starts the Shifu server for given directory.
+// ServerOptions are the options for the Shifu Server.
+type ServerOptions struct {
+	// FuncMap will be merged with the default Shifu template function map.
+	FuncMap template.FuncMap
+}
+
+// Server is the Shifu server.
+type Server struct {
+	// Content is the CMS content.
+	Content *cms.CMS
+
+	// Router is the router for the server.
+	// It has a CORS and gzip middleware, as well as a route for robots.txt, the static directory, and any unmatched path (/*) by default.
+	Router chi.Router
+
+	dir     string
+	funcMap template.FuncMap
+}
+
+// NewServer creates a new Shifu server for given directory.
 // The second argument is an optional template.FuncMap that will be merged with Shifu's funcmap.
-func Start(dir string, funcMap template.FuncMap) error {
-	slog.Info("Starting Shifu", "version", version, "directory", dir)
-	funcMap = cms.Merge(funcMap)
-	ctx, cancel := context.WithCancel(context.Background())
+func NewServer(dir string, options ServerOptions) *Server {
+	return &Server{
+		dir:     dir,
+		funcMap: options.FuncMap,
+	}
+}
 
-	if err := cfg.Watch(ctx, dir, funcMap); err != nil {
-		cancel()
+// Start starts the Shifu server.
+// The context.CancelFunc is optional and will be called on server shutdown or error if set.
+func (server *Server) Start(cancel context.CancelFunc) error {
+	slog.Info("Starting Shifu", "version", version, "directory", server.dir)
+	server.funcMap = cms.Merge(server.funcMap)
+	ctx, cancelServer := context.WithCancel(context.Background())
+	stop := func() {
+		cancelServer()
+
+		if cancel != nil {
+			cancel()
+		}
+	}
+
+	if err := cfg.Watch(ctx, server.dir, server.funcMap); err != nil {
+		stop()
 		return err
 	}
 
-	if err := sass.Watch(ctx, dir); err != nil {
-		cancel()
+	if err := sass.Watch(ctx, server.dir); err != nil {
+		stop()
 		return err
 	}
 
-	if err := js.Watch(ctx, dir); err != nil {
-		cancel()
+	if err := js.Watch(ctx, server.dir); err != nil {
+		stop()
 		return err
 	}
 
@@ -51,45 +86,45 @@ func Start(dir string, funcMap template.FuncMap) error {
 
 	switch strings.ToLower(config.Provider) {
 	case "fs":
-		provider = source.NewFS(dir, config.UpdateSeconds)
+		provider = source.NewFS(server.dir, config.UpdateSeconds)
 		break
 	case "git":
-		provider = source.NewGit(dir, config.Repository, config.UpdateSeconds)
+		provider = source.NewGit(server.dir, config.Repository, config.UpdateSeconds)
 		break
 	default:
-		cancel()
+		stop()
 		return errors.New("content provider not found")
 	}
 
 	sm := sitemap.New()
-	content := cms.NewCMS(cms.Options{
+	server.Content = cms.NewCMS(cms.Options{
 		Ctx:       ctx,
-		BaseDir:   dir,
+		BaseDir:   server.dir,
 		HotReload: cfg.Get().Dev,
-		FuncMap:   funcMap,
+		FuncMap:   server.funcMap,
 		Source:    provider,
 		Sitemap:   sm,
 	})
 	analytics.Init()
-	router := setupRouter(dir, content, sm)
-	<-startServer(router, cancel)
+	server.Router = server.setupRouter(server.dir, server.Content, sm)
+	<-server.startServer(server.Router, stop)
 	return nil
 }
 
-func setupRouter(dir string, cms *cms.CMS, sm *sitemap.Sitemap) chi.Router {
+func (server *Server) setupRouter(dir string, cms *cms.CMS, sm *sitemap.Sitemap) chi.Router {
 	router := chi.NewRouter()
 	router.Use(
 		middleware.Cors(),
 		middleware.Gzip(),
 	)
 	sm.Serve(router)
-	serveRobotsTxt(router)
-	serveStaticDir(router, dir)
+	server.serveRobotsTxt(router)
+	server.serveStaticDir(router, dir)
 	router.Handle("/*", http.HandlerFunc(cms.Serve))
 	return router
 }
 
-func serveRobotsTxt(router chi.Router) {
+func (server *Server) serveRobotsTxt(router chi.Router) {
 	robotsTxt := fmt.Sprintf("User-agent: *\nDisallow:\n\nSitemap: %s/sitemap.xml\n", cfg.Get().Server.Hostname)
 	router.Handle("/robots.txt", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "text/plain")
@@ -101,18 +136,18 @@ func serveRobotsTxt(router chi.Router) {
 	}))
 }
 
-func serveStaticDir(router chi.Router, dir string) {
+func (server *Server) serveStaticDir(router chi.Router, dir string) {
 	fs := http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join(dir, "static"))))
 	router.Handle("/static/*", gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fs.ServeHTTP(w, r)
 	})))
 }
 
-func startServer(handler http.Handler, cancel context.CancelFunc) chan struct{} {
+func (server *Server) startServer(handler http.Handler, cancel context.CancelFunc) chan struct{} {
 	slog.Info("Starting server...")
 	config := cfg.Get()
 	addr := fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port)
-	server := &http.Server{
+	httpServer := &http.Server{
 		Handler:      handler,
 		Addr:         addr,
 		WriteTimeout: time.Second * time.Duration(config.Server.WriteTimeout),
@@ -127,7 +162,7 @@ func startServer(handler http.Handler, cancel context.CancelFunc) chan struct{} 
 		cancel()
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(config.Server.ShutdownTimeout))
 
-		if err := server.Shutdown(ctx); err != nil {
+		if err := httpServer.Shutdown(ctx); err != nil {
 			slog.Error("Error shutting down server gracefully", "error", err)
 			panic(err)
 		}
@@ -139,12 +174,12 @@ func startServer(handler http.Handler, cancel context.CancelFunc) chan struct{} 
 
 	go func() {
 		if config.Server.TLSCertFile != "" && config.Server.TLSKeyFile != "" {
-			if err := server.ListenAndServeTLS(config.Server.TLSCertFile, config.Server.TLSKeyFile); err != nil {
+			if err := httpServer.ListenAndServeTLS(config.Server.TLSCertFile, config.Server.TLSKeyFile); err != nil {
 				slog.Error("Error starting server", "error", err)
 				panic(err)
 			}
 		} else {
-			if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 				slog.Error("Error starting server", "error", err)
 				panic(err)
 			}
