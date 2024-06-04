@@ -251,10 +251,15 @@ func main() {
 	customFuncMap := template.FuncMap{
 		"blogArticle": loadAndRenderBlogArticle,
 	}
-		
-    // Start Shifu from the content/dir directory and pass your own template.FuncMap.
-    // The FuncMap will be merged with the default FuncMap of Shifu.
-	if err := shifu.Start("content/dir", customFuncMap); err != nil {
+
+	// Set up Shifu from the content/dir directory and pass your own template.FuncMap.
+	// The FuncMap will be merged with the default FuncMap of Shifu.
+	server := shifu.NewServer("content/dir", shifu.ServerOptions{
+		FuncMap: customFuncMap,
+    })
+	
+	// Start the server. The router and cancel function are optional.
+	if err := server.Start(nil, nil); err != nil {
 		slog.Error("Error starting Shifu", "error", err)
 	}
 }
