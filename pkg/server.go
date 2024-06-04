@@ -39,6 +39,9 @@ type Server struct {
 	// Content is the CMS content.
 	Content *cms.CMS
 
+	// Sitemap is the sitemap generated from the content.
+	Sitemap *sitemap.Sitemap
+
 	router  chi.Router
 	dir     string
 	funcMap template.FuncMap
@@ -98,22 +101,22 @@ func (server *Server) Start(cancel context.CancelFunc) error {
 		return errors.New("content provider not found")
 	}
 
-	sm := sitemap.New()
+	server.Sitemap = sitemap.New()
 	server.Content = cms.NewCMS(cms.Options{
 		Ctx:       ctx,
 		BaseDir:   server.dir,
 		HotReload: cfg.Get().Dev,
 		FuncMap:   server.funcMap,
 		Source:    provider,
-		Sitemap:   sm,
+		Sitemap:   server.Sitemap,
 	})
 	analytics.Init()
-	server.setupRouter(server.dir, server.Content, sm)
+	server.setupRouter()
 	<-server.startServer(server.router, stop)
 	return nil
 }
 
-func (server *Server) setupRouter(dir string, cms *cms.CMS, sm *sitemap.Sitemap) {
+func (server *Server) setupRouter() {
 	router := chi.NewRouter()
 	router.Use(
 		middleware.Cors(),
@@ -134,10 +137,10 @@ func (server *Server) setupRouter(dir string, cms *cms.CMS, sm *sitemap.Sitemap)
 		}
 	}
 
-	sm.Serve(router)
+	server.Sitemap.Serve(router)
 	server.serveRobotsTxt(router)
-	server.serveStaticDir(router, dir)
-	router.Handle("/*", http.HandlerFunc(cms.Serve))
+	server.serveStaticDir(router, server.dir)
+	router.Handle("/*", http.HandlerFunc(server.Content.Serve))
 	server.router = router
 
 	for _, route := range router.Routes() {

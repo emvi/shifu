@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0
+
+* exposed server sitemap
+
 ## 0.6.2
 
 * fixed router setup
