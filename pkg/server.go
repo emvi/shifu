@@ -133,6 +133,7 @@ func (server *Server) setupRouter(dir string, cms *cms.CMS, sm *sitemap.Sitemap)
 	server.serveRobotsTxt(router)
 	server.serveStaticDir(router, dir)
 	router.Handle("/*", http.HandlerFunc(cms.Serve))
+	server.Router = router
 }
 
 func (server *Server) serveRobotsTxt(router chi.Router) {

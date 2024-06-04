@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1
+
+* fixed router setup
+
 ## 0.6.0
 
 * added optional router to server options
