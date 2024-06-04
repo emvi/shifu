@@ -256,9 +256,9 @@ func main() {
 	// The FuncMap will be merged with the default FuncMap of Shifu.
 	server := shifu.NewServer("content/dir", shifu.ServerOptions{
 		FuncMap: customFuncMap,
-    })
+	})
 	
-	// Start the server. The router and cancel function are optional.
+	// Start the server. The cancel function is optional.
 	if err := server.Start(nil); err != nil {
 		slog.Error("Error starting Shifu", "error", err)
 	}
