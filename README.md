@@ -233,13 +233,44 @@ Shifu is designed to be used as a standalone server, but also as a library for G
 You can add your own template functions for more advanced functionality and use cases and embed them in your application.
 Just `go get` it and call it anywhere in your application to start a web server.
 
+### Basic Example
+
 ```go
 package main
 
 import (
 	shifu "github.com/emvi/shifu/pkg"
 	"log/slog"
+)
+
+func main() {
+	// Set up Shifu from the content/dir directory.
+	s, err := shifu.NewServer("content/dir", shifu.ServerOptions{})
+
+	if err != nil {
+		panic(err)
+	}
+
+	// Start the server. The cancel function is optional.
+	if err := s.Start(nil); err != nil {
+		slog.Error("Error starting server", "error", err)
+	}
+}
+```
+
+### Advanced Example
+
+```go
+package main
+
+import (
+	shifu "github.com/emvi/shifu/pkg"
+	"github.com/emvi/shifu/pkg/cms"
+	"github.com/go-chi/chi/v5"
+	"net/http"
 	"html/template"
+	"log/slog"
+	"strings"
 )
 
 func loadAndRenderBlogArticle() string {
@@ -247,20 +278,35 @@ func loadAndRenderBlogArticle() string {
 }
 
 func main() {
-	// Define a custom FuncMap to load and render blog articles from an external source.
-	customFuncMap := template.FuncMap{
-		"blogArticle": loadAndRenderBlogArticle,
+	// Optional custom router. The routes will be merged with the Shifu router.
+	router := chi.NewRouter()
+	router.Get("/example", func(w http.ResponseWriter, _ *http.Request) {
+		w.Write([]byte("Hello World!"))
+	})
+	
+	// Set up Shifu from the content/dir directory.
+	s, err := shifu.NewServer("content/dir", shifu.ServerOptions{
+		Router:  router,
+
+		// Define a custom FuncMap to load and render blog articles from an external source.
+		FuncMap: template.FuncMap{
+			"blogArticle": loadAndRenderBlogArticle,
+		},
+	})
+
+	if err != nil {
+		panic(err)
 	}
 
-	// Set up Shifu from the content/dir directory and pass your own template.FuncMap.
-	// The FuncMap will be merged with the default FuncMap of Shifu.
-	server := shifu.NewServer("content/dir", shifu.ServerOptions{
-		FuncMap: customFuncMap,
+	// Add a custom handler.
+	s.Content.SetHandler("blog", func(c *cms.CMS, page cms.Content, w http.ResponseWriter, r *http.Request) {
+		// ...
+		c.RenderPage(w, r, strings.ToLower(r.URL.Path), &page)
     })
-	
-	// Start the server. The router and cancel function are optional.
-	if err := server.Start(nil); err != nil {
-		slog.Error("Error starting Shifu", "error", err)
+
+	// Start the server. The cancel function is optional.
+	if err := s.Start(nil); err != nil {
+		slog.Error("Error starting server", "error", err)
 	}
 }
 ```
