@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.3
+
+* fixed hostname in canonical link
+
 ## 0.7.2
 
 * fixed server setup

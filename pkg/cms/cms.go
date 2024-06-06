@@ -411,7 +411,7 @@ func (cms *CMS) updateContent() {
 				return errors.New(fmt.Sprintf("error parsing website content file '%s': %s", path, err))
 			}
 
-			websiteHost := cfg.Get().Server.Host
+			websiteHost := cfg.Get().Server.Hostname
 
 			// When the template is specified on the first level, this is a standalone component.
 			// Otherwise, it's a page.
