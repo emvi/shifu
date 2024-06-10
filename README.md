@@ -201,11 +201,11 @@ Custom handlers are implemented like this:
 
 ```go
 cms := shifu.NewCMS(cms.Options{
-    // ...
+	// ...
 })
 cms.SetHandler("blog", func Blog(c *cms.CMS, page cms.Content, w http.ResponseWriter, r *http.Request) {
 	// ...
-    c.RenderPage(w, r, strings.ToLower(r.URL.Path), &page)
+	c.RenderPage(w, r, strings.ToLower(r.URL.Path), &page)
 })
 ```
 
@@ -239,8 +239,9 @@ Just `go get` it and call it anywhere in your application to start a web server.
 package main
 
 import (
-	shifu "github.com/emvi/shifu/pkg"
 	"log/slog"
+
+	shifu "github.com/emvi/shifu/pkg"
 )
 
 func main() {
@@ -264,17 +265,18 @@ func main() {
 package main
 
 import (
+	"html/template"
+	"log/slog"
+	"net/http"
+	"strings"
+
 	shifu "github.com/emvi/shifu/pkg"
 	"github.com/emvi/shifu/pkg/cms"
 	"github.com/go-chi/chi/v5"
-	"net/http"
-	"html/template"
-	"log/slog"
-	"strings"
 )
 
 func loadAndRenderBlogArticle() string {
-    return "TODO"
+	return "TODO"
 }
 
 func main() {
@@ -283,10 +285,10 @@ func main() {
 	router.Get("/example", func(w http.ResponseWriter, _ *http.Request) {
 		w.Write([]byte("Hello World!"))
 	})
-	
+
 	// Set up Shifu from the content/dir directory.
 	s, err := shifu.NewServer("content/dir", shifu.ServerOptions{
-		Router:  router,
+		Router: router,
 
 		// Define a custom FuncMap to load and render blog articles from an external source.
 		FuncMap: template.FuncMap{
@@ -302,7 +304,7 @@ func main() {
 	s.Content.SetHandler("blog", func(c *cms.CMS, page cms.Content, w http.ResponseWriter, r *http.Request) {
 		// ...
 		c.RenderPage(w, r, strings.ToLower(r.URL.Path), &page)
-    })
+	})
 
 	// Start the server. The cancel function is optional.
 	if err := s.Start(nil); err != nil {
