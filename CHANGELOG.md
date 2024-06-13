@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.4
+
+* fixed loading refs before page content and experiments
+* fixed deadlock
+* updated Go version
+* updated dependencies
+
 ## 0.7.3
 
 * fixed hostname in canonical link

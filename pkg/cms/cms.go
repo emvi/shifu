@@ -391,34 +391,42 @@ func (cms *CMS) updateTpl() {
 
 func (cms *CMS) updateContent() {
 	slog.Info("Updating website content...")
-	cms.m.Lock()
-	defer cms.m.Unlock()
-	cms.pages = make(map[string]Content)
-	cms.refs = make(map[string]Content)
-	cms.pageExperiments = make(map[string][]string)
+	pages := make(map[string]Content)
+	refs := make(map[string]Content)
+	pageExperiments := make(map[string][]string)
+	websiteHost := cfg.Get().Server.Hostname
 
+	// extract refs
 	if err := filepath.WalkDir(filepath.Join(cms.baseDir, "content"), func(path string, d fs.DirEntry, err error) error {
 		if !d.IsDir() {
-			data, err := os.ReadFile(path)
+			content, err := cms.getContent(path)
 
 			if err != nil {
-				return errors.New(fmt.Sprintf("error reading website content file '%s': %s", path, err))
+				return err
 			}
 
-			var content Content
-
-			if err := json.Unmarshal(data, &content); err != nil {
-				return errors.New(fmt.Sprintf("error parsing website content file '%s': %s", path, err))
-			}
-
-			websiteHost := cfg.Get().Server.Hostname
-
-			// When the template is specified on the first level, this is a standalone component.
-			// Otherwise, it's a page.
+			// when the template is specified on the first level, this is a standalone component, otherwise, it's a page
 			if content.Tpl != "" {
 				name := strings.ToLower(strings.TrimSuffix(d.Name(), filepath.Ext(d.Name())))
-				cms.refs[name] = content
-			} else {
+				refs[name] = *content
+			}
+		}
+
+		return err
+	}); err != nil {
+		slog.Error("Error reading website content directory", "error", err)
+	}
+
+	// extract pages and experiments
+	if err := filepath.WalkDir(filepath.Join(cms.baseDir, "content"), func(path string, d fs.DirEntry, err error) error {
+		if !d.IsDir() {
+			content, err := cms.getContent(path)
+
+			if err != nil {
+				return err
+			}
+
+			if content.Tpl == "" {
 				for language, p := range content.Path {
 					info, err := d.Info()
 
@@ -428,8 +436,8 @@ func (cms *CMS) updateContent() {
 
 					content.Language = language
 					content.CanonicalLink = websiteHost + p
-					cms.updateExperiments(&content)
-					cms.pages[p] = content
+					cms.updateExperiments(refs, pageExperiments, content)
+					pages[p] = *content
 					priority := content.Sitemap.Priority
 
 					if priority == "" {
@@ -446,36 +454,51 @@ func (cms *CMS) updateContent() {
 		slog.Error("Error reading website content directory", "error", err)
 	}
 
+	cms.m.Lock()
+	defer cms.m.Unlock()
+	cms.pages = pages
+	cms.refs = refs
+	cms.pageExperiments = pageExperiments
 	slog.Info("Done updating website content")
 }
 
-func (cms *CMS) updateSitemap() {
-	slog.Info("Updating website sitemap...")
-	cms.sitemap.Update()
-	slog.Info("Done updating website sitemap")
+func (cms *CMS) getContent(path string) (*Content, error) {
+	data, err := os.ReadFile(path)
+
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("error reading website content file '%s': %s", path, err))
+	}
+
+	var content Content
+
+	if err := json.Unmarshal(data, &content); err != nil {
+		return nil, errors.New(fmt.Sprintf("error parsing website content file '%s': %s", path, err))
+	}
+
+	return &content, nil
 }
 
-func (cms *CMS) updateExperiments(page *Content) {
+func (cms *CMS) updateExperiments(refs map[string]Content, pageExperiments map[string][]string, page *Content) {
 	if page.Analytics.Experiment.Name != "" && page.Analytics.Experiment.Variant != "" {
-		if cms.pageExperiments[page.Analytics.Experiment.Name] == nil {
-			cms.pageExperiments[page.Analytics.Experiment.Name] = make([]string, 0)
+		if pageExperiments[page.Analytics.Experiment.Name] == nil {
+			pageExperiments[page.Analytics.Experiment.Name] = make([]string, 0)
 		}
 
-		if slices.Index(cms.pageExperiments[page.Analytics.Experiment.Name], page.Analytics.Experiment.Variant) == -1 {
-			cms.pageExperiments[page.Analytics.Experiment.Name] = append(cms.pageExperiments[page.Analytics.Experiment.Name], page.Analytics.Experiment.Variant)
+		if slices.Index(pageExperiments[page.Analytics.Experiment.Name], page.Analytics.Experiment.Variant) == -1 {
+			pageExperiments[page.Analytics.Experiment.Name] = append(pageExperiments[page.Analytics.Experiment.Name], page.Analytics.Experiment.Variant)
 		}
 	}
 
 	experiments := make(map[string][]string)
-	cms.extractExperiments(page, experiments)
+	cms.extractExperiments(refs, page, experiments)
 	page.Experiments = experiments
 }
 
-func (cms *CMS) extractExperiments(content *Content, experiments map[string][]string) {
+func (cms *CMS) extractExperiments(refs map[string]Content, content *Content, experiments map[string][]string) {
 	for _, elements := range content.Content {
 		for _, element := range elements {
 			if element.Ref != "" && (element.Analytics.Experiment.Name == "" || element.Analytics.Experiment.Variant == "") {
-				ref, ok := cms.refs[element.Ref]
+				ref, ok := refs[element.Ref]
 
 				if ok {
 					if element.Analytics.Experiment.Name == "" {
@@ -498,7 +521,13 @@ func (cms *CMS) extractExperiments(content *Content, experiments map[string][]st
 				}
 			}
 
-			cms.extractExperiments(&element, experiments)
+			cms.extractExperiments(refs, &element, experiments)
 		}
 	}
+}
+
+func (cms *CMS) updateSitemap() {
+	slog.Info("Updating website sitemap...")
+	cms.sitemap.Update()
+	slog.Info("Done updating website sitemap")
 }
