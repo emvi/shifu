@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.5
+
+* fixed deadlock when updating content in dev mode
+* fixed waiting for analytics provider when sending page views
+* updated Go version
+* updated dependencies
+
 ## 0.7.4
 
 * fixed loading refs before page content and experiments

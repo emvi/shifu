@@ -1,4 +1,4 @@
-.PHONY: deps test build_mac build_windows build_linux demo
+.PHONY: deps test build_mac build_windows build_linux demo init
 
 deps:
 	go get -u -t ./...

@@ -66,9 +66,11 @@ func NewCMS(options Options) *CMS {
 	}
 	cms.tpl = NewCache(filepath.Join(options.BaseDir, "tpl"), options.FuncMap, options.HotReload)
 	cms.source.Update(options.Ctx, func() {
-		cms.updateTpl()
+		slog.Info("Updating website templates, content, and sitemap...")
+		cms.tpl.Clear()
 		cms.updateContent()
-		cms.updateSitemap()
+		cms.sitemap.Update()
+		slog.Info("Done updating website templates, content, and sitemap")
 	})
 	return cms
 }
@@ -81,7 +83,6 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cms.m.RLock()
-	defer cms.m.RUnlock()
 	path := r.URL.Path
 	page, ok := cms.pages[path]
 
@@ -90,6 +91,7 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 		page, ok = cms.pages[notFoundPath]
 
 		if !ok {
+			cms.m.RUnlock()
 			return
 		}
 
@@ -102,13 +104,16 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 		if !ok {
 			slog.Error("Page handler not found", "path", path, "handler", page.Handler)
 			w.WriteHeader(http.StatusInternalServerError)
+			cms.m.RUnlock()
 			return
 		}
 
 		handler(cms, page, w, r)
+		cms.m.RUnlock()
 		return
 	}
 
+	cms.m.RUnlock()
 	cms.RenderPage(w, r, path, &page)
 }
 
@@ -380,17 +385,12 @@ func (cms *CMS) pageView(r *http.Request, page *Content) {
 		page.Analytics.Tags[k] = v
 	}
 
-	analytics.PageView(r, page.Analytics.Tags)
-}
-
-func (cms *CMS) updateTpl() {
-	slog.Info("Updating website templates...")
-	cms.tpl.Clear()
-	slog.Info("Done updating website templates")
+	go analytics.PageView(r, page.Analytics.Tags)
 }
 
 func (cms *CMS) updateContent() {
-	slog.Info("Updating website content...")
+	cms.m.Lock()
+	defer cms.m.Unlock()
 	pages := make(map[string]Content)
 	refs := make(map[string]Content)
 	pageExperiments := make(map[string][]string)
@@ -454,12 +454,9 @@ func (cms *CMS) updateContent() {
 		slog.Error("Error reading website content directory", "error", err)
 	}
 
-	cms.m.Lock()
-	defer cms.m.Unlock()
 	cms.pages = pages
 	cms.refs = refs
 	cms.pageExperiments = pageExperiments
-	slog.Info("Done updating website content")
 }
 
 func (cms *CMS) getContent(path string) (*Content, error) {
@@ -524,10 +521,4 @@ func (cms *CMS) extractExperiments(refs map[string]Content, content *Content, ex
 			cms.extractExperiments(refs, &element, experiments)
 		}
 	}
-}
-
-func (cms *CMS) updateSitemap() {
-	slog.Info("Updating website sitemap...")
-	cms.sitemap.Update()
-	slog.Info("Done updating website sitemap")
 }

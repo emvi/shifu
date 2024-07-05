@@ -57,6 +57,10 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		return nil, err
 	}
 
+	if cfg.Get().Dev {
+		slog.Warn("Dev mode is enabled!")
+	}
+
 	config := cfg.Get().Content
 	var provider source.Provider
 
