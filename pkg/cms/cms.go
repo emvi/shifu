@@ -137,7 +137,7 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 		w.Header().Add(k, v)
 	}
 
-	if page.Cached {
+	if !page.DisableCache {
 		data, ok := cms.pageCache[path]
 
 		if ok {
@@ -171,7 +171,7 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 		slog.Debug("Error sending response", "path", path, "error", err)
 	}
 
-	if page.Cached {
+	if !page.DisableCache {
 		cms.m.Lock()
 		cms.pageCache[path] = data
 		cms.m.Unlock()

@@ -118,7 +118,7 @@ The JSON structure for a content file is as follows:
 
 ```json
 {
-    "cached": true, // enables the static content cache
+    "disable_cache": false, // disables the static content cache (does not affect custom handlers)
     "path": {
         "en": "/", // /404 is a special case serving the 404 not found page
         "de": "/de"

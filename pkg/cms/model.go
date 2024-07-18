@@ -27,17 +27,17 @@ type Analytics struct {
 
 // Content is a page or element for the CMS.
 type Content struct {
-	Cached    bool                 `json:"cached"`
-	Path      map[string]string    `json:"path"`
-	Sitemap   Sitemap              `json:"sitemap"`
-	Header    map[string]string    `json:"header"`
-	Handler   string               `json:"handler"`
-	Analytics Analytics            `json:"analytics"`
-	Ref       string               `json:"ref"`
-	Tpl       string               `json:"tpl"`
-	Data      map[string]any       `json:"data"`
-	Copy      Copy                 `json:"copy"`
-	Content   map[string][]Content `json:"content"`
+	DisableCache bool                 `json:"disable_cache"`
+	Path         map[string]string    `json:"path"`
+	Sitemap      Sitemap              `json:"sitemap"`
+	Header       map[string]string    `json:"header"`
+	Handler      string               `json:"handler"`
+	Analytics    Analytics            `json:"analytics"`
+	Ref          string               `json:"ref"`
+	Tpl          string               `json:"tpl"`
+	Data         map[string]any       `json:"data"`
+	Copy         Copy                 `json:"copy"`
+	Content      map[string][]Content `json:"content"`
 
 	// Language is extracted and set from Path automatically.
 	Language string `json:"-"`
