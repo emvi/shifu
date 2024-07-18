@@ -25,6 +25,7 @@ type Config struct {
 	FuncMap template.FuncMap `json:"-"`
 
 	Dev       bool      `json:"dev"`
+	LogLevel  string    `json:"log_level"`
 	Server    Server    `json:"server"`
 	Content   Content   `json:"content"`
 	CORS      CORS      `json:"cors"`

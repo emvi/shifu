@@ -49,6 +49,8 @@ github.com/mitchellh/reflectwalk v1.0.2 h1:G2LzWKi524PWgd3mLHV8Y5k7s6XUvT0Gef6zx
 github.com/mitchellh/reflectwalk v1.0.2/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
 github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.3.0 h1:uZRvFSq3ZL8T0o6HoI0lr2+pl1RpORX7w7Xn+nuUSws=
 github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.3.0/go.mod h1:rsaEOobygzywGmIt+fJ4rkL5bJ20ElcBQOXpgOENbcI=
+github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.3.1 h1:MlKEWvXjDffQ5UCdrmMgs8jJvRPSfHSSpiXZLnsEWDw=
+github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.3.1/go.mod h1:rsaEOobygzywGmIt+fJ4rkL5bJ20ElcBQOXpgOENbcI=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/shopspring/decimal v1.2.0/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=

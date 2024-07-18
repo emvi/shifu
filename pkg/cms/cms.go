@@ -39,6 +39,7 @@ type CMS struct {
 	refs            map[string]Content
 	handler         map[string]Handler
 	pageExperiments map[string][]string
+	pageCache       map[string][]byte
 	m               sync.RWMutex
 }
 
@@ -63,6 +64,7 @@ func NewCMS(options Options) *CMS {
 		refs:            make(map[string]Content),
 		handler:         make(map[string]Handler),
 		pageExperiments: make(map[string][]string),
+		pageCache:       make(map[string][]byte),
 	}
 	cms.tpl = NewCache(filepath.Join(options.BaseDir, "tpl"), options.FuncMap, options.HotReload)
 	cms.source.Update(options.Ctx, func() {
@@ -82,6 +84,7 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 		cms.updateContent()
 	}
 
+	start := time.Now()
 	cms.m.RLock()
 	path := r.URL.Path
 	page, ok := cms.pages[path]
@@ -115,15 +118,16 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 
 	cms.m.RUnlock()
 	cms.RenderPage(w, r, path, &page)
+	slog.Debug("Served page", "time_ns", time.Now().Sub(start).Nanoseconds())
 }
 
 // RenderPage renders given page and returns it to the client.
 func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, page *Content) {
 	cms.m.RLock()
-	defer cms.m.RUnlock()
 	cms.selectExperiments(w, r, page)
 
 	if cms.redirectExperiment(w, r, page) {
+		cms.m.RUnlock()
 		return
 	}
 
@@ -133,12 +137,26 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 		w.Header().Add(k, v)
 	}
 
+	if page.Cached {
+		data, ok := cms.pageCache[path]
+
+		if ok {
+			if _, err := w.Write(data); err != nil {
+				slog.Debug("Error sending response", "path", path, "error", err)
+			}
+
+			cms.m.RUnlock()
+			return
+		}
+	}
+
 	var buffer bytes.Buffer
 
 	for _, content := range page.Content {
 		out, err := cms.renderContent(page, content)
 
 		if err != nil {
+			cms.m.RUnlock()
 			slog.Error("Error rendering template", "path", path, "error", err)
 			return
 		}
@@ -146,8 +164,17 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 		buffer.Write(out)
 	}
 
-	if _, err := w.Write(buffer.Bytes()); err != nil {
+	cms.m.RUnlock()
+	data := buffer.Bytes()
+
+	if _, err := w.Write(data); err != nil {
 		slog.Debug("Error sending response", "path", path, "error", err)
+	}
+
+	if page.Cached {
+		cms.m.Lock()
+		cms.pageCache[path] = data
+		cms.m.Unlock()
 	}
 }
 
@@ -457,6 +484,7 @@ func (cms *CMS) updateContent() {
 	cms.pages = pages
 	cms.refs = refs
 	cms.pageExperiments = pageExperiments
+	cms.pageCache = make(map[string][]byte)
 }
 
 func (cms *CMS) getContent(path string) (*Content, error) {

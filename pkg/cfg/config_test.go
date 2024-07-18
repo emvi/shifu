@@ -12,6 +12,7 @@ import (
 const (
 	sampleConfig = `{
 	"dev": true,
+	"log_level": "debug",
     "server": {
         "host": "localhost",
         "port": 8080,
@@ -69,6 +70,7 @@ func TestLoadConfig(t *testing.T) {
 	assert.NoError(t, os.WriteFile("config.json", []byte(sampleConfig), 0644))
 	assert.NoError(t, Load(".", nil))
 	assert.True(t, cfg.Dev)
+	assert.Equal(t, "debug", cfg.LogLevel)
 	assert.Equal(t, "localhost", cfg.Server.Host)
 	assert.Equal(t, 8080, cfg.Server.Port)
 	assert.Equal(t, 9, cfg.Server.ShutdownTimeout)

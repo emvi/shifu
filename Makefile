@@ -1,4 +1,7 @@
-.PHONY: deps test build_mac build_windows build_linux demo init
+.PHONY: demo deps test build_mac build_windows build_linux init
+
+demo:
+	go run cmd/shifu/main.go run demo
 
 deps:
 	go get -u -t ./...
@@ -18,9 +21,6 @@ build_windows: test
 build_linux: test
 	GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" cmd/shifu/main.go
 	mv main shifu
-
-demo:
-	go run cmd/shifu/main.go run demo
 
 init:
 	rm -r -f test

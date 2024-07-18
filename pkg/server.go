@@ -61,6 +61,20 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		slog.Warn("Dev mode is enabled!")
 	}
 
+	switch cfg.Get().LogLevel {
+	case "debug":
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+		break
+	case "warn":
+		slog.SetLogLoggerLevel(slog.LevelWarn)
+		break
+	case "error":
+		slog.SetLogLoggerLevel(slog.LevelError)
+		break
+	default:
+		slog.SetLogLoggerLevel(slog.LevelInfo)
+	}
+
 	config := cfg.Get().Content
 	var provider source.Provider
 

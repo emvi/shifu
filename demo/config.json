@@ -1,5 +1,6 @@
 {
     "dev": true,
+    "log_level": "debug",
     "server": {
         "host": "localhost",
         "port": 8080

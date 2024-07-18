@@ -27,6 +27,7 @@ type Analytics struct {
 
 // Content is a page or element for the CMS.
 type Content struct {
+	Cached    bool                 `json:"cached"`
 	Path      map[string]string    `json:"path"`
 	Sitemap   Sitemap              `json:"sitemap"`
 	Header    map[string]string    `json:"header"`

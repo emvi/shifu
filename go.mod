@@ -10,7 +10,7 @@ require (
 	github.com/go-chi/cors v1.2.1
 	github.com/gorilla/mux v1.8.1
 	github.com/klauspost/compress v1.17.9
-	github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.3.0
+	github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.3.1
 	github.com/stretchr/testify v1.9.0
 	github.com/yuin/goldmark v1.7.4
 )

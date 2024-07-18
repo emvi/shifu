@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.0
+
+* added page cache
+* added log level configuration
+* added logging page render time in debug mode
+* updated dependencies
+
 ## 0.7.5
 
 * fixed deadlock when updating content in dev mode

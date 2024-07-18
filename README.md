@@ -14,7 +14,8 @@ Shifu can also be used as a library in your Go application to add template funct
 * Serve static files
 * Reusable Golang template files
 * Automatically watch files for changes
-* Build and minify JavaScript/TypeScript and Sass 
+* Build and minify JavaScript/TypeScript and Sass
+* Static content cache
 * 404 error fallback page
 * Automatic sitemap generation
 * Integrated analytics using [Pirsch](https://pirsch.io)
@@ -55,6 +56,8 @@ Shifu is configured using a single `config.json` file inside the project directo
 
 ```json
 {
+    "dev": false,
+    "log_level": "info", // debug, info, warn, error
     "server": {
         "host": "localhost", // leave empty for production
         "port": 8080,
@@ -115,6 +118,7 @@ The JSON structure for a content file is as follows:
 
 ```json
 {
+    "cached": true, // enables the static content cache
     "path": {
         "en": "/", // /404 is a special case serving the 404 not found page
         "de": "/de"
