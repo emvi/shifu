@@ -18,7 +18,7 @@ var (
 func Init() {
 	provider := strings.ToLower(cfg.Get().Analytics.Provider)
 
-	if provider == "pirsch" {
+	if provider == "pirsch" && cfg.Get().Analytics.ClientSecret != "" {
 		slog.Info("Using analytics provider Pirsch")
 		client = NewPirschAnalytics(cfg.Get().Analytics.ClientID, cfg.Get().Analytics.ClientSecret)
 	} else {

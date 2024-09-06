@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.1
+
+* fixed creating Pirsch analytics client when client secret is not configured
+* updated dependencies
+
 ## 0.8.0
 
 * added page cache
