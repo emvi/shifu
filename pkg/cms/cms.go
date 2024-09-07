@@ -111,8 +111,8 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		handler(cms, page, w, r)
 		cms.m.RUnlock()
+		handler(cms, page, w, r)
 		return
 	}
 

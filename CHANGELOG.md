@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.2
+
+* fixed custom handler lock
+
 ## 0.8.1
 
 * fixed creating Pirsch analytics client when client secret is not configured
