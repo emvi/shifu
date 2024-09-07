@@ -207,7 +207,7 @@ Custom handlers are implemented like this:
 cms := shifu.NewCMS(cms.Options{
 	// ...
 })
-cms.SetHandler("blog", func Blog(c *cms.CMS, page cms.Content, w http.ResponseWriter, r *http.Request) {
+cms.SetHandler("blog", func(c *cms.CMS, page cms.Content, w http.ResponseWriter, r *http.Request) {
 	// ...
 	c.RenderPage(w, r, strings.ToLower(r.URL.Path), &page)
 })
