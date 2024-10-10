@@ -3,6 +3,7 @@
 ## 0.9.0
 
 * fixed configuration in readme
+* upgraded to Go version 1.23
 * updated dependencies
 
 ## 0.8.2
