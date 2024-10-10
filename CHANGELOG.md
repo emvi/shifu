@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.0
+
+* fixed configuration in readme
+* updated dependencies
+
 ## 0.8.2
 
 * fixed custom handler lock

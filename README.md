@@ -88,15 +88,15 @@ Shifu is configured using a single `config.json` file inside the project directo
         "out_source_map": "static/bundle.js.map",
         "watch": true
     },
-    "pirsch": { // optional configuration for Pirsch Analytics (pirsch.io)
+    "analytics": { // optional analytics configuration
         "provider": "pirsch",
         "client_id": "...", // optional when using an access key (recommended) instead of oAuth
         "client_secret": "...", // required
-        "subnets": [
+        "subnets": [ // optional subnet configuration
             "10.1.0.0/16",
             "10.2.0.0/8"
         ],
-        "header": [
+        "header": [ // optional IP header configuration
             "X-Forwarded-For",
             "Forwarded"
         ]
