@@ -22,6 +22,10 @@ build_linux: test
 	GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" cmd/shifu/main.go
 	mv main shifu
 
+build_arm64: test
+	GOOS=linux GOARCH=arm64 go build -a -installsuffix cgo -ldflags "-s -w" cmd/shifu/main.go
+	mv main shifu
+
 init:
 	rm -r -f test
 	go run cmd/shifu/main.go init test
