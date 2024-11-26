@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.1
+
+* fixed blocking analytics requests
+
 ## 0.9.0
 
 * fixed configuration in readme

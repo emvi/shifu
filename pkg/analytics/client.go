@@ -31,20 +31,24 @@ func Init() {
 
 // PageView sends a page view using the configured Analytics provider.
 func PageView(r *http.Request, tags map[string]string) {
-	if client != nil {
-		if err := client.PageView(r, tags); err != nil {
-			slog.Error("Error sending page view", "error", err)
+	go func() {
+		if client != nil {
+			if err := client.PageView(r, tags); err != nil {
+				slog.Error("Error sending page view", "error", err)
+			}
 		}
-	}
+	}()
 }
 
 // Event sends a custom event using the configured Analytics provider.
 func Event(r *http.Request, name string, duration int, meta, tags map[string]string) {
-	if client != nil {
-		if err := client.Event(r, name, duration, meta, tags); err != nil {
-			slog.Error("Error sending custom event", "error", err)
+	go func() {
+		if client != nil {
+			if err := client.Event(r, name, duration, meta, tags); err != nil {
+				slog.Error("Error sending custom event", "error", err)
+			}
 		}
-	}
+	}()
 }
 
 func loadIPHeader() {
