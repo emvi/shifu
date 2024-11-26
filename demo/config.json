@@ -19,5 +19,9 @@
         "out": "static/bundle.js",
         "out_source_map": "static/bundle.js.map",
         "watch": true
+    },
+    "analytics": {
+        "provider": "pirsch",
+        "client_secret": ""
     }
 }

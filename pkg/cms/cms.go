@@ -118,7 +118,7 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 
 	cms.m.RUnlock()
 	cms.RenderPage(w, r, path, &page)
-	slog.Debug("Served page", "time_ns", time.Now().Sub(start).Nanoseconds())
+	slog.Debug("Served page", "time_ms", time.Now().Sub(start).Milliseconds())
 }
 
 // RenderPage renders given page and returns it to the client.

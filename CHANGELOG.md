@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.2
+
+* changed page log time from ns to ms
+
 ## 0.9.1
 
 * fixed blocking analytics requests
