@@ -8,7 +8,11 @@ deps:
 	go mod vendor
 
 test:
-	go test -cover ./pkg/...
+	go test -cover ./pkg/cfg
+	go test -cover -race $$(go list ./pkg/... | grep -v /cfg)
+
+benchmark:
+	go test -bench=. ./pkg/...
 
 build_mac: test
 	GOOS=darwin go build -a -installsuffix cgo -ldflags "-s -w" cmd/shifu/main.go

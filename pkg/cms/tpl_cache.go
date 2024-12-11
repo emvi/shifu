@@ -57,9 +57,13 @@ func (cache *Cache) Render(name string, data any) ([]byte, error) {
 	return buffer.Bytes(), nil
 }
 
-// Get returns the HTML template or loads it in case the cache is disabled or it hasn't been loaded yet.
+// Get returns the HTML template or loads it in case the cache is disabled, or it hasn't been loaded yet.
 func (cache *Cache) Get() *template.Template {
-	if cache.disabled || !cache.loaded {
+	cache.m.RLock()
+	load := cache.disabled || !cache.loaded
+	cache.m.RUnlock()
+
+	if load {
 		if err := cache.loadTemplate(); err != nil {
 			slog.Error("Error refreshing template files from directory", "error", err, "directory", cache.dir)
 			panic(err)
@@ -68,7 +72,8 @@ func (cache *Cache) Get() *template.Template {
 
 	cache.m.RLock()
 	defer cache.m.RUnlock()
-	return &cache.temp
+	t := cache.temp
+	return &t
 }
 
 func (cache *Cache) loadTemplate() error {

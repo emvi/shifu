@@ -85,16 +85,14 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 	}
 
 	start := time.Now()
-	cms.m.RLock()
 	path := r.URL.Path
-	page, ok := cms.pages[path]
+	page, ok := cms.getPage(path)
 
 	if !ok {
 		slog.Debug("Page not found", "path", path)
-		page, ok = cms.pages[notFoundPath]
+		page, ok = cms.getPage(notFoundPath)
 
 		if !ok {
-			cms.m.RUnlock()
 			return
 		}
 
@@ -102,32 +100,27 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if page.Handler != "" {
-		handler, ok := cms.handler[page.Handler]
+		handler, ok := cms.getHandler(page.Handler)
 
 		if !ok {
 			slog.Error("Page handler not found", "path", path, "handler", page.Handler)
 			w.WriteHeader(http.StatusInternalServerError)
-			cms.m.RUnlock()
 			return
 		}
 
-		cms.m.RUnlock()
 		handler(cms, page, w, r)
 		return
 	}
 
-	cms.m.RUnlock()
 	cms.RenderPage(w, r, path, &page)
 	slog.Debug("Served page", "time_ms", time.Now().Sub(start).Milliseconds())
 }
 
 // RenderPage renders given page and returns it to the client.
 func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, page *Content) {
-	cms.m.RLock()
 	cms.selectExperiments(w, r, page)
 
 	if cms.redirectExperiment(w, r, page) {
-		cms.m.RUnlock()
 		return
 	}
 
@@ -138,14 +131,15 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 	}
 
 	if !page.DisableCache {
+		cms.m.RLock()
 		data, ok := cms.pageCache[path]
+		cms.m.RUnlock()
 
 		if ok {
 			if _, err := w.Write(data); err != nil {
 				slog.Debug("Error sending response", "path", path, "error", err)
 			}
 
-			cms.m.RUnlock()
 			return
 		}
 	}
@@ -156,7 +150,6 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 		out, err := cms.renderContent(page, content)
 
 		if err != nil {
-			cms.m.RUnlock()
 			slog.Error("Error rendering template", "path", path, "error", err)
 			return
 		}
@@ -164,7 +157,6 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 		buffer.Write(out)
 	}
 
-	cms.m.RUnlock()
 	data := buffer.Bytes()
 
 	if _, err := w.Write(data); err != nil {
@@ -180,10 +172,8 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 
 // Render404 renders the 404 page if it exists.
 func (cms *CMS) Render404(w http.ResponseWriter, r *http.Request, path string) {
-	cms.m.RLock()
-	defer cms.m.RUnlock()
 	slog.Debug("Page not found", "path", path)
-	page, ok := cms.pages[notFoundPath]
+	page, ok := cms.getPage(notFoundPath)
 	w.WriteHeader(http.StatusNotFound)
 
 	if ok {
@@ -193,8 +183,6 @@ func (cms *CMS) Render404(w http.ResponseWriter, r *http.Request, path string) {
 
 // Render renders and returns the content for given page.
 func (cms *CMS) Render(page *Content, content []Content) template.HTML {
-	cms.m.RLock()
-	defer cms.m.RUnlock()
 	out, err := cms.renderContent(page, content)
 
 	if err != nil {
@@ -222,7 +210,9 @@ func (cms *CMS) renderContent(page *Content, content []Content) ([]byte, error) 
 
 	for _, c := range content {
 		if c.Ref != "" {
+			cms.m.RLock()
 			ref, ok := cms.refs[c.Ref]
+			cms.m.RUnlock()
 
 			if !ok {
 				return nil, errors.New("reference not found")
@@ -349,7 +339,9 @@ func (cms *CMS) selectExperiments(w http.ResponseWriter, r *http.Request, page *
 	}
 
 	if page.Analytics.Experiment.Name != "" {
+		cms.m.RLock()
 		variants, ok := cms.pageExperiments[page.Analytics.Experiment.Name]
+		cms.m.RUnlock()
 
 		if ok && len(variants) > 1 {
 			selectedVariant, ok := selected[page.Analytics.Experiment.Name]
@@ -388,6 +380,9 @@ func (cms *CMS) selectExperiments(w http.ResponseWriter, r *http.Request, page *
 
 func (cms *CMS) redirectExperiment(w http.ResponseWriter, r *http.Request, page *Content) bool {
 	if page.SelectedPageExperiment != "" && page.Analytics.Experiment.Variant != page.SelectedPageExperiment {
+		cms.m.RLock()
+		defer cms.m.RUnlock()
+
 		for _, v := range cms.pages {
 			if v.Analytics.Experiment.Name == page.Analytics.Experiment.Name && v.Analytics.Experiment.Variant == page.SelectedPageExperiment {
 				redirect, ok := v.Path[page.Language]
@@ -416,8 +411,6 @@ func (cms *CMS) pageView(r *http.Request, page *Content) {
 }
 
 func (cms *CMS) updateContent() {
-	cms.m.Lock()
-	defer cms.m.Unlock()
 	pages := make(map[string]Content)
 	refs := make(map[string]Content)
 	pageExperiments := make(map[string][]string)
@@ -481,6 +474,8 @@ func (cms *CMS) updateContent() {
 		slog.Error("Error reading website content directory", "error", err)
 	}
 
+	cms.m.Lock()
+	defer cms.m.Unlock()
 	cms.pages = pages
 	cms.refs = refs
 	cms.pageExperiments = pageExperiments
@@ -549,4 +544,18 @@ func (cms *CMS) extractExperiments(refs map[string]Content, content *Content, ex
 			cms.extractExperiments(refs, &element, experiments)
 		}
 	}
+}
+
+func (cms *CMS) getPage(path string) (Content, bool) {
+	cms.m.RLock()
+	defer cms.m.RUnlock()
+	page, found := cms.pages[path]
+	return page, found
+}
+
+func (cms *CMS) getHandler(name string) (Handler, bool) {
+	cms.m.RLock()
+	defer cms.m.RUnlock()
+	handler, found := cms.handler[name]
+	return handler, found
 }

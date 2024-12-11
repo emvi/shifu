@@ -2,6 +2,7 @@
 
 ## 0.10.0
 
+* fixed concurrent data access
 * updated Go version
 * updated dependencies
 
