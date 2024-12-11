@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.0
+
+* updated Go version
+* updated dependencies
+
 ## 0.9.2
 
 * changed page log time from ns to ms
