@@ -141,52 +141,65 @@ The JSON structure for a content file is as follows:
 
 ```json
 {
-    "disable_cache": false, // disables the static content cache (does not affect custom handlers)
+    "_disable_cache": "Disables the static content cache (does not affect custom handlers)",
+    "disable_cache": false,
     "path": {
-        "en": "/", // /404 is a special case serving the 404 not found page
+        "_en": "Use /404 as a special case serving the 404 not found page",
+        "en": "/",
         "de": "/de"
     },
     "sitemap": {
-        "priority": "1.0" // default is 1.0
+        "_priority": "Default is 1.0",
+        "priority": "1.0"
     },
-    "header": { // optional list of headers
+    "_header": "Optional list of headers",
+    "header": {
         "X-Frame-Options": "deny"
     },
-    "handler": "custom_handler", // sets a custom handler defined on the backend
-    "analytics": { // optional analytics meta data
+    "_handler": "Sets a custom handler defined on the backend",
+    "handler": "custom_handler",
+    "_analytics": "Optional analytics meta data",
+    "analytics": {
         "tags": {
             "key": "value"
         },
         "experiment": {
-            "name": "landing", // A/B testing page variant
+            "_name": "A/B testing page variant",
+            "name": "landing",
             "variant": "a"
         }
     },
     "content": {
         "content": [
             {
-                "ref": "head", // references to a standalone element (JSON file without extension, always lowercase)
+                "_ref": "References to a standalone element (JSON file without extension, always lowercase)",
+                "ref": "head",
                 "data": {
-                    // overwrites whatever is set in head.json
+                    "_": "Overwrites whatever is set in head.json"
                 },
                 "copy": {
                     "en": {
-                        "title": "Home" // overrides the copy "title" with the value "Home"
+                        "_title": "Overrides the copy 'title' with the value 'Home'",
+                        "title": "Home"
                     }
                 }
             },
             {
-                "tpl": "text", // template file (without extension, always lowercase)
+                "_tpl": "Template file (without extension, always lowercase)",
+                "tpl": "text",
                 "analytics": {
                     "experiment": {
-                        "name": "experiment", // A/B testing experiment name and variant
+                        "_name": "A/B testing experiment name and variant",
+                        "name": "experiment",
                         "variant": "a"
                     }
                 },
-                "data": { // optional generic data object
+                "_data": "Optional generic data object",
+                "data": {
                     "numbers": [1, 2, 3]
                 },
-                "copy": { // optional data used in the template
+                "_copy": "Optional data used in the template",
+                "copy": {
                     "en": {
                         "headline": "Welcome!",
                         "text": "To Shifu."
@@ -211,7 +224,7 @@ Standalone elements are use the same structure as pages, but do not specify path
 {
     "tpl": "head",
     "data": {
-        // ...
+        "_": "..."
     },
     "copy": {
         "en": {
