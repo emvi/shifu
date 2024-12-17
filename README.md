@@ -210,7 +210,11 @@ The JSON structure for a content file is as follows:
                     }
                 },
                 "content": {
-                    "children": [ /* ... */ ]
+                    "children": [
+                        {
+                            "_": "..."
+                        }
+                    ]
                 }
             }
         ]
