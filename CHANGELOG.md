@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.1
+
+* updated dependencies
+
 ## 0.10.0
 
 * fixed concurrent data access

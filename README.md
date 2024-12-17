@@ -52,51 +52,74 @@ WantedBy=multi-user.target
 
 ## Configuration
 
-Shifu is configured using a single `config.json` file inside the project directory.
+Shifu is configured using a single `config.json` file inside the project directory. Keys starting with `_` are comments.
 
 ```json
 {
     "dev": false,
-    "log_level": "info", // debug, info, warn, error
+    "_log_level": "debug, info, warn, error",
+    "log_level": "info",
     "server": {
-        "host": "localhost", // leave empty for production
+        "_host": "Leave empty for production",
+        "host": "localhost",
         "port": 8080,
-        "shutdown_time": 30, // time before the server is forcefully shut down (optional)
-        "write_timeout": 5, // request write timeout
-        "read_timeout": 5, // request read timeout
+        "_shutdown_time": "Time before the server is forcefully shut down (optional)",
+        "shutdown_time": 30,
+        "_write_timeout": "Request write timeout",
+        "write_timeout": 5,
+        "_read_timeout": "Request read timeout",
+        "read_timeout": 5,
         "tls_cert_file": "cert/file.pem",
         "tls_key_file": "key/file.pem",
         "hostname": "example.com",
         "secure_cookies": true,
         "cookie_domain_name": "example.com"
     },
+    "content": {
+        "_provider": "git, fs",
+        "provider": "git",
+        "update_seconds": 600,
+        "repository": "https://..."
+    },
     "cors": {
         "origins": "*",
         "loglevel": "info"
     },
-    "sass": { // optional configuration to compile sass
-        "dir": "assets", // asset directory path
-        "entrypoint": "style.scss", // main sass file
-        "out": "static/style.css", // compiled output css file path
-        "out_source_map": "static/style.css.map", // css map file (optional)
-        "watch": true // re-compile files when changed
+    "_sass": "Optional configuration to compile Sass",
+    "sass": {
+        "_dir": "Asset directory path",
+        "dir": "assets",
+        "_entrypoint": "Main sass file",
+        "entrypoint": "style.scss",
+        "_out": "Compiled output CSS file path",
+        "out": "static/style.css",
+        "_out_source_map": "CSS map file (optional)",
+        "out_source_map": "static/style.css.map",
+        "_watch": "Re-compile files when changed",
+        "watch": true
     },
-    "js": { // optional configuration to compile js/ts (see sass configuration for reference)
+    "_js": "Optional configuration to compile js/ts (see Sass configuration for reference)",
+    "js": {
         "dir": "assets",
         "entrypoint": "entrypoint.js",
         "out": "static/bundle.js",
         "out_source_map": "static/bundle.js.map",
         "watch": true
     },
-    "analytics": { // optional analytics configuration
+    "_analytics": "Optional analytics configuration",
+    "analytics": {
         "provider": "pirsch",
-        "client_id": "...", // optional when using an access key (recommended) instead of oAuth
-        "client_secret": "...", // required
-        "subnets": [ // optional subnet configuration
+        "_client_id": "Optional when using an access key (recommended) instead of oAuth",
+        "client_id": "...",
+        "_client_secret": "Required",
+        "client_secret": "...",
+        "_subnets": "Optional subnet configuration",
+        "subnets": [
             "10.1.0.0/16",
             "10.2.0.0/8"
         ],
-        "header": [ // optional IP header configuration
+        "_header": "Optional IP header configuration",
+        "header": [
             "X-Forwarded-For",
             "Forwarded"
         ]
