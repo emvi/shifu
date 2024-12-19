@@ -53,6 +53,7 @@ type Content struct {
 	Provider      string `json:"provider"`
 	UpdateSeconds int    `json:"update_seconds"`
 	Repository    string `json:"repository"`
+	Route404      string `json:"route_404"`
 }
 
 // CORS is the HTTP CORS configuration.

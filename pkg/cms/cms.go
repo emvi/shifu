@@ -32,10 +32,11 @@ const (
 type CMS struct {
 	baseDir         string
 	hotReload       bool
+	route404        string
 	source          source.Provider
 	sitemap         *sitemap.Sitemap
 	tpl             *Cache
-	pages           map[string]Content
+	pages           []Route
 	refs            map[string]Content
 	handler         map[string]Handler
 	pageExperiments map[string][]string
@@ -48,6 +49,7 @@ type Options struct {
 	Ctx       context.Context
 	BaseDir   string
 	HotReload bool
+	Route404  string
 	FuncMap   template.FuncMap
 	Source    source.Provider
 	Sitemap   *sitemap.Sitemap
@@ -55,12 +57,17 @@ type Options struct {
 
 // NewCMS sets up a new CMS instance for given configuration.
 func NewCMS(options Options) *CMS {
+	if options.Route404 == "" {
+		options.Route404 = notFoundPath
+	}
+
 	cms := &CMS{
 		baseDir:         options.BaseDir,
 		hotReload:       options.HotReload,
+		route404:        options.Route404,
 		source:          options.Source,
 		sitemap:         options.Sitemap,
-		pages:           make(map[string]Content),
+		pages:           make([]Route, 0),
 		refs:            make(map[string]Content),
 		handler:         make(map[string]Handler),
 		pageExperiments: make(map[string][]string),
@@ -77,7 +84,7 @@ func NewCMS(options Options) *CMS {
 	return cms
 }
 
-// Serve renders the page for given path and writes the response to the http.ResponseWriter.
+// Serve matches the path and renders the page for given request.
 // If no page is found, it will redirect to the 404 page.
 func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 	if cms.hotReload {
@@ -86,17 +93,17 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 
 	start := time.Now()
 	path := r.URL.Path
-	page, ok := cms.getPage(path)
+	page, args, ok := cms.getPage(path)
 
 	if !ok {
 		slog.Debug("Page not found", "path", path)
-		page, ok = cms.getPage(notFoundPath)
+		w.WriteHeader(http.StatusNotFound)
+		page, args, ok = cms.getPage(cms.route404)
 
 		if !ok {
+			_, _ = w.Write([]byte("404 page not found"))
 			return
 		}
-
-		w.WriteHeader(http.StatusNotFound)
 	}
 
 	if page.Handler != "" {
@@ -112,12 +119,12 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cms.RenderPage(w, r, path, &page)
+	cms.RenderPage(w, r, path, args, &page)
 	slog.Debug("Served page", "time_ms", time.Now().Sub(start).Milliseconds())
 }
 
 // RenderPage renders given page and returns it to the client.
-func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, page *Content) {
+func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, args map[string]string, page *Content) {
 	cms.selectExperiments(w, r, page)
 
 	if cms.redirectExperiment(w, r, page) {
@@ -147,7 +154,7 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 	var buffer bytes.Buffer
 
 	for _, content := range page.Content {
-		out, err := cms.renderContent(page, content)
+		out, err := cms.renderContent(args, page, content)
 
 		if err != nil {
 			slog.Error("Error rendering template", "path", path, "error", err)
@@ -173,17 +180,17 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 // Render404 renders the 404 page if it exists.
 func (cms *CMS) Render404(w http.ResponseWriter, r *http.Request, path string) {
 	slog.Debug("Page not found", "path", path)
-	page, ok := cms.getPage(notFoundPath)
 	w.WriteHeader(http.StatusNotFound)
+	page, args, ok := cms.getPage(cms.route404)
 
 	if ok {
-		cms.RenderPage(w, r, path, &page)
+		cms.RenderPage(w, r, path, args, &page)
 	}
 }
 
 // Render renders and returns the content for given page.
-func (cms *CMS) Render(page *Content, content []Content) template.HTML {
-	out, err := cms.renderContent(page, content)
+func (cms *CMS) Render(args map[string]string, page *Content, content []Content) template.HTML {
+	out, err := cms.renderContent(args, page, content)
 
 	if err != nil {
 		slog.Error("Error rendering template", "error", err)
@@ -205,7 +212,7 @@ func (cms *CMS) LastUpdate() string {
 	return cms.source.LastUpdate().Format(time.RFC3339)
 }
 
-func (cms *CMS) renderContent(page *Content, content []Content) ([]byte, error) {
+func (cms *CMS) renderContent(args map[string]string, page *Content, content []Content) ([]byte, error) {
 	var buffer bytes.Buffer
 
 	for _, c := range content {
@@ -262,7 +269,7 @@ func (cms *CMS) renderContent(page *Content, content []Content) ([]byte, error) 
 			}
 
 			// render reference
-			out, err := cms.render(ref.Tpl, page, &ref)
+			out, err := cms.render(ref.Tpl, args, page, &ref)
 
 			if err != nil {
 				return nil, err
@@ -270,7 +277,7 @@ func (cms *CMS) renderContent(page *Content, content []Content) ([]byte, error) 
 
 			buffer.Write(out)
 		} else {
-			out, err := cms.render(c.Tpl, page, &c)
+			out, err := cms.render(c.Tpl, args, page, &c)
 
 			if err != nil {
 				return nil, err
@@ -283,17 +290,19 @@ func (cms *CMS) renderContent(page *Content, content []Content) ([]byte, error) 
 	return buffer.Bytes(), nil
 }
 
-func (cms *CMS) render(tpl string, page *Content, content *Content) ([]byte, error) {
+func (cms *CMS) render(tpl string, args map[string]string, page *Content, content *Content) ([]byte, error) {
 	if content.Analytics.Experiment.Name != "" && page.SelectedExperiments[content.Analytics.Experiment.Name] != content.Analytics.Experiment.Variant {
 		return nil, nil
 	}
 
 	out, err := cms.tpl.Render(fmt.Sprintf("%s.html", tpl), struct {
 		CMS     *CMS
+		Args    map[string]string
 		Page    *Content
 		Content *Content
 	}{
 		cms,
+		args,
 		page,
 		content,
 	})
@@ -383,9 +392,9 @@ func (cms *CMS) redirectExperiment(w http.ResponseWriter, r *http.Request, page 
 		cms.m.RLock()
 		defer cms.m.RUnlock()
 
-		for _, v := range cms.pages {
-			if v.Analytics.Experiment.Name == page.Analytics.Experiment.Name && v.Analytics.Experiment.Variant == page.SelectedPageExperiment {
-				redirect, ok := v.Path[page.Language]
+		for _, route := range cms.pages {
+			if route.content.Analytics.Experiment.Name == page.Analytics.Experiment.Name && route.content.Analytics.Experiment.Variant == page.SelectedPageExperiment {
+				redirect, ok := route.content.Path[page.Language]
 
 				if ok && r.URL.Path != redirect {
 					http.Redirect(w, r, redirect, http.StatusFound)
@@ -411,13 +420,19 @@ func (cms *CMS) pageView(r *http.Request, page *Content) {
 }
 
 func (cms *CMS) updateContent() {
-	pages := make(map[string]Content)
+	pages := make([]Route, 0)
 	refs := make(map[string]Content)
 	pageExperiments := make(map[string][]string)
 	websiteHost := cfg.Get().Server.Hostname
+	contentDir := filepath.Join(cms.baseDir, "content")
+
+	if _, err := os.Stat(contentDir); errors.Is(err, os.ErrNotExist) {
+		slog.Error("Content directory doesn't exist", "path", contentDir)
+		return
+	}
 
 	// extract refs
-	if err := filepath.WalkDir(filepath.Join(cms.baseDir, "content"), func(path string, d fs.DirEntry, err error) error {
+	if err := filepath.WalkDir(contentDir, func(path string, d fs.DirEntry, err error) error {
 		if !d.IsDir() {
 			content, err := cms.getContent(path)
 
@@ -438,7 +453,7 @@ func (cms *CMS) updateContent() {
 	}
 
 	// extract pages and experiments
-	if err := filepath.WalkDir(filepath.Join(cms.baseDir, "content"), func(path string, d fs.DirEntry, err error) error {
+	if err := filepath.WalkDir(contentDir, func(path string, d fs.DirEntry, err error) error {
 		if !d.IsDir() {
 			content, err := cms.getContent(path)
 
@@ -457,7 +472,13 @@ func (cms *CMS) updateContent() {
 					content.Language = language
 					content.CanonicalLink = websiteHost + p
 					cms.updateExperiments(refs, pageExperiments, content)
-					pages[p] = *content
+					route, err := NewRoute(p, *content)
+
+					if err != nil {
+						return err
+					}
+
+					pages = append(pages, *route)
 					priority := content.Sitemap.Priority
 
 					if priority == "" {
@@ -473,6 +494,15 @@ func (cms *CMS) updateContent() {
 	}); err != nil {
 		slog.Error("Error reading website content directory", "error", err)
 	}
+
+	// longest path goes first
+	slices.SortFunc(pages, func(a, b Route) int {
+		if len(a.raw) > len(b.raw) {
+			return -1
+		}
+
+		return 1
+	})
 
 	cms.m.Lock()
 	defer cms.m.Unlock()
@@ -546,11 +576,19 @@ func (cms *CMS) extractExperiments(refs map[string]Content, content *Content, ex
 	}
 }
 
-func (cms *CMS) getPage(path string) (Content, bool) {
+func (cms *CMS) getPage(path string) (Content, map[string]string, bool) {
 	cms.m.RLock()
 	defer cms.m.RUnlock()
-	page, found := cms.pages[path]
-	return page, found
+
+	for i := range cms.pages {
+		args, found := cms.pages[i].Match(path)
+
+		if found {
+			return cms.pages[i].content, args, true
+		}
+	}
+
+	return Content{}, nil, false
 }
 
 func (cms *CMS) getHandler(name string) (Handler, bool) {

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.0
+
+* allow matching routes
+* allow overwriting default 404-page route
+* added an error message when folders do not match expected project structure
+* updated dependencies
+
 ## 0.10.1
 
 * updated dependencies

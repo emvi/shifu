@@ -95,6 +95,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		Ctx:       ctx,
 		BaseDir:   dir,
 		HotReload: cfg.Get().Dev,
+		Route404:  cfg.Get().Content.Route404,
 		FuncMap:   options.FuncMap,
 		Source:    provider,
 		Sitemap:   sm,
@@ -167,7 +168,7 @@ func (server *Server) setupRouter() {
 	server.Sitemap.Serve(router)
 	server.serveRobotsTxt(router)
 	server.serveStaticDir(router, server.dir)
-	router.Handle("/*", http.HandlerFunc(server.Content.Serve))
+	router.HandleFunc("/*", server.Content.Serve)
 	server.router = router
 
 	for _, route := range router.Routes() {

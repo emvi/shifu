@@ -1,0 +1,28 @@
+{
+    "path": {
+        "en": "/not-found",
+        "de": "/de/not-found"
+    },
+    "sitemap": {
+        "priority": "0.1"
+    },
+    "content": {
+        "content": [
+            {"ref": "head"},
+            {
+                "tpl": "text",
+                "copy": {
+                    "en": {
+                        "headline": "#404",
+                        "text": "<p>Page not found.</p>"
+                    },
+                    "de": {
+                        "headline": "#404",
+                        "text": "<p>Seite nicht gefunden.</p>"
+                    }
+                }
+            },
+            {"ref": "end"}
+        ]
+    }
+}

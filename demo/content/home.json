@@ -17,7 +17,7 @@
                 }
             },
             {
-                "tpl": "text",
+                "tpl": "text_md",
                 "analytics": {
                     "experiment": {
                         "name": "headline",
@@ -32,7 +32,7 @@
                 }
             },
             {
-                "tpl": "text",
+                "tpl": "text_md",
                 "analytics": {
                     "experiment": {
                         "name": "headline",

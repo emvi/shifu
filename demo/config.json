@@ -5,6 +5,9 @@
         "host": "localhost",
         "port": 8080
     },
+    "content": {
+        "route_404": "/not-found"
+    },
     "sass": {
         "dir": "assets",
         "entrypoint": "style.scss",
