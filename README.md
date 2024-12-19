@@ -79,7 +79,9 @@ Shifu is configured using a single `config.json` file inside the project directo
         "_provider": "git, fs",
         "provider": "git",
         "update_seconds": 600,
-        "repository": "https://..."
+        "repository": "https://...",
+        "_route_404": "Overrides the default 404-page path (/404)",
+        "route_404": "/404"
     },
     "cors": {
         "origins": "*",
@@ -143,6 +145,7 @@ The JSON structure for a content file is as follows:
 {
     "_disable_cache": "Disables the static content cache (does not affect custom handlers)",
     "disable_cache": false,
+    "_path": "A list of routes this page should be served on. Routes support regular expressions and variables, e.g. /p/{var} or /p/{var:[0-9]+}. They are available as a string map called 'Args'.",
     "path": {
         "_en": "Use /404 as a special case serving the 404 not found page",
         "en": "/",
