@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.1
+
+* fixed unused parameter
+
 ## 0.11.0
 
 * allow matching routes

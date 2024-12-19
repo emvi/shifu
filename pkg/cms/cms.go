@@ -179,7 +179,7 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 
 // Render404 renders the 404 page for given path and language if it exists.
 // The language will fall back to en if not found or empty.
-func (cms *CMS) Render404(w http.ResponseWriter, r *http.Request, path, language string) {
+func (cms *CMS) Render404(w http.ResponseWriter, r *http.Request, path string) {
 	slog.Debug("Page not found", "path", path)
 	w.WriteHeader(http.StatusNotFound)
 	page, args, ok := cms.getPage(cms.getNotFoundPath(r))
