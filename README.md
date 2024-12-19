@@ -63,11 +63,11 @@ Shifu is configured using a single `config.json` file inside the project directo
         "_host": "Leave empty for production",
         "host": "localhost",
         "port": 8080,
-        "_shutdown_time": "Time before the server is forcefully shut down (optional)",
+        "_shutdown_time": "Time before the server is forcefully shut down (optional).",
         "shutdown_time": 30,
-        "_write_timeout": "Request write timeout",
+        "_write_timeout": "Request write timeout.",
         "write_timeout": 5,
-        "_read_timeout": "Request read timeout",
+        "_read_timeout": "Request read timeout.",
         "read_timeout": 5,
         "tls_cert_file": "cert/file.pem",
         "tls_key_file": "key/file.pem",
@@ -80,27 +80,30 @@ Shifu is configured using a single `config.json` file inside the project directo
         "provider": "git",
         "update_seconds": 600,
         "repository": "https://...",
-        "_route_404": "Overrides the default 404-page path (/404)",
-        "route_404": "/404"
+        "_not_found": "Overrides the default 404-page path (/404).",
+        "not_found": {
+            "en": "/not-found",
+            "de": "/de/nicht-gefunden"
+        }
     },
     "cors": {
         "origins": "*",
         "loglevel": "info"
     },
-    "_sass": "Optional configuration to compile Sass",
+    "_sass": "Optional configuration to compile Sass.",
     "sass": {
-        "_dir": "Asset directory path",
+        "_dir": "Asset directory path.",
         "dir": "assets",
-        "_entrypoint": "Main sass file",
+        "_entrypoint": "Main sass file.",
         "entrypoint": "style.scss",
-        "_out": "Compiled output CSS file path",
+        "_out": "Compiled output CSS file path.",
         "out": "static/style.css",
-        "_out_source_map": "CSS map file (optional)",
+        "_out_source_map": "CSS map file (optional).",
         "out_source_map": "static/style.css.map",
-        "_watch": "Re-compile files when changed",
+        "_watch": "Re-compile files when changed.",
         "watch": true
     },
-    "_js": "Optional configuration to compile js/ts (see Sass configuration for reference)",
+    "_js": "Optional configuration to compile js/ts (see Sass configuration for reference).",
     "js": {
         "dir": "assets",
         "entrypoint": "entrypoint.js",
@@ -108,19 +111,19 @@ Shifu is configured using a single `config.json` file inside the project directo
         "out_source_map": "static/bundle.js.map",
         "watch": true
     },
-    "_analytics": "Optional analytics configuration",
+    "_analytics": "Optional analytics configuration.",
     "analytics": {
         "provider": "pirsch",
-        "_client_id": "Optional when using an access key (recommended) instead of oAuth",
+        "_client_id": "Optional when using an access key (recommended) instead of oAuth.",
         "client_id": "...",
-        "_client_secret": "Required",
+        "_client_secret": "Required.",
         "client_secret": "...",
-        "_subnets": "Optional subnet configuration",
+        "_subnets": "Optional subnet configuration.",
         "subnets": [
             "10.1.0.0/16",
             "10.2.0.0/8"
         ],
-        "_header": "Optional IP header configuration",
+        "_header": "Optional IP header configuration.",
         "header": [
             "X-Forwarded-For",
             "Forwarded"
@@ -143,31 +146,31 @@ The JSON structure for a content file is as follows:
 
 ```json
 {
-    "_disable_cache": "Disables the static content cache (does not affect custom handlers)",
+    "_disable_cache": "Disables the static content cache (does not affect custom handlers).",
     "disable_cache": false,
-    "_path": "A list of routes this page should be served on. Routes support regular expressions and variables, e.g. /p/{var} or /p/{var:[0-9]+}. They are available as a string map called 'Args'.",
+    "_path": "A list of routes on which this page should be served. Routes support regular expressions and variables, such as /p/{var} or /p/{var:[0-9]+}. They are available as a string map called 'args'.",
     "path": {
-        "_en": "Use /404 as a special case serving the 404 not found page",
+        "_en": "Use /404 as a special case serving the 404 not found page by default.",
         "en": "/",
         "de": "/de"
     },
     "sitemap": {
-        "_priority": "Default is 1.0",
+        "_priority": "Default is 1.0.",
         "priority": "1.0"
     },
-    "_header": "Optional list of headers",
+    "_header": "Optional list of headers.",
     "header": {
         "X-Frame-Options": "deny"
     },
-    "_handler": "Sets a custom handler defined on the backend",
+    "_handler": "Sets a custom handler defined on the backend.",
     "handler": "custom_handler",
-    "_analytics": "Optional analytics meta data",
+    "_analytics": "Optional analytics meta data.",
     "analytics": {
         "tags": {
             "key": "value"
         },
         "experiment": {
-            "_name": "A/B testing page variant",
+            "_name": "A/B testing page variant.",
             "name": "landing",
             "variant": "a"
         }
@@ -175,33 +178,33 @@ The JSON structure for a content file is as follows:
     "content": {
         "content": [
             {
-                "_ref": "References to a standalone element (JSON file without extension, always lowercase)",
+                "_ref": "References to a standalone element (JSON file without extension, always lowercase).",
                 "ref": "head",
                 "data": {
-                    "_": "Overwrites whatever is set in head.json"
+                    "_": "Overwrites whatever is set in head.json."
                 },
                 "copy": {
                     "en": {
-                        "_title": "Overrides the copy 'title' with the value 'Home'",
+                        "_title": "Overrides the copy 'title' with the value 'Home'.",
                         "title": "Home"
                     }
                 }
             },
             {
-                "_tpl": "Template file (without extension, always lowercase)",
+                "_tpl": "Template file (without extension, always lowercase).",
                 "tpl": "text",
                 "analytics": {
                     "experiment": {
-                        "_name": "A/B testing experiment name and variant",
+                        "_name": "A/B testing experiment name and variant.",
                         "name": "experiment",
                         "variant": "a"
                     }
                 },
-                "_data": "Optional generic data object",
+                "_data": "Optional generic data object.",
                 "data": {
                     "numbers": [1, 2, 3]
                 },
-                "_copy": "Optional data used in the template",
+                "_copy": "Optional data used in the template.",
                 "copy": {
                     "en": {
                         "headline": "Welcome!",

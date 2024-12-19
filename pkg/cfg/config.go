@@ -50,10 +50,10 @@ type Server struct {
 
 // Content is the content and source configuration.
 type Content struct {
-	Provider      string `json:"provider"`
-	UpdateSeconds int    `json:"update_seconds"`
-	Repository    string `json:"repository"`
-	Route404      string `json:"route_404"`
+	Provider      string            `json:"provider"`
+	UpdateSeconds int               `json:"update_seconds"`
+	Repository    string            `json:"repository"`
+	NotFound      map[string]string `json:"not_found"`
 }
 
 // CORS is the HTTP CORS configuration.

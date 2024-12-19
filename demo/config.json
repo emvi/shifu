@@ -6,7 +6,10 @@
         "port": 8080
     },
     "content": {
-        "route_404": "/not-found"
+        "not_found": {
+            "en": "/not-found",
+            "de": "/de/nicht-gefunden"
+        }
     },
     "sass": {
         "dir": "assets",

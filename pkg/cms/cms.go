@@ -32,7 +32,7 @@ const (
 type CMS struct {
 	baseDir         string
 	hotReload       bool
-	route404        string
+	notFound        map[string]string
 	source          source.Provider
 	sitemap         *sitemap.Sitemap
 	tpl             *Cache
@@ -49,7 +49,7 @@ type Options struct {
 	Ctx       context.Context
 	BaseDir   string
 	HotReload bool
-	Route404  string
+	NotFound  map[string]string
 	FuncMap   template.FuncMap
 	Source    source.Provider
 	Sitemap   *sitemap.Sitemap
@@ -57,14 +57,14 @@ type Options struct {
 
 // NewCMS sets up a new CMS instance for given configuration.
 func NewCMS(options Options) *CMS {
-	if options.Route404 == "" {
-		options.Route404 = notFoundPath
+	if len(options.NotFound) == 0 {
+		options.NotFound = map[string]string{"en": notFoundPath}
 	}
 
 	cms := &CMS{
 		baseDir:         options.BaseDir,
 		hotReload:       options.HotReload,
-		route404:        options.Route404,
+		notFound:        options.NotFound,
 		source:          options.Source,
 		sitemap:         options.Sitemap,
 		pages:           make([]Route, 0),
@@ -98,7 +98,7 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		slog.Debug("Page not found", "path", path)
 		w.WriteHeader(http.StatusNotFound)
-		page, args, ok = cms.getPage(cms.route404)
+		page, args, ok = cms.getPage(cms.getNotFoundPath(r))
 
 		if !ok {
 			_, _ = w.Write([]byte("404 page not found"))
@@ -177,11 +177,12 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 	}
 }
 
-// Render404 renders the 404 page if it exists.
-func (cms *CMS) Render404(w http.ResponseWriter, r *http.Request, path string) {
+// Render404 renders the 404 page for given path and language if it exists.
+// The language will fall back to en if not found or empty.
+func (cms *CMS) Render404(w http.ResponseWriter, r *http.Request, path, language string) {
 	slog.Debug("Page not found", "path", path)
 	w.WriteHeader(http.StatusNotFound)
-	page, args, ok := cms.getPage(cms.route404)
+	page, args, ok := cms.getPage(cms.getNotFoundPath(r))
 
 	if ok {
 		cms.RenderPage(w, r, path, args, &page)
@@ -596,4 +597,42 @@ func (cms *CMS) getHandler(name string) (Handler, bool) {
 	defer cms.m.RUnlock()
 	handler, found := cms.handler[name]
 	return handler, found
+}
+
+func (cms *CMS) getNotFoundPath(r *http.Request) string {
+	languages := cms.getAcceptedLanguages(r)
+
+	for _, l := range languages {
+		p, found := cms.notFound[l]
+
+		if found {
+			return p
+		}
+	}
+
+	if !slices.Contains(languages, "en") {
+		return cms.notFound["en"]
+	}
+
+	return ""
+}
+
+func (cms *CMS) getAcceptedLanguages(r *http.Request) []string {
+	header := r.Header.Get("Accept-Language")
+	parts := strings.Split(header, ",")
+	languages := make([]string, 0)
+
+	for _, part := range parts {
+		left, _, _ := strings.Cut(strings.TrimSpace(part), ";")
+
+		if strings.Contains(left, "-") {
+			left, _, _ = strings.Cut(left, "-")
+		}
+
+		if left != "" && len(left) == 2 && !slices.Contains(languages, left) {
+			languages = append(languages, left)
+		}
+	}
+
+	return languages
 }

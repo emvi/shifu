@@ -95,7 +95,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		Ctx:       ctx,
 		BaseDir:   dir,
 		HotReload: cfg.Get().Dev,
-		Route404:  cfg.Get().Content.Route404,
+		NotFound:  cfg.Get().Content.NotFound,
 		FuncMap:   options.FuncMap,
 		Source:    provider,
 		Sitemap:   sm,
