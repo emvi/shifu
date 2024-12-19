@@ -150,7 +150,7 @@ The JSON structure for a content file is as follows:
     "disable_cache": false,
     "_path": "A list of routes on which this page should be served. Routes support regular expressions and variables, such as /p/{var} or /p/{var:[0-9]+}. They are available as a string map called 'args'.",
     "path": {
-        "_en": "Use /404 as a special case serving the 404 not found page by default.",
+        "_en": "Use /404 (default) as a special case serving the 404 not found page.",
         "en": "/",
         "de": "/de"
     },
