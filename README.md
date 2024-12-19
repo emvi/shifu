@@ -253,9 +253,9 @@ Custom handlers are implemented like this:
 cms := shifu.NewCMS(cms.Options{
 	// ...
 })
-cms.SetHandler("blog", func(c *cms.CMS, page cms.Content, w http.ResponseWriter, r *http.Request) {
+cms.SetHandler("blog", func(c *cms.CMS, page cms.Content, args map[string]string, w http.ResponseWriter, r *http.Request) {
 	// ...
-	c.RenderPage(w, r, strings.ToLower(r.URL.Path), &page)
+	c.RenderPage(w, r, strings.ToLower(r.URL.Path), args, &page)
 })
 ```
 
@@ -351,9 +351,9 @@ func main() {
 	}
 
 	// Add a custom handler.
-	s.Content.SetHandler("blog", func(c *cms.CMS, page cms.Content, w http.ResponseWriter, r *http.Request) {
+	s.Content.SetHandler("blog", func(c *cms.CMS, page cms.Content, args map[string]string, w http.ResponseWriter, r *http.Request) {
 		// ...
-		c.RenderPage(w, r, strings.ToLower(r.URL.Path), &page)
+		c.RenderPage(w, r, strings.ToLower(r.URL.Path), args, &page)
 	})
 
 	// Start the server. The cancel function is optional.

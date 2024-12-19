@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.2
+
+* added args to custom handler
+
 ## 0.11.1
 
 * fixed unused parameter

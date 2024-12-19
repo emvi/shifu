@@ -3,7 +3,7 @@ package cms
 import "net/http"
 
 // Handler is a special handler invoked if specified in Content.
-type Handler func(*CMS, Content, http.ResponseWriter, *http.Request)
+type Handler func(*CMS, Content, map[string]string, http.ResponseWriter, *http.Request)
 
 // Copy is the translated copy for Content.
 type Copy map[string]map[string]any

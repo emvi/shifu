@@ -115,7 +115,7 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		handler(cms, page, w, r)
+		handler(cms, page, args, w, r)
 		return
 	}
 
