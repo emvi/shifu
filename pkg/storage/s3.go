@@ -1,0 +1,98 @@
+package storage
+
+import (
+	"bytes"
+	"context"
+	"errors"
+	"fmt"
+	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
+	"io"
+	"log/slog"
+)
+
+type S3 struct {
+	client *minio.Client
+	bucket string
+}
+
+func NewS3() *S3 {
+	staticCfg := cfg.Get().Static
+	client, err := minio.New(staticCfg.URL, &minio.Options{
+		Secure: true,
+		Creds: credentials.NewStaticV4(
+			staticCfg.AccessKey,
+			staticCfg.Secret,
+			"",
+		),
+	})
+
+	if err != nil {
+		slog.Error("Error creating client", "error", err)
+		panic(err)
+	}
+
+	return &S3{
+		client: client,
+		bucket: staticCfg.Bucket,
+	}
+}
+
+// Exists implements the Storage interface.
+func (storage *S3) Exists(path string) (bool, string) {
+	info, err := storage.client.StatObject(context.Background(), storage.bucket, path, minio.StatObjectOptions{})
+
+	if err != nil {
+		return false, ""
+	}
+
+	return true, storage.getPublicURL(info.Key)
+}
+
+// Read implements the Storage interface.
+func (storage *S3) Read(path string) ([]byte, error) {
+	object, err := storage.client.GetObject(context.Background(), storage.bucket, path, minio.GetObjectOptions{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := io.ReadAll(object)
+
+	if err != nil {
+		slog.Error("Error reading object", "err", err, "path", path)
+		return nil, err
+	}
+
+	return data, nil
+}
+
+// Write implements the Storage interface.
+func (storage *S3) Write(path string, data []byte, options *WriteOptions) (string, error) {
+	info, err := storage.client.PutObject(context.Background(), storage.bucket, path, bytes.NewReader(data), int64(len(data)), minio.PutObjectOptions{})
+
+	if err != nil {
+		return "", err
+	}
+
+	return storage.getPublicURL(info.Key), nil
+}
+
+// WriteStream implements the Storage interface.
+func (storage *S3) WriteStream(string, io.Reader) (string, error) {
+	return "", errors.New("not implemented")
+}
+
+// Delete implements the Storage interface.
+func (storage *S3) Delete(path string) error {
+	if err := storage.client.RemoveObject(context.Background(), storage.bucket, path, minio.RemoveObjectOptions{}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (storage *S3) getPublicURL(path string) string {
+	return fmt.Sprintf("https://%s.fsn1.your-objectstorage.com/%s", storage.bucket, path)
+}

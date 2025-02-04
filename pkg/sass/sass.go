@@ -1,27 +1,25 @@
 package sass
 
 import (
-	"context"
 	"fmt"
 	"github.com/emvi/shifu/pkg/cfg"
-	"github.com/fsnotify/fsnotify"
+	"github.com/emvi/shifu/pkg/storage"
 	"io/fs"
 	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 )
 
 // Compile compiles the entrypoint Sass for given base directory.
-func Compile(dir string) {
+func Compile(dir string, store storage.Storage) {
 	if err := os.MkdirAll(filepath.Join(dir, filepath.Dir(cfg.Get().Sass.Out)), 0744); err != nil {
 		slog.Error("Error creating css output directory", "error", err)
 		return
 	}
 
 	in := filepath.Join(dir, cfg.Get().Sass.Dir, cfg.Get().Sass.Entrypoint)
-	out := filepath.Join(dir, cfg.Get().Sass.Out)
+	out := filepath.Join(dir, "tmp", cfg.Get().Sass.Out)
 	slog.Info("Compiling sass file", "in", in, "out", out)
 	dirs, err := getDirs(filepath.Join(dir, cfg.Get().Sass.Dir))
 
@@ -51,54 +49,30 @@ func Compile(dir string) {
 		slog.Error("Error compiling sass", "error", err)
 		return
 	}
-}
 
-// Watch watches the entrypoint Sass for changes and recompiles if required.
-func Watch(ctx context.Context, dir string) error {
-	if cfg.Get().Sass.Entrypoint != "" {
-		Compile(dir)
+	data, err := os.ReadFile(out)
 
-		if cfg.Get().Sass.Watch {
-			watcher, err := fsnotify.NewWatcher()
-
-			if err != nil {
-				return err
-			}
-
-			go func() {
-				out := filepath.Join(dir, cfg.Get().Sass.Out)
-
-				for {
-					select {
-					case event, ok := <-watcher.Events:
-						if !ok {
-							continue
-						}
-
-						if event.Op == fsnotify.Write && event.Name != out {
-							ext := strings.ToLower(filepath.Ext(event.Name))
-
-							if ext == ".scss" || ext == ".sass" {
-								Compile(dir)
-							}
-						}
-					case <-ctx.Done():
-						if err := watcher.Close(); err != nil {
-							slog.Error("Error closing watcher", "error", err)
-						}
-
-						return
-					}
-				}
-			}()
-
-			if err := watcher.Add(filepath.Join(dir, cfg.Get().Sass.Dir)); err != nil {
-				return err
-			}
-		}
+	if err != nil {
+		slog.Error("Error reading temporary sass output", "error", err)
+		return
 	}
 
-	return nil
+	if _, err := store.Write(filepath.Join(dir, cfg.Get().Sass.Out), data, nil); err != nil {
+		slog.Error("Error saving sass file", "error", err)
+	}
+
+	if cfg.Get().Sass.OutSourceMap != "" {
+		data, err = os.ReadFile(out + ".map")
+
+		if err != nil {
+			slog.Error("Error reading temporary sass source map output", "error", err)
+			return
+		}
+
+		if _, err := store.Write(filepath.Join(dir, cfg.Get().Sass.Out)+".map", data, nil); err != nil {
+			slog.Error("Error saving sass source map file", "error", err)
+		}
+	}
 }
 
 func getDirs(root string) ([]string, error) {

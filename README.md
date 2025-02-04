@@ -11,7 +11,7 @@ Shifu can also be used as a library in your Go application to add template funct
 * JSON-based content management
 * Reference commonly used elements
 * Support for i18n (translations)
-* Serve static files
+* Serve static files (from file system or S3)
 * Reusable Golang template files
 * Automatically watch files for changes
 * Build and minify JavaScript/TypeScript and Sass
@@ -86,6 +86,15 @@ Shifu is configured using a single `config.json` file inside the project directo
             "de": "/de/nicht-gefunden"
         }
     },
+    "_static": "Provides an optional storage configuration. It uses the file system by default",
+    "static": {
+        "_provider": "fs, s3",
+        "provider": "s3",
+        "url": "fsn1.your-objectstorage.com",
+        "bucket": "hetzner-bucket",
+        "access_key": "...",
+        "secret": "..."
+    },
     "cors": {
         "origins": "*",
         "loglevel": "info"
@@ -108,7 +117,7 @@ Shifu is configured using a single `config.json` file inside the project directo
         "dir": "assets",
         "entrypoint": "entrypoint.js",
         "out": "static/bundle.js",
-        "out_source_map": "static/bundle.js.map",
+        "source_map": true,
         "watch": true
     },
     "_analytics": "Optional analytics configuration.",
@@ -141,6 +150,7 @@ The directory structure is as follows:
 | content/  | Recursive content files in JSON format.              |
 | static/   | Static content (will be served as is on `/static/`). |
 | tpl/      | Recursive Golang template files.                     |
+| tmp/      | For temporary files.                                 |
 
 The JSON structure for a content file is as follows:
 

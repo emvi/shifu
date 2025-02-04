@@ -28,6 +28,7 @@ type Config struct {
 	LogLevel  string    `json:"log_level"`
 	Server    Server    `json:"server"`
 	Content   Content   `json:"content"`
+	Static    Static    `json:"static"`
 	CORS      CORS      `json:"cors"`
 	Sass      Sass      `json:"sass"`
 	JS        JS        `json:"js"`
@@ -54,6 +55,15 @@ type Content struct {
 	UpdateSeconds int               `json:"update_seconds"`
 	Repository    string            `json:"repository"`
 	NotFound      map[string]string `json:"not_found"`
+}
+
+// Static is the static file configuration.
+type Static struct {
+	Provider  string `json:"provider"`
+	URL       string `json:"url"`
+	Bucket    string `json:"bucket"`
+	AccessKey string `json:"access_key"`
+	Secret    string `json:"secret"`
 }
 
 // CORS is the HTTP CORS configuration.
@@ -125,6 +135,10 @@ func Load(dir string, funcMap template.FuncMap) error {
 		cfg.CORS.Origins = "*"
 	}
 
+	if cfg.Static.Provider == "" {
+		cfg.Static.Provider = "fs"
+	}
+
 	cfg.BaseDir = dir
 	cfg.FuncMap = funcMap
 	return nil
@@ -152,7 +166,7 @@ func Watch(ctx context.Context, dir string, funcMap template.FuncMap) error {
 
 				if event.Op == fsnotify.Write {
 					if err := Load(dir, funcMap); err != nil {
-						slog.Error("Error updating config.json", "err", err)
+						slog.Error("Error updating config.json", "error", err)
 					}
 				}
 			case <-ctx.Done():

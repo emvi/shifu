@@ -30,6 +30,10 @@ const (
 	    "update_seconds": 600,
 		"repository": "https//github.com/foo/bar"
 	},
+	"static": {
+		"provider": "fs",
+		"path_prefix": "."
+	},
 	"cors": {
 		"origins": "*",
 		"loglevel": "info"
@@ -84,6 +88,7 @@ func TestLoadConfig(t *testing.T) {
 	assert.Equal(t, "fs", cfg.Content.Provider)
 	assert.Equal(t, 600, cfg.Content.UpdateSeconds)
 	assert.Equal(t, "https//github.com/foo/bar", cfg.Content.Repository)
+	assert.Equal(t, "fs", cfg.Static.Provider)
 	assert.Equal(t, "*", cfg.CORS.Origins)
 	assert.Equal(t, "info", cfg.CORS.Loglevel)
 	assert.Equal(t, "style.scss", cfg.Sass.Entrypoint)

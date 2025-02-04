@@ -11,14 +11,16 @@ import (
 	"github.com/emvi/shifu/pkg/sass"
 	"github.com/emvi/shifu/pkg/sitemap"
 	"github.com/emvi/shifu/pkg/source"
+	"github.com/emvi/shifu/pkg/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/klauspost/compress/gzhttp"
 	"html/template"
 	"log/slog"
+	"mime"
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
+	"path"
 	"strings"
 	"time"
 )
@@ -43,6 +45,7 @@ type Server struct {
 
 	router  chi.Router
 	dir     string
+	storage storage.Storage
 	funcMap template.FuncMap
 	ctx     context.Context
 	cancel  context.CancelFunc
@@ -75,18 +78,28 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		slog.SetLogLoggerLevel(slog.LevelInfo)
 	}
 
-	config := cfg.Get().Content
+	contentConfig := cfg.Get().Content
 	var provider source.Provider
 
-	switch strings.ToLower(config.Provider) {
+	switch strings.ToLower(strings.TrimSpace(contentConfig.Provider)) {
 	case "fs":
-		provider = source.NewFS(dir, config.UpdateSeconds)
+		provider = source.NewFS(dir, contentConfig.UpdateSeconds)
 		break
 	case "git":
-		provider = source.NewGit(dir, config.Repository, config.UpdateSeconds)
+		provider = source.NewGit(dir, contentConfig.Repository, contentConfig.UpdateSeconds)
 		break
 	default:
-		return nil, fmt.Errorf("content provider '%s' not found", config.Provider)
+		return nil, fmt.Errorf("content provider '%s' not found", contentConfig.Provider)
+	}
+
+	var backend storage.Storage
+
+	switch strings.ToLower(strings.TrimSpace(cfg.Get().Static.Provider)) {
+	case "s3":
+		backend = storage.NewS3()
+		break
+	default:
+		backend = storage.NewFileStorage()
 	}
 
 	sm := sitemap.New()
@@ -105,6 +118,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		Sitemap: sm,
 		router:  options.Router,
 		dir:     dir,
+		storage: backend,
 		funcMap: options.FuncMap,
 		ctx:     ctx,
 		cancel:  cancel,
@@ -128,12 +142,12 @@ func (server *Server) Start(cancel context.CancelFunc) error {
 		return err
 	}
 
-	if err := sass.Watch(server.ctx, server.dir); err != nil {
+	if err := sass.Watch(server.ctx, server.dir, server.storage); err != nil {
 		stop()
 		return err
 	}
 
-	if err := js.Watch(server.ctx, server.dir); err != nil {
+	if err := js.Watch(server.ctx, server.dir, server.storage); err != nil {
 		stop()
 		return err
 	}
@@ -167,7 +181,7 @@ func (server *Server) setupRouter() {
 
 	server.Sitemap.Serve(router)
 	server.serveRobotsTxt(router)
-	server.serveStaticDir(router, server.dir)
+	server.serveStaticDir(router)
 	router.HandleFunc("/*", server.Content.Serve)
 	server.router = router
 
@@ -188,10 +202,22 @@ func (server *Server) serveRobotsTxt(router chi.Router) {
 	}))
 }
 
-func (server *Server) serveStaticDir(router chi.Router, dir string) {
-	fs := http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join(dir, "static"))))
+func (server *Server) serveStaticDir(router chi.Router) {
 	router.Handle("/static/*", gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fs.ServeHTTP(w, r)
+		data, err := server.storage.Read(server.dir + r.URL.Path)
+
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		fileType := mime.TypeByExtension(path.Ext(r.URL.Path))
+
+		if fileType != "" {
+			w.Header().Set("Content-Type", fileType)
+		}
+
+		_, _ = w.Write(data)
 	})))
 }
 

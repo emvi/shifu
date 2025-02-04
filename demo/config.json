@@ -23,7 +23,7 @@
         "dir": "assets",
         "entrypoint": "entrypoint.js",
         "out": "static/bundle.js",
-        "out_source_map": "static/bundle.js.map",
+        "source_map": true,
         "watch": true
     },
     "analytics": {

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../assets/entrypoint.js"],
+  "sourcesContent": ["console.log(\"Welcome to Shifu!\");\n"],
+  "mappings": "MAAA,QAAQ,IAAI,mBAAmB",
+  "names": []
+}
