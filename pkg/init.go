@@ -53,7 +53,8 @@ const (
 </html>
 `
 	gitIgnore = `tmp/
-.secrets.env`
+.secrets.env
+`
 )
 
 var (
