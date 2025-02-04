@@ -59,11 +59,12 @@ type Content struct {
 
 // Static is the static file configuration.
 type Static struct {
-	Provider  string `json:"provider"`
-	URL       string `json:"url"`
-	Bucket    string `json:"bucket"`
-	AccessKey string `json:"access_key"`
-	Secret    string `json:"secret"`
+	Provider   string `json:"provider"`
+	PathPrefix string `json:"path_prefix"`
+	URL        string `json:"url"`
+	Bucket     string `json:"bucket"`
+	AccessKey  string `json:"access_key"`
+	Secret     string `json:"secret"`
 }
 
 // CORS is the HTTP CORS configuration.

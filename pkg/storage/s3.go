@@ -10,14 +10,20 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"io"
 	"log/slog"
+	"path/filepath"
+	"strings"
 )
 
+// S3 serves files from an S3 bucket.
 type S3 struct {
-	client *minio.Client
-	bucket string
+	client     *minio.Client
+	bucket     string
+	baseDir    string
+	pathPrefix string
 }
 
-func NewS3() *S3 {
+// NewS3 creates a new S3 Storage provider.
+func NewS3(baseDir, pathPrefix string) *S3 {
 	staticCfg := cfg.Get().Static
 	client, err := minio.New(staticCfg.URL, &minio.Options{
 		Secure: true,
@@ -34,14 +40,20 @@ func NewS3() *S3 {
 	}
 
 	return &S3{
-		client: client,
-		bucket: staticCfg.Bucket,
+		client:     client,
+		bucket:     staticCfg.Bucket,
+		baseDir:    baseDir,
+		pathPrefix: pathPrefix,
 	}
 }
 
 // Exists implements the Storage interface.
 func (storage *S3) Exists(path string) (bool, string) {
-	info, err := storage.client.StatObject(context.Background(), storage.bucket, path, minio.StatObjectOptions{})
+	path = storage.getPath(path)
+	info, err := storage.client.StatObject(context.Background(),
+		storage.bucket,
+		path,
+		minio.StatObjectOptions{})
 
 	if err != nil {
 		return false, ""
@@ -52,7 +64,11 @@ func (storage *S3) Exists(path string) (bool, string) {
 
 // Read implements the Storage interface.
 func (storage *S3) Read(path string) ([]byte, error) {
-	object, err := storage.client.GetObject(context.Background(), storage.bucket, path, minio.GetObjectOptions{})
+	path = storage.getPath(path)
+	object, err := storage.client.GetObject(context.Background(),
+		storage.bucket,
+		path,
+		minio.GetObjectOptions{})
 
 	if err != nil {
 		return nil, err
@@ -69,8 +85,14 @@ func (storage *S3) Read(path string) ([]byte, error) {
 }
 
 // Write implements the Storage interface.
-func (storage *S3) Write(path string, data []byte, options *WriteOptions) (string, error) {
-	info, err := storage.client.PutObject(context.Background(), storage.bucket, path, bytes.NewReader(data), int64(len(data)), minio.PutObjectOptions{})
+func (storage *S3) Write(path string, data []byte, _ *WriteOptions) (string, error) {
+	path = storage.getPath(path)
+	info, err := storage.client.PutObject(context.Background(),
+		storage.bucket,
+		path,
+		bytes.NewReader(data),
+		int64(len(data)),
+		minio.PutObjectOptions{})
 
 	if err != nil {
 		return "", err
@@ -86,11 +108,20 @@ func (storage *S3) WriteStream(string, io.Reader) (string, error) {
 
 // Delete implements the Storage interface.
 func (storage *S3) Delete(path string) error {
-	if err := storage.client.RemoveObject(context.Background(), storage.bucket, path, minio.RemoveObjectOptions{}); err != nil {
+	path = storage.getPath(path)
+
+	if err := storage.client.RemoveObject(context.Background(),
+		storage.bucket,
+		path,
+		minio.RemoveObjectOptions{}); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (storage *S3) getPath(path string) string {
+	return filepath.Join(storage.pathPrefix, strings.TrimPrefix(path, storage.baseDir))
 }
 
 func (storage *S3) getPublicURL(path string) string {

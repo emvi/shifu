@@ -98,6 +98,8 @@ Below is the entire configuration. Keys starting with `_` are comments.
     "static": {
         "_provider": "fs, s3",
         "provider": "s3",
+        "_path_prefix": "The prefix is only relevant for S3",
+        "path_prefix": "prefix",
         "url": "fsn1.your-objectstorage.com",
         "bucket": "hetzner-bucket",
         "access_key": "...",

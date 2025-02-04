@@ -96,7 +96,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 
 	switch strings.ToLower(strings.TrimSpace(cfg.Get().Static.Provider)) {
 	case "s3":
-		backend = storage.NewS3()
+		backend = storage.NewS3(dir, cfg.Get().Static.PathPrefix)
 		break
 	default:
 		backend = storage.NewFileStorage()
