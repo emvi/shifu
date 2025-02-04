@@ -2,6 +2,8 @@
 
 ## 0.12.0
 
+* added secrets configuration
+* added storage backend providers (file system, S3)
 * updated dependencies
 
 ## 0.11.2
