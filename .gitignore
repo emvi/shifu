@@ -1,8 +1,10 @@
 .idea/
 pkg/js/in/
 pkg/js/out/
+pkg/js/tmp/
 pkg/sass/in/
 pkg/sass/out/
+pkg/sass/tmp/
 pkg/cfg/config.json
 pkg/cms/test/
 test/

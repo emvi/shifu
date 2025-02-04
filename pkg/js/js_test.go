@@ -3,6 +3,7 @@ package js
 import (
 	"context"
 	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/emvi/shifu/pkg/storage"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -16,6 +17,7 @@ const (
 )
 
 func TestCompile(t *testing.T) {
+	fs := storage.NewFileStorage()
 	assert.NoError(t, os.RemoveAll(inDir))
 	assert.NoError(t, os.Mkdir(inDir, 0777))
 	in := filepath.Join(inDir, "test.js")
@@ -26,7 +28,7 @@ func TestCompile(t *testing.T) {
 	cfg.Get().JS.Entrypoint = "test.js"
 	cfg.Get().JS.Out = filepath.Join(outDir, "bundle.js")
 	cfg.Get().JS.SourceMap = true
-	Compile("")
+	Compile("", fs)
 	assert.FileExists(t, out)
 	assert.FileExists(t, filepath.Join(outDir, "bundle.js.map"))
 	content, err := os.ReadFile(out)
@@ -35,6 +37,7 @@ func TestCompile(t *testing.T) {
 }
 
 func TestWatch(t *testing.T) {
+	fs := storage.NewFileStorage()
 	assert.NoError(t, os.RemoveAll(inDir))
 	assert.NoError(t, os.Mkdir(inDir, 0777))
 	in := filepath.Join(inDir, "test.js")
@@ -46,7 +49,7 @@ func TestWatch(t *testing.T) {
 	cfg.Get().JS.Out = filepath.Join(outDir, "bundle.js")
 	cfg.Get().JS.Watch = true
 	ctx, cancel := context.WithCancel(context.Background())
-	assert.NoError(t, Watch(ctx, ""))
+	assert.NoError(t, Watch(ctx, "", fs))
 	time.Sleep(time.Millisecond * 10)
 	assert.FileExists(t, out)
 	content, err := os.ReadFile(out)
