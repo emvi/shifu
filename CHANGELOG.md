@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.0
+
+* updated dependencies
+
 ## 0.11.2
 
 * added args to custom handler
