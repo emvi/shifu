@@ -52,6 +52,8 @@ const (
 </body>
 </html>
 `
+	gitIgnore = `tmp/
+.secrets.env`
 )
 
 var (
@@ -106,6 +108,9 @@ func Init(path string) error {
 		Content: cfg.Content{
 			Provider: "fs",
 		},
+		Static: cfg.Static{
+			Provider: "fs",
+		},
 		Sass: cfg.Sass{
 			Entrypoint:   "main.scss",
 			Dir:          "assets/scss",
@@ -143,6 +148,14 @@ func Init(path string) error {
 	}
 
 	if err := os.WriteFile(filepath.Join(path, "tpl", "main.html"), []byte(mainHtml), 0644); err != nil {
+		return err
+	}
+
+	if err := os.WriteFile(filepath.Join(path, ".secrets.env"), []byte{}, 0644); err != nil {
+		return err
+	}
+
+	if err := os.WriteFile(filepath.Join(path, ".gitignore"), []byte(gitIgnore), 0644); err != nil {
 		return err
 	}
 

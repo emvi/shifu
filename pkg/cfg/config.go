@@ -1,14 +1,14 @@
 package cfg
 
 import (
-	"context"
+	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/fsnotify/fsnotify"
 	"html/template"
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 const (
@@ -107,6 +107,15 @@ func Load(dir string, funcMap template.FuncMap) error {
 		return fmt.Errorf("error loading config.json: %s", err)
 	}
 
+	contentStr := string(content)
+	secrets := loadSecrets(dir)
+
+	for key, value := range secrets {
+		contentStr = strings.ReplaceAll(contentStr, fmt.Sprintf("${%s}", key), value)
+	}
+
+	content = []byte(contentStr)
+
 	if err := json.Unmarshal(content, &cfg); err != nil {
 		return fmt.Errorf("error loading config.json: %s", err)
 	}
@@ -144,46 +153,34 @@ func Load(dir string, funcMap template.FuncMap) error {
 	return nil
 }
 
-// Watch watches config.json for changes and automatically reloads the settings.
-func Watch(ctx context.Context, dir string, funcMap template.FuncMap) error {
-	if err := Load(dir, funcMap); err != nil {
-		return err
-	}
-
-	watcher, err := fsnotify.NewWatcher()
+func loadSecrets(dir string) map[string]string {
+	vars, err := os.Open(filepath.Join(dir, ".secrets.env"))
 
 	if err != nil {
-		return err
+		slog.Error("Error opening secrets file: ", "error", err)
+		return nil
 	}
 
-	go func() {
-		for {
-			select {
-			case event, ok := <-watcher.Events:
-				if !ok {
-					continue
-				}
+	defer vars.Close()
+	scanner := bufio.NewScanner(vars)
+	scanner.Split(bufio.ScanLines)
+	substitute := make(map[string]string)
 
-				if event.Op == fsnotify.Write {
-					if err := Load(dir, funcMap); err != nil {
-						slog.Error("Error updating config.json", "error", err)
-					}
-				}
-			case <-ctx.Done():
-				if err := watcher.Close(); err != nil {
-					slog.Error("Error closing config.json watcher", "error", err)
-				}
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
 
-				return
-			}
+		if line == "" {
+			continue
 		}
-	}()
 
-	if err := watcher.Add(filepath.Join(dir, configFile)); err != nil {
-		return err
+		key, value, found := strings.Cut(line, "=")
+
+		if found {
+			substitute[key] = value
+		}
 	}
 
-	return nil
+	return substitute
 }
 
 // Get returns the configuration.

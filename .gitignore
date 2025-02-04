@@ -6,7 +6,6 @@ pkg/sass/out/
 pkg/cfg/config.json
 pkg/cms/test/
 test/
-demo/tmp/
 ./shifu
 ./shifu.exe
 ./main

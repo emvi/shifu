@@ -52,7 +52,15 @@ WantedBy=multi-user.target
 
 ## Configuration
 
-Shifu is configured using a single `config.json` file inside the project directory. Keys starting with `_` are comments.
+Shifu is configured using a single `config.json` file inside the project's root directory. A `.secrets.env` file can be added to store secrets. Secrets are key-value pairs, one per line.
+
+```env
+SECRET=value
+```
+
+You can then replace them inside `config.json` using `${SECRET}`.
+
+Below is the entire configuration. Keys starting with `_` are comments.
 
 ```json
 {

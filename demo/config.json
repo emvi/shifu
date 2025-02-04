@@ -11,6 +11,14 @@
             "de": "/de/nicht-gefunden"
         }
     },
+    "static": {
+        "provider": "s3",
+        "path_prefix": "test",
+        "url": "fsn1.your-objectstorage.com",
+        "bucket": "emvi",
+        "access_key": "${S3_ACCESS_KEY}",
+        "secret": "${S3_SECRET}"
+    },
     "sass": {
         "dir": "assets",
         "entrypoint": "style.scss",
