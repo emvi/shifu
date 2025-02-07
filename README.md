@@ -83,19 +83,8 @@ Below is the entire configuration. Keys starting with `_` are comments.
         "secure_cookies": true,
         "cookie_domain_name": "example.com"
     },
-    "content": {
-        "_provider": "git, fs",
-        "provider": "git",
-        "update_seconds": 600,
-        "repository": "https://...",
-        "_not_found": "Overrides the default 404-page path (/404).",
-        "not_found": {
-            "en": "/not-found",
-            "de": "/de/nicht-gefunden"
-        }
-    },
-    "_static": "Provides an optional storage configuration. It uses the file system by default",
-    "static": {
+    "_storage": "Provides an optional storage configuration. It uses the file system by default. Mixing Git and S3 with the content configuration is possible, but requires adding all files that conflict with Git to be added to gitignore.",
+    "storage": {
         "_provider": "fs, s3",
         "provider": "s3",
         "_path_prefix": "The prefix is only relevant for S3",
@@ -104,6 +93,17 @@ Below is the entire configuration. Keys starting with `_` are comments.
         "bucket": "hetzner-bucket",
         "access_key": "...",
         "secret": "..."
+    },
+    "content": {
+        "_provider": "git, fs, s3",
+        "provider": "git",
+        "update_seconds": 600,
+        "repository": "https://...",
+        "_not_found": "Overrides the default 404-page path (/404).",
+        "not_found": {
+            "en": "/not-found",
+            "de": "/de/nicht-gefunden"
+        }
     },
     "cors": {
         "origins": "*",

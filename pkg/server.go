@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/emvi/shifu/pkg/analytics"
 	"github.com/emvi/shifu/pkg/cfg"
@@ -78,6 +79,17 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		slog.SetLogLoggerLevel(slog.LevelInfo)
 	}
 
+	storageProvider := strings.ToLower(strings.TrimSpace(cfg.Get().Storage.Provider))
+	var storageBackend storage.Storage
+
+	switch storageProvider {
+	case "s3":
+		storageBackend = storage.NewS3(dir, cfg.Get().Storage.PathPrefix)
+		break
+	default:
+		storageBackend = storage.NewFileStorage()
+	}
+
 	contentConfig := cfg.Get().Content
 	var provider source.Provider
 
@@ -88,18 +100,15 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 	case "git":
 		provider = source.NewGit(dir, contentConfig.Repository, contentConfig.UpdateSeconds)
 		break
-	default:
-		return nil, fmt.Errorf("content provider '%s' not found", contentConfig.Provider)
-	}
-
-	var backend storage.Storage
-
-	switch strings.ToLower(strings.TrimSpace(cfg.Get().Static.Provider)) {
 	case "s3":
-		backend = storage.NewS3(dir, cfg.Get().Static.PathPrefix)
+		if storageProvider != "s3" {
+			return nil, errors.New("storage provider must also be set to s3 if content provider is s3")
+		}
+
+		provider = source.NewS3(storageBackend, dir, cfg.Get().Storage.PathPrefix, contentConfig.UpdateSeconds)
 		break
 	default:
-		backend = storage.NewFileStorage()
+		return nil, fmt.Errorf("content provider '%s' not found", contentConfig.Provider)
 	}
 
 	sm := sitemap.New()
@@ -118,7 +127,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		Sitemap: sm,
 		router:  options.Router,
 		dir:     dir,
-		storage: backend,
+		storage: storageBackend,
 		funcMap: options.FuncMap,
 		ctx:     ctx,
 		cancel:  cancel,

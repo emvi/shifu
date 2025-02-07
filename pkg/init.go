@@ -106,10 +106,10 @@ func Init(path string) error {
 			WriteTimeout:    5,
 			ReadTimeout:     5,
 		},
-		Content: cfg.Content{
+		Storage: cfg.Storage{
 			Provider: "fs",
 		},
-		Static: cfg.Static{
+		Content: cfg.Content{
 			Provider: "fs",
 		},
 		Sass: cfg.Sass{

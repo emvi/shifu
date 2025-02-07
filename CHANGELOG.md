@@ -3,7 +3,7 @@
 ## 0.12.0
 
 * added secrets configuration
-* added storage backend providers (file system, S3)
+* added storage backend providers (file system, S3) for content and static files
 * updated dependencies
 
 ## 0.11.2

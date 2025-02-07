@@ -12,6 +12,9 @@ type WriteOptions struct {
 
 // Storage is an interface abstracting the static file handling.
 type Storage interface {
+	// List lists all files.
+	List(string, bool) ([]string, error)
+
 	// Exists tests if the file for given path exists and returns the paths if it does.
 	Exists(string) (bool, string)
 

@@ -24,7 +24,7 @@ type S3 struct {
 
 // NewS3 creates a new S3 Storage provider.
 func NewS3(baseDir, pathPrefix string) *S3 {
-	staticCfg := cfg.Get().Static
+	staticCfg := cfg.Get().Storage
 	client, err := minio.New(staticCfg.URL, &minio.Options{
 		Secure: true,
 		Creds: credentials.NewStaticV4(
@@ -45,6 +45,30 @@ func NewS3(baseDir, pathPrefix string) *S3 {
 		baseDir:    baseDir,
 		pathPrefix: pathPrefix,
 	}
+}
+
+// List implements the Storage interface.
+func (storage *S3) List(prefix string, recursive bool) ([]string, error) {
+	if storage.pathPrefix != "" && storage.pathPrefix != "." {
+		prefix = filepath.Join(storage.pathPrefix, prefix)
+	}
+
+	objects := storage.client.ListObjects(context.Background(), storage.bucket, minio.ListObjectsOptions{
+		Prefix:    prefix,
+		Recursive: recursive,
+	})
+	files := make([]string, 0)
+
+	for object := range objects {
+		if object.Err != nil {
+			slog.Error("Error listing objects", "error", object.Err)
+			return nil, object.Err
+		}
+
+		files = append(files, object.Key)
+	}
+
+	return files, nil
 }
 
 // Exists implements the Storage interface.
@@ -77,7 +101,7 @@ func (storage *S3) Read(path string) ([]byte, error) {
 	data, err := io.ReadAll(object)
 
 	if err != nil {
-		slog.Error("Error reading object", "err", err, "path", path)
+		slog.Error("Error reading object", "error", err, "path", path)
 		return nil, err
 	}
 

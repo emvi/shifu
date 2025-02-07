@@ -25,15 +25,19 @@ const (
 		"secure_cookies": true,
 		"cookie_domain_name": "example.com"
     },
+	"storage": {
+		"provider": "fs",
+		"path_prefix": "prefix",
+		"url": "objectstorage.com",
+        "bucket": "bucket",
+        "access_key": "${S3_ACCESS_KEY}",
+        "secret": "${S3_SECRET}"
+	},
 	"content": {
 		"provider": "fs",
 	    "update_seconds": 600,
 		"repository": "https//github.com/foo/bar"
-	},
-	"static": {
-		"provider": "fs",
-		"path_prefix": "."
-	},
+	},	
 	"cors": {
 		"origins": "*",
 		"loglevel": "info"
@@ -85,10 +89,15 @@ func TestLoadConfig(t *testing.T) {
 	assert.Equal(t, "example.com", cfg.Server.Hostname)
 	assert.True(t, cfg.Server.SecureCookies)
 	assert.Equal(t, "example.com", cfg.Server.CookieDomainName)
+	assert.Equal(t, "fs", cfg.Storage.Provider)
+	assert.Equal(t, "prefix", cfg.Storage.PathPrefix)
+	assert.Equal(t, "objectstorage.com", cfg.Storage.URL)
+	assert.Equal(t, "bucket", cfg.Storage.Bucket)
+	assert.Equal(t, "key", cfg.Storage.AccessKey)
+	assert.Equal(t, "secret", cfg.Storage.Secret)
 	assert.Equal(t, "fs", cfg.Content.Provider)
 	assert.Equal(t, 600, cfg.Content.UpdateSeconds)
 	assert.Equal(t, "https//github.com/foo/bar", cfg.Content.Repository)
-	assert.Equal(t, "fs", cfg.Static.Provider)
 	assert.Equal(t, "*", cfg.CORS.Origins)
 	assert.Equal(t, "info", cfg.CORS.Loglevel)
 	assert.Equal(t, "style.scss", cfg.Sass.Entrypoint)

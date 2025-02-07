@@ -5,7 +5,16 @@
         "host": "localhost",
         "port": 8080
     },
+    "storage": {
+        "provider": "s3",
+        "path_prefix": "demo",
+        "url": "fsn1.your-objectstorage.com",
+        "bucket": "emvi",
+        "access_key": "${S3_ACCESS_KEY}",
+        "secret": "${S3_SECRET}"
+    },
     "content": {
+        "provider": "s3",
         "not_found": {
             "en": "/not-found",
             "de": "/de/nicht-gefunden"

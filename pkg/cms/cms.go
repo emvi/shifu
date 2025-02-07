@@ -426,9 +426,15 @@ func (cms *CMS) updateContent() {
 	pageExperiments := make(map[string][]string)
 	websiteHost := cfg.Get().Server.Hostname
 	contentDir := filepath.Join(cms.baseDir, "content")
+	_, err := os.Stat(contentDir)
 
-	if _, err := os.Stat(contentDir); errors.Is(err, os.ErrNotExist) {
-		slog.Error("Content directory doesn't exist", "path", contentDir)
+	if os.IsNotExist(err) {
+		if err := os.MkdirAll(contentDir, 0744); err != nil {
+			slog.Error("Error creating content directory", "error", err, "path", contentDir)
+			return
+		}
+	} else if err != nil {
+		slog.Error("Error reading content directory", "error", err, "path", contentDir)
 		return
 	}
 

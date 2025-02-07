@@ -27,8 +27,8 @@ type Config struct {
 	Dev       bool      `json:"dev"`
 	LogLevel  string    `json:"log_level"`
 	Server    Server    `json:"server"`
+	Storage   Storage   `json:"storage"`
 	Content   Content   `json:"content"`
-	Static    Static    `json:"static"`
 	CORS      CORS      `json:"cors"`
 	Sass      Sass      `json:"sass"`
 	JS        JS        `json:"js"`
@@ -49,22 +49,22 @@ type Server struct {
 	CookieDomainName string `json:"cookie_domain_name"`
 }
 
-// Content is the content and source configuration.
-type Content struct {
-	Provider      string            `json:"provider"`
-	UpdateSeconds int               `json:"update_seconds"`
-	Repository    string            `json:"repository"`
-	NotFound      map[string]string `json:"not_found"`
-}
-
-// Static is the static file configuration.
-type Static struct {
+// Storage is the file storage configuration.
+type Storage struct {
 	Provider   string `json:"provider"`
 	PathPrefix string `json:"path_prefix"`
 	URL        string `json:"url"`
 	Bucket     string `json:"bucket"`
 	AccessKey  string `json:"access_key"`
 	Secret     string `json:"secret"`
+}
+
+// Content is the content and source configuration.
+type Content struct {
+	Provider      string            `json:"provider"`
+	UpdateSeconds int               `json:"update_seconds"`
+	Repository    string            `json:"repository"`
+	NotFound      map[string]string `json:"not_found"`
 }
 
 // CORS is the HTTP CORS configuration.
@@ -145,8 +145,8 @@ func Load(dir string, funcMap template.FuncMap) error {
 		cfg.CORS.Origins = "*"
 	}
 
-	if cfg.Static.Provider == "" {
-		cfg.Static.Provider = "fs"
+	if cfg.Storage.Provider == "" {
+		cfg.Storage.Provider = "fs"
 	}
 
 	cfg.BaseDir = dir
@@ -157,7 +157,9 @@ func Load(dir string, funcMap template.FuncMap) error {
 func loadSecrets(dir string) map[string]string {
 	vars, err := os.Open(filepath.Join(dir, ".secrets.env"))
 
-	if err != nil {
+	if os.IsNotExist(err) {
+		return nil
+	} else if err != nil {
 		slog.Error("Error opening secrets file: ", "error", err)
 		return nil
 	}

@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"errors"
 	"io"
 	"log/slog"
 	"os"
@@ -13,6 +14,11 @@ type FileStorage struct{}
 // NewFileStorage creates a new FileStorage provider.
 func NewFileStorage() *FileStorage {
 	return &FileStorage{}
+}
+
+// List implements the Storage interface.
+func (storage *FileStorage) List(string, bool) ([]string, error) {
+	return nil, errors.New("not implemented")
 }
 
 // Exists implements the Storage interface.
@@ -29,7 +35,7 @@ func (storage *FileStorage) Read(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 
 	if err != nil {
-		slog.Debug("Error reading file", "err", err, "path", path)
+		slog.Debug("Error reading file", "error", err, "path", path)
 		return nil, err
 	}
 
@@ -39,12 +45,12 @@ func (storage *FileStorage) Read(path string) ([]byte, error) {
 // Write implements the Storage interface.
 func (storage *FileStorage) Write(path string, data []byte, _ *WriteOptions) (string, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0744); err != nil {
-		slog.Error("Error creating directory", "err", err, "path", path)
+		slog.Error("Error creating directory", "error", err, "path", path)
 		return "", err
 	}
 
 	if err := os.WriteFile(path, data, 0644); err != nil {
-		slog.Error("Error writing file", "err", err, "path", path)
+		slog.Error("Error writing file", "error", err, "path", path)
 		return "", err
 	}
 
@@ -54,7 +60,7 @@ func (storage *FileStorage) Write(path string, data []byte, _ *WriteOptions) (st
 // WriteStream implements the Storage interface.
 func (storage *FileStorage) WriteStream(path string, data io.Reader) (string, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0744); err != nil {
-		slog.Error("Error creating directory", "err", err, "path", path)
+		slog.Error("Error creating directory", "error", err, "path", path)
 		return "", err
 	}
 
@@ -66,7 +72,7 @@ func (storage *FileStorage) WriteStream(path string, data io.Reader) (string, er
 
 	defer func() {
 		if err := file.Close(); err != nil {
-			slog.Warn("Error writing file", "err", err, "path", path)
+			slog.Warn("Error writing file", "error", err, "path", path)
 		}
 	}()
 
@@ -81,7 +87,7 @@ func (storage *FileStorage) WriteStream(path string, data io.Reader) (string, er
 		}
 
 		if _, err := file.Write(buffer[:n]); err != nil {
-			slog.Error("Error writing file", "err", err, "path", path)
+			slog.Error("Error writing file", "error", err, "path", path)
 			return "", err
 		}
 	}
@@ -93,7 +99,7 @@ func (storage *FileStorage) WriteStream(path string, data io.Reader) (string, er
 func (storage *FileStorage) Delete(path string) error {
 	if err := os.Remove(path); err != nil {
 		slog.Error("Error deleting file",
-			"err", err, "path", path)
+			"error", err, "path", path)
 		return err
 	}
 
