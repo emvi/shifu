@@ -12,56 +12,32 @@ import (
 )
 
 // S3 loads the website data from a S3 bucket.
+// It will only load the content once. Afterward, the content needs to be pulled manually.
 type S3 struct {
-	storage       storage.Storage
-	dir           string
-	pathPrefix    string
-	updateSeconds int
-	lastUpdate    time.Time
-	m             sync.RWMutex
+	storage    storage.Storage
+	dir        string
+	pathPrefix string
+	lastUpdate time.Time
+	m          sync.RWMutex
 }
 
 // NewS3 creates a new Provider for S3.
-func NewS3(storage storage.Storage, dir, pathPrefix string, updateSeconds int) *S3 {
-	if updateSeconds == 0 {
-		updateSeconds = 60
-	}
-
+func NewS3(storage storage.Storage, dir, pathPrefix string) *S3 {
 	provider := &S3{
-		storage:       storage,
-		dir:           dir,
-		pathPrefix:    pathPrefix,
-		updateSeconds: updateSeconds,
+		storage:    storage,
+		dir:        dir,
+		pathPrefix: pathPrefix,
 	}
 	provider.pull()
 	return provider
 }
 
 // Update implements the Provider interface.
-func (provider *S3) Update(ctx context.Context, update func()) {
-	go func() {
-		timerDuration := time.Second * time.Duration(provider.updateSeconds)
-		timer := time.NewTimer(timerDuration)
-		defer timer.Stop()
-
-		for {
-			timer.Reset(timerDuration)
-
-			select {
-			case <-timer.C:
-				if provider.pull() {
-					provider.m.Lock()
-					update()
-					provider.lastUpdate = time.Now().UTC()
-					provider.m.Unlock()
-				}
-			case <-ctx.Done():
-				return
-			}
-		}
-	}()
-
+func (provider *S3) Update(_ context.Context, update func()) {
+	provider.m.Lock()
 	update()
+	provider.lastUpdate = time.Now().UTC()
+	provider.m.Unlock()
 }
 
 // LastUpdate implements the Provider interface.
@@ -71,6 +47,7 @@ func (provider *S3) LastUpdate() time.Time {
 	return provider.lastUpdate
 }
 
+// TODO optimize
 func (provider *S3) pull() bool {
 	files, err := provider.storage.List("content", true)
 

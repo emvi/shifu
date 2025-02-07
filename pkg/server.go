@@ -46,7 +46,7 @@ type Server struct {
 
 	router  chi.Router
 	dir     string
-	storage storage.Storage
+	store   storage.Storage
 	funcMap template.FuncMap
 	ctx     context.Context
 	cancel  context.CancelFunc
@@ -105,7 +105,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 			return nil, errors.New("storage provider must also be set to s3 if content provider is s3")
 		}
 
-		provider = source.NewS3(storageBackend, dir, cfg.Get().Storage.PathPrefix, contentConfig.UpdateSeconds)
+		provider = source.NewS3(storageBackend, dir, cfg.Get().Storage.PathPrefix)
 		break
 	default:
 		return nil, fmt.Errorf("content provider '%s' not found", contentConfig.Provider)
@@ -127,7 +127,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		Sitemap: sm,
 		router:  options.Router,
 		dir:     dir,
-		storage: storageBackend,
+		store:   storageBackend,
 		funcMap: options.FuncMap,
 		ctx:     ctx,
 		cancel:  cancel,
@@ -151,16 +151,17 @@ func (server *Server) Start(cancel context.CancelFunc) error {
 		return err
 	}
 
-	if err := sass.Watch(server.ctx, server.dir, server.storage); err != nil {
+	if err := sass.Watch(server.ctx, server.dir, server.store); err != nil {
 		stop()
 		return err
 	}
 
-	if err := js.Watch(server.ctx, server.dir, server.storage); err != nil {
+	if err := js.Watch(server.ctx, server.dir, server.store); err != nil {
 		stop()
 		return err
 	}
 
+	cms.Init(server.store)
 	analytics.Init()
 	server.setupRouter()
 	<-server.startServer(server.router, stop)
@@ -213,7 +214,7 @@ func (server *Server) serveRobotsTxt(router chi.Router) {
 
 func (server *Server) serveStaticDir(router chi.Router) {
 	router.Handle("/static/*", gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		data, err := server.storage.Read(server.dir + r.URL.Path)
+		data, err := server.store.Read(server.dir + r.URL.Path)
 
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
