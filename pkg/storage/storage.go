@@ -2,6 +2,7 @@ package storage
 
 import (
 	"io"
+	"os"
 )
 
 // WriteOptions are options to write a file.
@@ -17,6 +18,9 @@ type Storage interface {
 
 	// Exists tests if the file for given path exists and returns the paths if it does.
 	Exists(string) (bool, string)
+
+	// Stat returns the file meta information.
+	Stat(string) (os.FileInfo, error)
 
 	// Read reads a file for given path.
 	Read(string) ([]byte, error)

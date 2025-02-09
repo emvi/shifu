@@ -10,6 +10,7 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"io"
 	"log/slog"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -84,6 +85,21 @@ func (storage *S3) Exists(path string) (bool, string) {
 	}
 
 	return true, storage.getPublicURL(info.Key)
+}
+
+// Stat implements the Storage interface.
+func (storage *S3) Stat(path string) (os.FileInfo, error) {
+	path = storage.getPath(path)
+	info, err := storage.client.StatObject(context.Background(),
+		storage.bucket,
+		path,
+		minio.StatObjectOptions{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &S3Object{info}, nil
 }
 
 // Read implements the Storage interface.

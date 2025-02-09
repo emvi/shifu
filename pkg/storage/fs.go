@@ -30,6 +30,11 @@ func (storage *FileStorage) Exists(path string) (bool, string) {
 	return true, path
 }
 
+// Stat implements the Storage interface.
+func (storage *FileStorage) Stat(path string) (os.FileInfo, error) {
+	return os.Stat(path)
+}
+
 // Read implements the Storage interface.
 func (storage *FileStorage) Read(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
