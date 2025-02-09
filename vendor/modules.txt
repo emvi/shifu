@@ -23,7 +23,7 @@ github.com/dustin/go-humanize
 # github.com/emvi/null v1.3.1
 ## explicit
 github.com/emvi/null
-# github.com/evanw/esbuild v0.24.2
+# github.com/evanw/esbuild v0.25.0
 ## explicit; go 1.13
 github.com/evanw/esbuild/internal/api_helpers
 github.com/evanw/esbuild/internal/ast
@@ -108,7 +108,7 @@ github.com/klauspost/cpuid/v2
 # github.com/minio/md5-simd v1.1.2
 ## explicit; go 1.14
 github.com/minio/md5-simd
-# github.com/minio/minio-go/v7 v7.0.84
+# github.com/minio/minio-go/v7 v7.0.85
 ## explicit; go 1.22
 github.com/minio/minio-go/v7
 github.com/minio/minio-go/v7/pkg/cors
@@ -168,7 +168,7 @@ github.com/yuin/goldmark/renderer
 github.com/yuin/goldmark/renderer/html
 github.com/yuin/goldmark/text
 github.com/yuin/goldmark/util
-# golang.org/x/crypto v0.32.0
+# golang.org/x/crypto v0.33.0
 ## explicit; go 1.20
 golang.org/x/crypto/argon2
 golang.org/x/crypto/bcrypt

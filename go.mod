@@ -4,14 +4,14 @@ go 1.23.4
 
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
-	github.com/evanw/esbuild v0.24.2
+	github.com/evanw/esbuild v0.25.0
 	github.com/fsnotify/fsnotify v1.8.0
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/go-chi/cors v1.2.1
 	github.com/gorilla/mux v1.8.1
 	github.com/hetznercloud/hcloud-go/v2 v2.19.1
 	github.com/klauspost/compress v1.17.11
-	github.com/minio/minio-go/v7 v7.0.84
+	github.com/minio/minio-go/v7 v7.0.85
 	github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.4.0
 	github.com/stretchr/testify v1.10.0
 	github.com/yuin/goldmark v1.7.8
@@ -44,7 +44,7 @@ require (
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
-	golang.org/x/crypto v0.32.0 // indirect
+	golang.org/x/crypto v0.33.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect

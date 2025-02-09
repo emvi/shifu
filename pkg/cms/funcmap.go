@@ -106,7 +106,6 @@ func get(content *Content, key string) any {
 
 func renderMarkdown(file string, data any) template.HTML {
 	content, err := store.Read(filepath.Join(cfg.Get().BaseDir, file))
-	//content, err := os.ReadFile(filepath.Join(cfg.Get().BaseDir, file))
 
 	if err != nil {
 		slog.Error("Error loading markdown file", "file", file, "error", err)
