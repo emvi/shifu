@@ -38,7 +38,7 @@ func BenchmarkCMS(b *testing.B) {
 		BaseDir:   "../../demo",
 		HotReload: true,
 		FuncMap:   defaultFuncMap,
-		Source:    source.NewFS("../../demo", 1),
+		Source:    source.NewFileStorage("../../demo", 1),
 		Sitemap:   sitemap.New(),
 	})
 	var wg sync.WaitGroup

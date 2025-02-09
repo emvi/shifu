@@ -47,7 +47,6 @@ func (provider *S3) LastUpdate() time.Time {
 	return provider.lastUpdate
 }
 
-// TODO optimize
 func (provider *S3) pull() bool {
 	files, err := provider.storage.List("content", true)
 
@@ -57,16 +56,23 @@ func (provider *S3) pull() bool {
 
 	for _, file := range files {
 		file = strings.TrimPrefix(file, provider.pathPrefix)
-		data, err := provider.storage.Read(file)
+		withoutPrefix := strings.TrimPrefix(file, "/content/")
+		dir := filepath.Join(provider.dir, "content", filepath.Dir(withoutPrefix))
+		out := filepath.Join(provider.dir, "content", withoutPrefix)
 
-		if err != nil {
-			slog.Error("Error reading content from S3", "error", err, "file", file)
-			continue
+		// check if file needs to be updated
+		info, err := provider.storage.Stat(file)
+
+		if err == nil {
+			stat, err := os.Stat(out)
+
+			if err == nil && stat != nil &&
+				(stat.ModTime().Equal(info.ModTime()) || stat.ModTime().After(info.ModTime())) {
+				continue
+			}
 		}
 
-		file = strings.TrimPrefix(file, "/content/")
-		dir := filepath.Join(provider.dir, "content", filepath.Dir(file))
-
+		// create directory if required
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
 			if err := os.MkdirAll(dir, 0744); err != nil {
 				slog.Error("Error creating directory", "error", err, "dir", dir)
@@ -74,8 +80,16 @@ func (provider *S3) pull() bool {
 			}
 		}
 
-		if err := os.WriteFile(filepath.Join(provider.dir, "content", file), data, 0644); err != nil {
-			slog.Error("Error writing S3 content to disk", "error", err, "file", file)
+		// download and write to disk
+		data, err := provider.storage.Read(file)
+
+		if err != nil {
+			slog.Error("Error reading content from S3", "error", err, "file", file)
+			continue
+		}
+
+		if err := os.WriteFile(out, data, 0644); err != nil {
+			slog.Error("Error writing S3 content to disk", "error", err, "file", out)
 		}
 	}
 

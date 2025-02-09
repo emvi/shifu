@@ -27,6 +27,7 @@ type Config struct {
 	Dev       bool      `json:"dev"`
 	LogLevel  string    `json:"log_level"`
 	Server    Server    `json:"server"`
+	Git       Git       `json:"git"`
 	Storage   Storage   `json:"storage"`
 	Content   Content   `json:"content"`
 	CORS      CORS      `json:"cors"`
@@ -49,6 +50,12 @@ type Server struct {
 	CookieDomainName string `json:"cookie_domain_name"`
 }
 
+// Git is the Git repository configuration for auto-updates.
+type Git struct {
+	UpdateSeconds int    `json:"update_seconds"`
+	Repository    string `json:"repository"`
+}
+
 // Storage is the file storage configuration.
 type Storage struct {
 	Provider   string `json:"provider"`
@@ -61,10 +68,8 @@ type Storage struct {
 
 // Content is the content and source configuration.
 type Content struct {
-	Provider      string            `json:"provider"`
-	UpdateSeconds int               `json:"update_seconds"`
-	Repository    string            `json:"repository"`
-	NotFound      map[string]string `json:"not_found"`
+	Provider string            `json:"provider"`
+	NotFound map[string]string `json:"not_found"`
 }
 
 // CORS is the HTTP CORS configuration.
@@ -137,10 +142,6 @@ func Load(dir string, funcMap template.FuncMap) error {
 		cfg.Server.ReadTimeout = 5
 	}
 
-	if cfg.Content.Provider == "" {
-		cfg.Content.Provider = "fs"
-	}
-
 	if cfg.CORS.Origins == "" {
 		cfg.CORS.Origins = "*"
 	}
@@ -164,7 +165,11 @@ func loadSecrets(dir string) map[string]string {
 		return nil
 	}
 
-	defer vars.Close()
+	defer func() {
+		if err := vars.Close(); err != nil {
+			slog.Error("Error closing secrets file: ", "error", err)
+		}
+	}()
 	scanner := bufio.NewScanner(vars)
 	scanner.Split(bufio.ScanLines)
 	substitute := make(map[string]string)

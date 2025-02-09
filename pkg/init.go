@@ -109,9 +109,6 @@ func Init(path string) error {
 		Storage: cfg.Storage{
 			Provider: "fs",
 		},
-		Content: cfg.Content{
-			Provider: "fs",
-		},
 		Sass: cfg.Sass{
 			Entrypoint:   "main.scss",
 			Dir:          "assets/scss",
