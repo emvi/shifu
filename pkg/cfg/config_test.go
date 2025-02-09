@@ -1,12 +1,9 @@
 package cfg
 
 import (
-	"context"
 	"github.com/stretchr/testify/assert"
 	"os"
-	"strings"
 	"testing"
-	"time"
 )
 
 const (
@@ -25,6 +22,10 @@ const (
 		"secure_cookies": true,
 		"cookie_domain_name": "example.com"
     },
+	"git": {
+	    "update_seconds": 600,
+		"repository": "https//github.com/foo/bar"
+	},
 	"storage": {
 		"provider": "fs",
 		"path_prefix": "prefix",
@@ -34,10 +35,11 @@ const (
         "secret": "${S3_SECRET}"
 	},
 	"content": {
-		"provider": "fs",
-	    "update_seconds": 600,
-		"repository": "https//github.com/foo/bar"
-	},	
+		"provider": "git",
+		"not_found": {
+			"en": "/not-found"
+		}
+	},
 	"cors": {
 		"origins": "*",
 		"loglevel": "info"
@@ -89,15 +91,16 @@ func TestLoadConfig(t *testing.T) {
 	assert.Equal(t, "example.com", cfg.Server.Hostname)
 	assert.True(t, cfg.Server.SecureCookies)
 	assert.Equal(t, "example.com", cfg.Server.CookieDomainName)
+	assert.Equal(t, 600, cfg.Git.UpdateSeconds)
+	assert.Equal(t, "https//github.com/foo/bar", cfg.Git.Repository)
 	assert.Equal(t, "fs", cfg.Storage.Provider)
 	assert.Equal(t, "prefix", cfg.Storage.PathPrefix)
 	assert.Equal(t, "objectstorage.com", cfg.Storage.URL)
 	assert.Equal(t, "bucket", cfg.Storage.Bucket)
 	assert.Equal(t, "key", cfg.Storage.AccessKey)
 	assert.Equal(t, "secret", cfg.Storage.Secret)
-	assert.Equal(t, "fs", cfg.Content.Provider)
-	assert.Equal(t, 600, cfg.Content.UpdateSeconds)
-	assert.Equal(t, "https//github.com/foo/bar", cfg.Content.Repository)
+	assert.Equal(t, "git", cfg.Content.Provider)
+	assert.Equal(t, "/not-found", cfg.Content.NotFound["en"])
 	assert.Equal(t, "*", cfg.CORS.Origins)
 	assert.Equal(t, "info", cfg.CORS.Loglevel)
 	assert.Equal(t, "style.scss", cfg.Sass.Entrypoint)
@@ -126,24 +129,4 @@ func TestLoadConfigNotExists(t *testing.T) {
 	err := Load(".", nil)
 	assert.NotNil(t, err)
 	assert.Equal(t, "error loading config.json: open config.json: no such file or directory", err.Error())
-}
-
-func TestWatchConfig(t *testing.T) {
-	assert.NoError(t, os.RemoveAll("config.json"))
-	assert.NoError(t, os.WriteFile("config.json", []byte(sampleConfig), 0644))
-	ctx, cancel := context.WithCancel(context.Background())
-	assert.NoError(t, Watch(ctx, ".", nil))
-	assert.Equal(t, 8080, cfg.Server.Port)
-	assert.NoError(t, os.WriteFile("config.json", []byte(strings.Replace(sampleConfig, "8080", "8888", 1)), 0644))
-	time.Sleep(time.Millisecond * 10)
-	cancel()
-	assert.Equal(t, 8888, cfg.Server.Port)
-}
-
-func TestWatchConfigNotExists(t *testing.T) {
-	assert.NoError(t, os.RemoveAll("config.json"))
-	ctx, cancel := context.WithCancel(context.Background())
-	err := Watch(ctx, ".", nil)
-	assert.Equal(t, "error loading config.json: open config.json: no such file or directory", err.Error())
-	cancel()
 }

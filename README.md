@@ -13,13 +13,14 @@ Shifu can also be used as a library in your Go application to add template funct
 * Support for i18n (translations)
 * Serve static files (from file system or S3)
 * Reusable Golang template files
-* Automatically watch files for changes
-* Build and minify JavaScript/TypeScript and Sass
+* Build and minify JavaScript/TypeScript and Sass on save
 * Static content cache
-* 404 error fallback page
+* Configurable 404 error fallback page
 * Automatic sitemap generation
 * Integrated analytics using [Pirsch](https://pirsch.io)
-* A/B testing
+  * Track page views
+  * Track custom events
+  * Integrated A/B testing
 * Custom Golang handlers for advanced functionality
 * Simple configuration and easy deployment
 * Standalone server or library
@@ -83,6 +84,11 @@ Below is the entire configuration. Keys starting with `_` are comments.
         "secure_cookies": true,
         "cookie_domain_name": "example.com"
     },
+    "_git": "Pulls files from a Git repository regularly",
+    "git": {
+        "update_seconds": 600,
+        "repository": "https://..."
+    },
     "_storage": "Provides an optional storage configuration. It uses the file system by default. Mixing Git and S3 with the content configuration is possible, but requires adding all files that conflict with Git to be added to gitignore.",
     "storage": {
         "_provider": "fs, s3",
@@ -97,8 +103,6 @@ Below is the entire configuration. Keys starting with `_` are comments.
     "content": {
         "_provider": "git, fs, s3",
         "provider": "git",
-        "update_seconds": 600,
-        "repository": "https://...",
         "_not_found": "Overrides the default 404-page path (/404).",
         "not_found": {
             "en": "/not-found",

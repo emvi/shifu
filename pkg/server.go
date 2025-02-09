@@ -79,10 +79,9 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		slog.SetLogLoggerLevel(slog.LevelInfo)
 	}
 
-	storageProvider := strings.ToLower(strings.TrimSpace(cfg.Get().Storage.Provider))
 	var storageBackend storage.Storage
 
-	switch storageProvider {
+	switch strings.ToLower(strings.TrimSpace(cfg.Get().Storage.Provider)) {
 	case "s3":
 		storageBackend = storage.NewS3(dir, cfg.Get().Storage.PathPrefix)
 		break
@@ -90,25 +89,23 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		storageBackend = storage.NewFileStorage()
 	}
 
-	contentConfig := cfg.Get().Content
 	var provider source.Provider
 
-	switch strings.ToLower(strings.TrimSpace(contentConfig.Provider)) {
-	case "fs":
-		provider = source.NewFS(dir, contentConfig.UpdateSeconds)
-		break
-	case "git":
-		provider = source.NewGit(dir, contentConfig.Repository, contentConfig.UpdateSeconds)
-		break
+	switch strings.ToLower(strings.TrimSpace(cfg.Get().Content.Provider)) {
 	case "s3":
-		if storageProvider != "s3" {
-			return nil, errors.New("storage provider must also be set to s3 if content provider is s3")
-		}
-
 		provider = source.NewS3(storageBackend, dir, cfg.Get().Storage.PathPrefix)
 		break
+	case "git":
+		gitConfig := cfg.Get().Git
+
+		if gitConfig.Repository == "" {
+			return nil, errors.New("git repository URL is empty")
+		}
+
+		provider = source.NewGit(dir, gitConfig.Repository, gitConfig.UpdateSeconds)
+		break
 	default:
-		return nil, fmt.Errorf("content provider '%s' not found", contentConfig.Provider)
+		provider = source.NewFileStorage(dir, cfg.Get().Git.UpdateSeconds)
 	}
 
 	sm := sitemap.New()
@@ -144,11 +141,6 @@ func (server *Server) Start(cancel context.CancelFunc) error {
 		if cancel != nil {
 			cancel()
 		}
-	}
-
-	if err := cfg.Watch(server.ctx, server.dir, server.funcMap); err != nil {
-		stop()
-		return err
 	}
 
 	if err := sass.Watch(server.ctx, server.dir, server.store); err != nil {

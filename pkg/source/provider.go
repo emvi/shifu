@@ -7,7 +7,7 @@ import (
 
 // Provider is the interface for a website data provider.
 type Provider interface {
-	// Update regularly updates the website data from Git.
+	// Update regularly updates the website data.
 	Update(context.Context, func())
 
 	// LastUpdate returns the time the website data has last been updated.
