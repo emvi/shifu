@@ -106,9 +106,6 @@ func Init(path string) error {
 			WriteTimeout:    5,
 			ReadTimeout:     5,
 		},
-		Storage: cfg.Storage{
-			Provider: "fs",
-		},
 		Sass: cfg.Sass{
 			Entrypoint:   "main.scss",
 			Dir:          "assets/scss",

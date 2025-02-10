@@ -3,7 +3,6 @@ package sass
 import (
 	"fmt"
 	"github.com/emvi/shifu/pkg/cfg"
-	"github.com/emvi/shifu/pkg/storage"
 	"io/fs"
 	"log/slog"
 	"os"
@@ -12,14 +11,14 @@ import (
 )
 
 // Compile compiles the entrypoint Sass for given base directory.
-func Compile(dir string, store storage.Storage) {
+func Compile(dir string) {
 	if err := os.MkdirAll(filepath.Join(dir, filepath.Dir(cfg.Get().Sass.Out)), 0744); err != nil {
 		slog.Error("Error creating css output directory", "error", err)
 		return
 	}
 
 	in := filepath.Join(dir, cfg.Get().Sass.Dir, cfg.Get().Sass.Entrypoint)
-	out := filepath.Join(dir, "tmp", cfg.Get().Sass.Out)
+	out := filepath.Join(dir, cfg.Get().Sass.Out)
 	slog.Info("Compiling sass file", "in", in, "out", out)
 	dirs, err := getDirs(filepath.Join(dir, cfg.Get().Sass.Dir))
 
@@ -48,30 +47,6 @@ func Compile(dir string, store storage.Storage) {
 	if err := cmd.Run(); err != nil {
 		slog.Error("Error compiling sass", "error", err)
 		return
-	}
-
-	data, err := os.ReadFile(out)
-
-	if err != nil {
-		slog.Error("Error reading temporary sass output", "error", err)
-		return
-	}
-
-	if _, err := store.Write(filepath.Join(dir, cfg.Get().Sass.Out), data, nil); err != nil {
-		slog.Error("Error saving sass file", "error", err)
-	}
-
-	if cfg.Get().Sass.OutSourceMap != "" {
-		data, err = os.ReadFile(out + ".map")
-
-		if err != nil {
-			slog.Error("Error reading temporary sass source map output", "error", err)
-			return
-		}
-
-		if _, err := store.Write(filepath.Join(dir, cfg.Get().Sass.Out)+".map", data, nil); err != nil {
-			slog.Error("Error saving sass source map file", "error", err)
-		}
 	}
 }
 

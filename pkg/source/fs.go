@@ -6,28 +6,28 @@ import (
 	"time"
 )
 
-// FileStorage loads the website data from the file system.
-type FileStorage struct {
+// FileSystem loads the website data from the file system.
+type FileSystem struct {
 	dir           string
 	updateSeconds int
 	lastUpdate    time.Time
 	m             sync.RWMutex
 }
 
-// NewFileStorage creates a new Provider for the file system.
-func NewFileStorage(dir string, updateSeconds int) *FileStorage {
+// NewFileSystem creates a new Provider for the file system.
+func NewFileSystem(dir string, updateSeconds int) *FileSystem {
 	if updateSeconds == 0 {
 		updateSeconds = 60
 	}
 
-	return &FileStorage{
+	return &FileSystem{
 		dir:           dir,
 		updateSeconds: updateSeconds,
 	}
 }
 
 // Update implements the Provider interface.
-func (provider *FileStorage) Update(ctx context.Context, update func()) {
+func (provider *FileSystem) Update(ctx context.Context, update func()) {
 	go func() {
 		timerDuration := time.Second * time.Duration(provider.updateSeconds)
 		timer := time.NewTimer(timerDuration)
@@ -52,7 +52,7 @@ func (provider *FileStorage) Update(ctx context.Context, update func()) {
 }
 
 // LastUpdate implements the Provider interface.
-func (provider *FileStorage) LastUpdate() time.Time {
+func (provider *FileSystem) LastUpdate() time.Time {
 	provider.m.RLock()
 	defer provider.m.RUnlock()
 	return provider.lastUpdate

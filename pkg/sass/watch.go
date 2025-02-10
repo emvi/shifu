@@ -3,7 +3,6 @@ package sass
 import (
 	"context"
 	"github.com/emvi/shifu/pkg/cfg"
-	"github.com/emvi/shifu/pkg/storage"
 	"github.com/fsnotify/fsnotify"
 	"log/slog"
 	"path/filepath"
@@ -11,9 +10,9 @@ import (
 )
 
 // Watch watches the entrypoint Sass for changes and recompiles if required.
-func Watch(ctx context.Context, dir string, store storage.Storage) error {
+func Watch(ctx context.Context, dir string) error {
 	if cfg.Get().Sass.Entrypoint != "" {
-		Compile(dir, store)
+		Compile(dir)
 
 		if cfg.Get().Sass.Watch {
 			watcher, err := fsnotify.NewWatcher()
@@ -36,7 +35,7 @@ func Watch(ctx context.Context, dir string, store storage.Storage) error {
 							ext := strings.ToLower(filepath.Ext(event.Name))
 
 							if ext == ".scss" || ext == ".sass" {
-								Compile(dir, store)
+								Compile(dir)
 							}
 						}
 					case <-ctx.Done():

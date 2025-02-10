@@ -1,10 +1,7 @@
-.PHONY: demo demo_s3 deps test build_mac build_windows build_linux init
+.PHONY: demo deps test build_mac build_windows build_linux init
 
 demo:
 	go run cmd/shifu/main.go run demo
-
-demo_s3:
-	go run cmd/shifu/main.go run demo_s3
 
 deps:
 	go get -u -t ./...

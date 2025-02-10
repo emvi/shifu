@@ -26,14 +26,6 @@ const (
 	    "update_seconds": 600,
 		"repository": "https//github.com/foo/bar"
 	},
-	"storage": {
-		"provider": "fs",
-		"path_prefix": "prefix",
-		"url": "objectstorage.com",
-        "bucket": "bucket",
-        "access_key": "${S3_ACCESS_KEY}",
-        "secret": "${S3_SECRET}"
-	},
 	"content": {
 		"provider": "git",
 		"not_found": {
@@ -93,12 +85,6 @@ func TestLoadConfig(t *testing.T) {
 	assert.Equal(t, "example.com", cfg.Server.CookieDomainName)
 	assert.Equal(t, 600, cfg.Git.UpdateSeconds)
 	assert.Equal(t, "https//github.com/foo/bar", cfg.Git.Repository)
-	assert.Equal(t, "fs", cfg.Storage.Provider)
-	assert.Equal(t, "prefix", cfg.Storage.PathPrefix)
-	assert.Equal(t, "objectstorage.com", cfg.Storage.URL)
-	assert.Equal(t, "bucket", cfg.Storage.Bucket)
-	assert.Equal(t, "key", cfg.Storage.AccessKey)
-	assert.Equal(t, "secret", cfg.Storage.Secret)
 	assert.Equal(t, "git", cfg.Content.Provider)
 	assert.Equal(t, "/not-found", cfg.Content.NotFound["en"])
 	assert.Equal(t, "*", cfg.CORS.Origins)

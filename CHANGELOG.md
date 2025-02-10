@@ -2,9 +2,8 @@
 
 ## 0.12.0
 
-* added storage backend providers (file system, S3) for `content` and `static` files
-* added secrets configuration
 * improved configuration format
+* added secrets configuration
 * removed auto-updates for configuration (wasn't really useful)
 * updated dependencies
 

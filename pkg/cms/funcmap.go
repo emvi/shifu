@@ -11,6 +11,7 @@ import (
 	"html/template"
 	"log/slog"
 	"math/rand/v2"
+	"os"
 	"path/filepath"
 	"strconv"
 	tt "text/template"
@@ -105,7 +106,7 @@ func get(content *Content, key string) any {
 }
 
 func renderMarkdown(file string, data any) template.HTML {
-	content, err := store.Read(filepath.Join(cfg.Get().BaseDir, file))
+	content, err := os.ReadFile(filepath.Join(cfg.Get().BaseDir, file))
 
 	if err != nil {
 		slog.Error("Error loading markdown file", "file", file, "error", err)
@@ -116,7 +117,7 @@ func renderMarkdown(file string, data any) template.HTML {
 }
 
 func renderMarkdownBlock(file, block string, data any) template.HTML {
-	content, err := store.Read(filepath.Join(cfg.Get().BaseDir, file))
+	content, err := os.ReadFile(filepath.Join(cfg.Get().BaseDir, file))
 
 	if err != nil {
 		slog.Error("Error loading markdown file", "file", file, "error", err)

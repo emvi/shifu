@@ -11,7 +11,7 @@ Shifu can also be used as a library in your Go application to add template funct
 * JSON-based content management
 * Reference commonly used elements
 * Support for i18n (translations)
-* Serve static files (from file system or S3)
+* Serve static files
 * Reusable Golang template files
 * Build and minify JavaScript/TypeScript and Sass on save
 * Static content cache
@@ -89,19 +89,8 @@ Below is the entire configuration. Keys starting with `_` are comments.
         "update_seconds": 600,
         "repository": "https://..."
     },
-    "_storage": "Provides an optional storage configuration. It uses the file system by default. Mixing Git and S3 with the content configuration is possible, but requires adding all files that conflict with Git to be added to gitignore.",
-    "storage": {
-        "_provider": "fs, s3",
-        "provider": "s3",
-        "_path_prefix": "The prefix is only relevant for S3",
-        "path_prefix": "prefix",
-        "url": "fsn1.your-objectstorage.com",
-        "bucket": "hetzner-bucket",
-        "access_key": "...",
-        "secret": "..."
-    },
     "content": {
-        "_provider": "git, fs, s3",
+        "_provider": "git, fs",
         "provider": "git",
         "_not_found": "Overrides the default 404-page path (/404).",
         "not_found": {

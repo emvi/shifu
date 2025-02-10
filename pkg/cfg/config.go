@@ -28,7 +28,6 @@ type Config struct {
 	LogLevel  string    `json:"log_level"`
 	Server    Server    `json:"server"`
 	Git       Git       `json:"git"`
-	Storage   Storage   `json:"storage"`
 	Content   Content   `json:"content"`
 	CORS      CORS      `json:"cors"`
 	Sass      Sass      `json:"sass"`
@@ -54,16 +53,6 @@ type Server struct {
 type Git struct {
 	UpdateSeconds int    `json:"update_seconds"`
 	Repository    string `json:"repository"`
-}
-
-// Storage is the file storage configuration.
-type Storage struct {
-	Provider   string `json:"provider"`
-	PathPrefix string `json:"path_prefix"`
-	URL        string `json:"url"`
-	Bucket     string `json:"bucket"`
-	AccessKey  string `json:"access_key"`
-	Secret     string `json:"secret"`
 }
 
 // Content is the content and source configuration.
@@ -146,8 +135,8 @@ func Load(dir string, funcMap template.FuncMap) error {
 		cfg.CORS.Origins = "*"
 	}
 
-	if cfg.Storage.Provider == "" {
-		cfg.Storage.Provider = "fs"
+	if cfg.Content.Provider == "" {
+		cfg.Content.Provider = "fs"
 	}
 
 	cfg.BaseDir = dir

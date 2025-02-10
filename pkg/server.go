@@ -12,16 +12,14 @@ import (
 	"github.com/emvi/shifu/pkg/sass"
 	"github.com/emvi/shifu/pkg/sitemap"
 	"github.com/emvi/shifu/pkg/source"
-	"github.com/emvi/shifu/pkg/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/klauspost/compress/gzhttp"
 	"html/template"
 	"log/slog"
-	"mime"
 	"net/http"
 	"os"
 	"os/signal"
-	"path"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -46,7 +44,6 @@ type Server struct {
 
 	router  chi.Router
 	dir     string
-	store   storage.Storage
 	funcMap template.FuncMap
 	ctx     context.Context
 	cancel  context.CancelFunc
@@ -79,22 +76,9 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		slog.SetLogLoggerLevel(slog.LevelInfo)
 	}
 
-	var storageBackend storage.Storage
-
-	switch strings.ToLower(strings.TrimSpace(cfg.Get().Storage.Provider)) {
-	case "s3":
-		storageBackend = storage.NewS3(dir, cfg.Get().Storage.PathPrefix)
-		break
-	default:
-		storageBackend = storage.NewFileStorage()
-	}
-
 	var provider source.Provider
 
 	switch strings.ToLower(strings.TrimSpace(cfg.Get().Content.Provider)) {
-	case "s3":
-		provider = source.NewS3(storageBackend, dir, cfg.Get().Storage.PathPrefix)
-		break
 	case "git":
 		gitConfig := cfg.Get().Git
 
@@ -105,7 +89,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		provider = source.NewGit(dir, gitConfig.Repository, gitConfig.UpdateSeconds)
 		break
 	default:
-		provider = source.NewFileStorage(dir, cfg.Get().Git.UpdateSeconds)
+		provider = source.NewFileSystem(dir, cfg.Get().Git.UpdateSeconds)
 	}
 
 	sm := sitemap.New()
@@ -124,7 +108,6 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		Sitemap: sm,
 		router:  options.Router,
 		dir:     dir,
-		store:   storageBackend,
 		funcMap: options.FuncMap,
 		ctx:     ctx,
 		cancel:  cancel,
@@ -133,7 +116,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 
 // Start starts the Shifu server.
 // The context.CancelFunc is optional and will be called on server shutdown or error if set.
-func (server *Server) Start(cancel context.CancelFunc) error {
+func (server *Server) Start(cancel context.CancelFunc, dir string) error {
 	slog.Info("Starting Shifu", "version", version, "directory", server.dir)
 	stop := func() {
 		server.cancel()
@@ -143,24 +126,23 @@ func (server *Server) Start(cancel context.CancelFunc) error {
 		}
 	}
 
-	if err := sass.Watch(server.ctx, server.dir, server.store); err != nil {
+	if err := sass.Watch(server.ctx, server.dir); err != nil {
 		stop()
 		return err
 	}
 
-	if err := js.Watch(server.ctx, server.dir, server.store); err != nil {
+	if err := js.Watch(server.ctx, server.dir); err != nil {
 		stop()
 		return err
 	}
 
-	cms.Init(server.store)
 	analytics.Init()
-	server.setupRouter()
+	server.setupRouter(dir)
 	<-server.startServer(server.router, stop)
 	return nil
 }
 
-func (server *Server) setupRouter() {
+func (server *Server) setupRouter(dir string) {
 	router := chi.NewRouter()
 	router.Use(
 		middleware.Cors(),
@@ -183,7 +165,7 @@ func (server *Server) setupRouter() {
 
 	server.Sitemap.Serve(router)
 	server.serveRobotsTxt(router)
-	server.serveStaticDir(router)
+	server.serveStaticDir(router, dir)
 	router.HandleFunc("/*", server.Content.Serve)
 	server.router = router
 
@@ -204,22 +186,10 @@ func (server *Server) serveRobotsTxt(router chi.Router) {
 	}))
 }
 
-func (server *Server) serveStaticDir(router chi.Router) {
+func (server *Server) serveStaticDir(router chi.Router, dir string) {
+	fs := http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join(dir, "static"))))
 	router.Handle("/static/*", gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		data, err := server.store.Read(server.dir + r.URL.Path)
-
-		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
-			return
-		}
-
-		fileType := mime.TypeByExtension(path.Ext(r.URL.Path))
-
-		if fileType != "" {
-			w.Header().Set("Content-Type", fileType)
-		}
-
-		_, _ = w.Write(data)
+		fs.ServeHTTP(w, r)
 	})))
 }
 

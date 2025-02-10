@@ -3,7 +3,6 @@ package js
 import (
 	"context"
 	"github.com/emvi/shifu/pkg/cfg"
-	"github.com/emvi/shifu/pkg/storage"
 	"github.com/fsnotify/fsnotify"
 	"log/slog"
 	"path/filepath"
@@ -11,9 +10,9 @@ import (
 )
 
 // Watch watches the entrypoint JS/TS for changes and recompiles if required.
-func Watch(ctx context.Context, dir string, store storage.Storage) error {
+func Watch(ctx context.Context, dir string) error {
 	if cfg.Get().JS.Entrypoint != "" {
-		Compile(dir, store)
+		Compile(dir)
 
 		if cfg.Get().JS.Watch {
 			watcher, err := fsnotify.NewWatcher()
@@ -36,7 +35,7 @@ func Watch(ctx context.Context, dir string, store storage.Storage) error {
 							ext := strings.ToLower(filepath.Ext(event.Name))
 
 							if ext == ".js" || ext == ".ts" || ext == ".tsx" || ext == ".mts" || ext == ".cts" {
-								Compile(dir, store)
+								Compile(dir)
 							}
 						}
 					case <-ctx.Done():
