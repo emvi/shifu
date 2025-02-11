@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/emvi/shifu/pkg/analytics"
+	"github.com/emvi/shifu/pkg/api"
 	"github.com/emvi/shifu/pkg/cfg"
 	"github.com/emvi/shifu/pkg/cms"
 	"github.com/emvi/shifu/pkg/js"
@@ -43,7 +44,6 @@ type Server struct {
 	Sitemap *sitemap.Sitemap
 
 	router  chi.Router
-	dir     string
 	funcMap template.FuncMap
 	ctx     context.Context
 	cancel  context.CancelFunc
@@ -107,7 +107,6 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		Content: content,
 		Sitemap: sm,
 		router:  options.Router,
-		dir:     dir,
 		funcMap: options.FuncMap,
 		ctx:     ctx,
 		cancel:  cancel,
@@ -117,7 +116,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 // Start starts the Shifu server.
 // The context.CancelFunc is optional and will be called on server shutdown or error if set.
 func (server *Server) Start(cancel context.CancelFunc, dir string) error {
-	slog.Info("Starting Shifu", "version", version, "directory", server.dir)
+	slog.Info("Starting Shifu", "version", version, "directory", cfg.Get().BaseDir)
 	stop := func() {
 		server.cancel()
 
@@ -126,12 +125,12 @@ func (server *Server) Start(cancel context.CancelFunc, dir string) error {
 		}
 	}
 
-	if err := sass.Watch(server.ctx, server.dir); err != nil {
+	if err := sass.Watch(server.ctx); err != nil {
 		stop()
 		return err
 	}
 
-	if err := js.Watch(server.ctx, server.dir); err != nil {
+	if err := js.Watch(server.ctx); err != nil {
 		stop()
 		return err
 	}
@@ -163,6 +162,10 @@ func (server *Server) setupRouter(dir string) {
 		}
 	}
 
+	if cfg.Get().API.Secret != "" {
+		server.serveAPI(router)
+	}
+
 	server.Sitemap.Serve(router)
 	server.serveRobotsTxt(router)
 	server.serveStaticDir(router, dir)
@@ -172,6 +175,14 @@ func (server *Server) setupRouter(dir string) {
 	for _, route := range router.Routes() {
 		slog.Info("Added route", "route", route.Pattern)
 	}
+}
+
+func (server *Server) serveAPI(router chi.Router) {
+	router.Route("/api/v1", func(r chi.Router) {
+		r.Use(middleware.APISecret)
+		r.Get("/health", func(w http.ResponseWriter, r *http.Request) {})
+		r.Get("/static", api.ListStaticFiles)
+	})
 }
 
 func (server *Server) serveRobotsTxt(router chi.Router) {

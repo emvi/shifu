@@ -22,6 +22,9 @@ const (
 		"secure_cookies": true,
 		"cookie_domain_name": "example.com"
     },
+	"api": {
+		"secret": "foobar"
+	},
 	"git": {
 	    "update_seconds": 600,
 		"repository": "https//github.com/foo/bar"
@@ -83,6 +86,7 @@ func TestLoadConfig(t *testing.T) {
 	assert.Equal(t, "example.com", cfg.Server.Hostname)
 	assert.True(t, cfg.Server.SecureCookies)
 	assert.Equal(t, "example.com", cfg.Server.CookieDomainName)
+	assert.Equal(t, "foobar", cfg.API.Secret)
 	assert.Equal(t, 600, cfg.Git.UpdateSeconds)
 	assert.Equal(t, "https//github.com/foo/bar", cfg.Git.Repository)
 	assert.Equal(t, "git", cfg.Content.Provider)

@@ -10,8 +10,9 @@ import (
 )
 
 // Watch watches the entrypoint JS/TS for changes and recompiles if required.
-func Watch(ctx context.Context, dir string) error {
+func Watch(ctx context.Context) error {
 	if cfg.Get().JS.Entrypoint != "" {
+		dir := cfg.Get().BaseDir
 		Compile(dir)
 
 		if cfg.Get().JS.Watch {
