@@ -55,13 +55,51 @@ func pullContent() error {
 		return err
 	}
 
+	remoteFiles, err := getRemoteContentFiles()
+
+	if err != nil {
+		return err
+	}
+
+	localFiles := content.List()
+	download := make([]string, 0)
+
+	for i, remoteFile := range remoteFiles {
+		found := false
+
+		for j, localFile := range localFiles {
+			if remoteFile.Path == localFile.Path {
+				if remoteFiles[i].LastModified.After(localFiles[j].LastModified) {
+					download = append(download, remoteFile.Path)
+				}
+
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			download = append(download, remoteFile.Path)
+		}
+	}
+
+	for _, path := range download {
+		if err := downloadContentFile(path); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func getRemoteContentFiles() ([]content.File, error) {
 	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/v1/content", cfg.Get().Remote.URL), nil)
 	req.Header.Set("Authorization", fmt.Sprintf("Key %s", cfg.Get().Remote.Secret))
 	resp, err := http.DefaultClient.Do(req)
 
 	if err != nil {
 		slog.Error("Error listing remote content files", "error", err)
-		return err
+		return nil, err
 	}
 
 	defer func() {
@@ -72,14 +110,14 @@ func pullContent() error {
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("Error listing remote content files", "error", err, "status", resp.StatusCode)
-		return errors.New("error listing remote content files")
+		return nil, errors.New("error listing remote content files")
 	}
 
 	body, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		slog.Error("Error reading content response body", "error", err)
-		return err
+		return nil, err
 	}
 
 	var remoteFiles struct {
@@ -88,42 +126,14 @@ func pullContent() error {
 
 	if err := json.Unmarshal(body, &remoteFiles); err != nil {
 		slog.Error("Error unmarshalling remote content files", "error", err)
-		return err
+		return nil, err
 	}
 
 	for i := range remoteFiles.Files {
 		remoteFiles.Files[i].Path = strings.TrimPrefix(remoteFiles.Files[i].Path, "/")
 	}
 
-	localFiles := content.List()
-	update := make([]string, 0)
-
-	for i, remoteFile := range remoteFiles.Files {
-		found := false
-
-		for j, localFile := range localFiles {
-			if remoteFile.Path == localFile.Path {
-				if remoteFiles.Files[i].LastModified.After(localFiles[j].LastModified) {
-					update = append(update, remoteFile.Path)
-				}
-
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			update = append(update, remoteFile.Path)
-		}
-	}
-
-	for _, path := range update {
-		if err := downloadContentFile(path); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return remoteFiles.Files, nil
 }
 
 func downloadContentFile(path string) error {
@@ -179,13 +189,51 @@ func pullStatic() error {
 		return err
 	}
 
+	remoteFiles, err := getRemoteStaticFiles()
+
+	if err != nil {
+		return err
+	}
+
+	localFiles := static.List()
+	download := make([]string, 0)
+
+	for i, remoteFile := range remoteFiles {
+		found := false
+
+		for j, localFile := range localFiles {
+			if remoteFile.Path == localFile.Path {
+				if remoteFiles[i].LastModified.After(localFiles[j].LastModified) {
+					download = append(download, remoteFile.Path)
+				}
+
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			download = append(download, remoteFile.Path)
+		}
+	}
+
+	for _, path := range download {
+		if err := downloadStaticFile(path); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func getRemoteStaticFiles() ([]static.File, error) {
 	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/v1/static", cfg.Get().Remote.URL), nil)
 	req.Header.Set("Authorization", fmt.Sprintf("Key %s", cfg.Get().Remote.Secret))
 	resp, err := http.DefaultClient.Do(req)
 
 	if err != nil {
 		slog.Error("Error listing remote static files", "error", err)
-		return err
+		return nil, err
 	}
 
 	defer func() {
@@ -196,14 +244,14 @@ func pullStatic() error {
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("Error listing remote static files", "error", err, "status", resp.StatusCode)
-		return errors.New("error listing remote static files")
+		return nil, errors.New("error listing remote static files")
 	}
 
 	body, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		slog.Error("Error reading static response body", "error", err)
-		return err
+		return nil, err
 	}
 
 	var remoteFiles struct {
@@ -212,42 +260,14 @@ func pullStatic() error {
 
 	if err := json.Unmarshal(body, &remoteFiles); err != nil {
 		slog.Error("Error unmarshalling remote static files", "error", err)
-		return err
+		return nil, err
 	}
 
 	for i := range remoteFiles.Files {
 		remoteFiles.Files[i].Path = strings.TrimPrefix(remoteFiles.Files[i].Path, "/")
 	}
 
-	localFiles := static.List()
-	update := make([]string, 0)
-
-	for i, remoteFile := range remoteFiles.Files {
-		found := false
-
-		for j, localFile := range localFiles {
-			if remoteFile.Path == localFile.Path {
-				if remoteFiles.Files[i].LastModified.After(localFiles[j].LastModified) {
-					update = append(update, remoteFile.Path)
-				}
-
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			update = append(update, remoteFile.Path)
-		}
-	}
-
-	for _, path := range update {
-		if err := downloadStaticFile(path); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return remoteFiles.Files, nil
 }
 
 func downloadStaticFile(path string) error {

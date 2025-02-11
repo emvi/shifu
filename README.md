@@ -24,6 +24,7 @@ Shifu can also be used as a library in your Go application to add template funct
 * Custom Golang handlers for advanced functionality
 * Simple configuration and easy deployment
 * Standalone server or library
+* Push/Pull files to/from a remote server
 
 ## Installation and Setup
 
@@ -32,9 +33,11 @@ Move the binary to a directory in your $PATH (like `/usr/local/bin`).
 For Sass, you need to install the `sass` command globally (`sudo npm i -g sass`).
 After that you can run Shifu from the command line with the `shifu` command.
 
-* `shifu run <path>` will run Shifu in the given directory.
-* `shifu init <path>` will initialize a new project in the given directory.
-* `shifu version` will print the version number of Shifu.
+* `shifu run <path>` will run Shifu in the given directory
+* `shifu init <path>` will initialize a new project in the given directory
+* `shifu version` will print the version number of Shifu
+* `shifu pull` will pull changed `static` and `content` files from a remote server if configured
+* `shifu push` will push changed `static` and `content` files to a remote server if configured
 
 systemd sample configuration:
 
@@ -83,6 +86,15 @@ Below is the entire configuration. Keys starting with `_` are comments.
         "hostname": "example.com",
         "secure_cookies": true,
         "cookie_domain_name": "example.com"
+    },
+    "_api": "Enables the API",
+    "api": {
+        "secret": "secret"
+    },
+    "_remote": "Configures a remote server for synchronization (push/pull) using the API secret",
+    "remote": {
+        "url": "https://example.com",
+        "secret": "secret"
     },
     "_git": "Pulls files from a Git repository regularly",
     "git": {

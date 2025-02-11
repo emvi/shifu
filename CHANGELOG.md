@@ -2,6 +2,7 @@
 
 ## 0.12.0
 
+* added local and remote file synchronization
 * improved configuration format
 * added secrets configuration
 * removed auto-updates for configuration (wasn't really useful)

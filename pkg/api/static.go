@@ -1,7 +1,9 @@
 package api
 
 import (
+	"errors"
 	"github.com/emvi/shifu/pkg/static"
+	"io"
 	"net/http"
 )
 
@@ -12,4 +14,18 @@ func ListStaticFiles(w http.ResponseWriter, _ *http.Request) {
 	}{
 		Files: static.List(),
 	})
+}
+
+// PutStaticFile uploads a static file.
+func PutStaticFile(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Query().Get("path")
+	body, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		sendError(w, errors.New("error reading request body"))
+	}
+
+	if err := static.Put(path, body); err != nil {
+		sendError(w, err)
+	}
 }
