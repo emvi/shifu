@@ -53,7 +53,7 @@ func pushContent() error {
 
 		for j, remoteFile := range remoteFiles {
 			if remoteFile.Path == localFile.Path {
-				if remoteFiles[i].LastModified.Before(localFiles[j].LastModified) {
+				if remoteFiles[j].LastModified.Before(localFiles[i].LastModified) {
 					upload = append(upload, localFile.Path)
 				}
 
@@ -121,7 +121,7 @@ func pushStatic() error {
 
 		for j, remoteFile := range remoteFiles {
 			if remoteFile.Path == localFile.Path {
-				if remoteFiles[i].LastModified.Before(localFiles[j].LastModified) {
+				if remoteFiles[j].LastModified.Before(localFiles[i].LastModified) {
 					upload = append(upload, localFile.Path)
 				}
 
