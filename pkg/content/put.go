@@ -11,15 +11,14 @@ import (
 
 // Put uploads a content file.
 func Put(path string, content []byte) error {
+	path = strings.TrimPrefix(path, "/")
+	path = strings.TrimPrefix(path, "content")
 	dir := cfg.Get().BaseDir
 
-	if err := os.MkdirAll(filepath.Join(dir, "content"), 0744); err != nil {
+	if err := os.MkdirAll(filepath.Join(dir, "content", filepath.Dir(path)), 0744); err != nil {
 		slog.Error("Error creating content directory", "error", err)
 		return errors.New("error creating content directory")
 	}
-
-	path = strings.TrimPrefix(path, "/")
-	path = strings.TrimPrefix(path, "content")
 
 	if err := os.WriteFile(filepath.Join(dir, "content", path), content, 0644); err != nil {
 		slog.Error("Error writing content file", "error", err)

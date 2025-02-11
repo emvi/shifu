@@ -15,4 +15,6 @@ func TestPut(t *testing.T) {
 	content, err := os.ReadFile("content/test.json")
 	assert.NoError(t, err)
 	assert.Equal(t, `{"foo":"bar"}`, string(content))
+	assert.NoError(t, Put("/content/sub/test.json", []byte("{}")))
+	assert.FileExists(t, "content/sub/test.json")
 }

@@ -15,4 +15,6 @@ func TestPut(t *testing.T) {
 	content, err := os.ReadFile("static/test.txt")
 	assert.NoError(t, err)
 	assert.Equal(t, "Hello world!", string(content))
+	assert.NoError(t, Put("/static/sub/test.txt", []byte("Hello world!")))
+	assert.FileExists(t, "static/sub/test.txt")
 }
