@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bufio"
 	shifu "github.com/emvi/shifu/pkg"
+	"github.com/emvi/shifu/pkg/sync"
+	"log"
 	"log/slog"
 	"os"
 	"strings"
@@ -39,13 +42,47 @@ func main() {
 		if err := server.Start(nil, dir); err != nil {
 			slog.Error("Error starting Shifu", "error", err)
 		}
+
+		break
 	case "init":
 		if err := shifu.Init(dir); err != nil {
 			slog.Error("Error initializing new Shifu project", "error", err)
 		}
+		break
 	case "version":
 		slog.Info("Shifu version", "version", shifu.Version())
+		break
+	case "pull":
+		log.Print("Are you sure you would like to overwrite local files? [Y]es/[N]o: ")
+		reader := bufio.NewReader(os.Stdin)
+		confirm, _ := reader.ReadString('\n')
+		confirm = strings.ToLower(confirm)
+
+		if confirm != "yes\n" && confirm != "y\n" {
+			return
+		}
+
+		if err := sync.Pull(dir); err != nil {
+			slog.Error("Error pulling changes", "error", err)
+		}
+
+		break
+	case "push":
+		log.Print("Are you sure you would like to overwrite remote files? [Y]es/[N]o: ")
+		reader := bufio.NewReader(os.Stdin)
+		confirm, _ := reader.ReadString('\n')
+		confirm = strings.ToLower(confirm)
+
+		if confirm != "yes\n" && confirm != "y\n" {
+			return
+		}
+
+		if err := sync.Push(dir); err != nil {
+			slog.Error("Error pushing changes", "error", err)
+		}
+
+		break
 	default:
-		slog.Info("Command unknown. Usage: shifu run|init|version <path>")
+		slog.Info("Command unknown. Usage: shifu run|init|version|pull|push <path>")
 	}
 }

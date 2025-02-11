@@ -46,7 +46,7 @@ func TestWatch(t *testing.T) {
 	cfg.Get().JS.Out = filepath.Join(outDir, "bundle.js")
 	cfg.Get().JS.Watch = true
 	ctx, cancel := context.WithCancel(context.Background())
-	assert.NoError(t, Watch(ctx, ""))
+	assert.NoError(t, Watch(ctx))
 	time.Sleep(time.Millisecond * 10)
 	assert.FileExists(t, out)
 	content, err := os.ReadFile(out)

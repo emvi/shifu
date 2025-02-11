@@ -1,0 +1,30 @@
+* {
+  box-sizing: border-box;
+  font-family: sans-serif;
+  line-height: 1.5;
+}
+
+body {
+  padding: 40px;
+}
+
+section {
+  max-width: 640px;
+  margin: 20px auto;
+}
+
+h1 {
+  font-size: 32px;
+}
+
+a {
+  color: blue;
+  text-decoration: none;
+}
+
+.img {
+  img {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+}

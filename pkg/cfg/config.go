@@ -27,6 +27,8 @@ type Config struct {
 	Dev       bool      `json:"dev"`
 	LogLevel  string    `json:"log_level"`
 	Server    Server    `json:"server"`
+	API       API       `json:"api"`
+	Remote    Remote    `json:"remote"`
 	Git       Git       `json:"git"`
 	Content   Content   `json:"content"`
 	CORS      CORS      `json:"cors"`
@@ -47,6 +49,17 @@ type Server struct {
 	Hostname         string `json:"hostname"`
 	SecureCookies    bool   `json:"secure_cookies"`
 	CookieDomainName string `json:"cookie_domain_name"`
+}
+
+// API is the server API configuration.
+type API struct {
+	Secret string `json:"secret"`
+}
+
+// Remote is the configuration for a remote Shifu server.
+type Remote struct {
+	URL    string `json:"url"`
+	Secret string `json:"secret"`
 }
 
 // Git is the Git repository configuration for auto-updates.

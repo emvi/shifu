@@ -46,7 +46,7 @@ func TestWatchSass(t *testing.T) {
 	cfg.Get().Sass.Out = filepath.Join(outDir, "test.css")
 	cfg.Get().Sass.Watch = true
 	ctx, cancel := context.WithCancel(context.Background())
-	assert.NoError(t, Watch(ctx, ""))
+	assert.NoError(t, Watch(ctx))
 	time.Sleep(time.Millisecond * 100)
 	assert.FileExists(t, out)
 	content, err := os.ReadFile(out)

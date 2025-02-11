@@ -1,0 +1,30 @@
+package content
+
+import (
+	"errors"
+	"github.com/emvi/shifu/pkg/cfg"
+	"log/slog"
+	"os"
+	"path/filepath"
+	"strings"
+)
+
+// Put uploads a content file.
+func Put(path string, content []byte) error {
+	dir := cfg.Get().BaseDir
+
+	if err := os.MkdirAll(filepath.Join(dir, "content"), 0744); err != nil {
+		slog.Error("Error creating content directory", "error", err)
+		return errors.New("error creating content directory")
+	}
+
+	path = strings.TrimPrefix(path, "/")
+	path = strings.TrimPrefix(path, "content")
+
+	if err := os.WriteFile(filepath.Join(dir, "content", path), content, 0644); err != nil {
+		slog.Error("Error writing content file", "error", err)
+		return errors.New("error writing file")
+	}
+
+	return nil
+}
