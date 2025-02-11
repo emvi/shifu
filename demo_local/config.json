@@ -3,9 +3,10 @@
     "log_level": "debug",
     "server": {
         "host": "localhost",
-        "port": 8080
+        "port": 8081
     },
-    "api": {
+    "remote": {
+        "url": "http://localhost:8080",
         "secret": "${API_SECRET}"
     },
     "content": {

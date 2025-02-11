@@ -153,7 +153,6 @@ The directory structure is as follows:
 | content/  | Recursive content files in JSON format.              |
 | static/   | Static content (will be served as is on `/static/`). |
 | tpl/      | Recursive Golang template files.                     |
-| tmp/      | For temporary files.                                 |
 
 The JSON structure for a content file is as follows:
 
