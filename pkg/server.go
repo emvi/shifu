@@ -180,9 +180,10 @@ func (server *Server) setupRouter(dir string) {
 func (server *Server) serveAPI(router chi.Router) {
 	router.Route("/api/v1", func(r chi.Router) {
 		r.Use(middleware.APISecret)
-		r.Get("/health", func(w http.ResponseWriter, r *http.Request) {})
+		r.Get("/health", func(http.ResponseWriter, *http.Request) {})
 		r.Get("/static", api.ListStaticFiles)
 		r.Put("/static", api.PutStaticFile)
+		r.Get("/cms", func(http.ResponseWriter, *http.Request) { server.Content.Update() })
 		r.Get("/content", api.ListContentFiles)
 		r.Get("/content/file", api.GetContentFile)
 		r.Put("/content/file", api.PutContentFile)

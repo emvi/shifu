@@ -33,8 +33,8 @@ func NewGit(dir, repository string, updateSeconds int) *Git {
 	return provider
 }
 
-// Update implements the Provider interface.
-func (provider *Git) Update(ctx context.Context, update func()) {
+// Watch implements the Provider interface.
+func (provider *Git) Watch(ctx context.Context, update func()) {
 	if provider.repository != "" {
 		go func() {
 			timerDuration := time.Second * time.Duration(provider.updateSeconds)
@@ -46,12 +46,7 @@ func (provider *Git) Update(ctx context.Context, update func()) {
 
 				select {
 				case <-timer.C:
-					if provider.pullGitRepo() {
-						provider.m.Lock()
-						update()
-						provider.lastUpdate = time.Now().UTC()
-						provider.m.Unlock()
-					}
+					provider.Update(update)
 				case <-ctx.Done():
 					return
 				}
@@ -60,6 +55,15 @@ func (provider *Git) Update(ctx context.Context, update func()) {
 	}
 
 	update()
+}
+
+// Update implements the Provider interface.
+func (provider *Git) Update(update func()) {
+	provider.pullGitRepo()
+	provider.m.Lock()
+	update()
+	provider.lastUpdate = time.Now().UTC()
+	provider.m.Unlock()
 }
 
 // LastUpdate implements the Provider interface.

@@ -26,8 +26,8 @@ func NewFileSystem(dir string, updateSeconds int) *FileSystem {
 	}
 }
 
-// Update implements the Provider interface.
-func (provider *FileSystem) Update(ctx context.Context, update func()) {
+// Watch implements the Provider interface.
+func (provider *FileSystem) Watch(ctx context.Context, update func()) {
 	go func() {
 		timerDuration := time.Second * time.Duration(provider.updateSeconds)
 		timer := time.NewTimer(timerDuration)
@@ -38,10 +38,7 @@ func (provider *FileSystem) Update(ctx context.Context, update func()) {
 
 			select {
 			case <-timer.C:
-				provider.m.Lock()
-				update()
-				provider.lastUpdate = time.Now().UTC()
-				provider.m.Unlock()
+				provider.Update(update)
 			case <-ctx.Done():
 				return
 			}
@@ -49,6 +46,14 @@ func (provider *FileSystem) Update(ctx context.Context, update func()) {
 	}()
 
 	update()
+}
+
+// Update implements the Provider interface.
+func (provider *FileSystem) Update(update func()) {
+	provider.m.Lock()
+	update()
+	provider.lastUpdate = time.Now().UTC()
+	provider.m.Unlock()
 }
 
 // LastUpdate implements the Provider interface.

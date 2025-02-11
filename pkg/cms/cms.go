@@ -74,7 +74,7 @@ func NewCMS(options Options) *CMS {
 		pageCache:       make(map[string][]byte),
 	}
 	cms.tpl = NewCache(filepath.Join(options.BaseDir, "tpl"), options.FuncMap, options.HotReload)
-	cms.source.Update(options.Ctx, func() {
+	cms.source.Watch(options.Ctx, func() {
 		slog.Info("Updating website templates, content, and sitemap...")
 		cms.tpl.Clear()
 		cms.updateContent()
@@ -206,6 +206,18 @@ func (cms *CMS) SetHandler(name string, handler Handler) {
 	cms.m.Lock()
 	defer cms.m.Unlock()
 	cms.handler[name] = handler
+}
+
+// Update updates the templates, content, and sitemap.
+func (cms *CMS) Update() {
+	slog.Info("Updating CMS")
+	cms.source.Update(func() {
+		slog.Info("Updating website templates, content, and sitemap...")
+		cms.tpl.Clear()
+		cms.updateContent()
+		cms.sitemap.Update()
+		slog.Info("Done updating website templates, content, and sitemap")
+	})
 }
 
 // LastUpdate returns the time the website data has last been updated.

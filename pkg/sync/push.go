@@ -33,6 +33,10 @@ func Push(dir string) error {
 		return err
 	}
 
+	if err := updateContent(); err != nil {
+		return err
+	}
+
 	slog.Info("Done")
 	return nil
 }
@@ -168,6 +172,31 @@ func uploadStaticFile(path string) error {
 
 	if resp.StatusCode != http.StatusOK {
 		return errors.New("error uploading file")
+	}
+
+	return nil
+}
+
+func updateContent() error {
+	slog.Info("Updating remote content")
+	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/v1/cms", cfg.Get().Remote.URL), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Key %s", cfg.Get().Remote.Secret))
+	resp, err := http.DefaultClient.Do(req)
+
+	if err != nil {
+		slog.Error("Error updating remote content", "error", err)
+		return err
+	}
+
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			slog.Warn("Error closing content update response body", "error", err)
+		}
+	}()
+
+	if resp.StatusCode != http.StatusOK {
+		slog.Error("Error updating remote content", "error", err, "status", resp.StatusCode)
+		return errors.New("error updating remote content")
 	}
 
 	return nil
