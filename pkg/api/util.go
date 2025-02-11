@@ -23,3 +23,11 @@ func sendJSON(w http.ResponseWriter, v any) {
 		slog.Error("Error writing response", "error", err)
 	}
 }
+
+func sendError(w http.ResponseWriter, err error) {
+	sendJSON(w, struct {
+		Error string `json:"error"`
+	}{
+		Error: err.Error(),
+	})
+}

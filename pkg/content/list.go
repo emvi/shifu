@@ -1,4 +1,4 @@
-package static
+package content
 
 import (
 	"github.com/emvi/shifu/pkg/cfg"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// File is a static file.
+// File is a content file.
 type File struct {
 	Path         string    `json:"path"`
 	Size         int64     `json:"size"`
@@ -21,8 +21,8 @@ func List() []File {
 	dir := cfg.Get().BaseDir
 	files := make([]File, 0)
 
-	if err := filepath.WalkDir(filepath.Join(dir, "static"), func(path string, d fs.DirEntry, err error) error {
-		if !d.IsDir() && !strings.HasPrefix(filepath.Base(path), ".") {
+	if err := filepath.WalkDir(filepath.Join(dir, "content"), func(path string, d fs.DirEntry, err error) error {
+		if !d.IsDir() && strings.ToLower(filepath.Ext(path)) == ".json" {
 			info, e := d.Info()
 
 			if e != nil {
@@ -38,7 +38,7 @@ func List() []File {
 
 		return err
 	}); err != nil {
-		slog.Error("Error listing static files", "error", err)
+		slog.Error("Error listing content files", "error", err)
 	}
 
 	return files

@@ -182,6 +182,8 @@ func (server *Server) serveAPI(router chi.Router) {
 		r.Use(middleware.APISecret)
 		r.Get("/health", func(w http.ResponseWriter, r *http.Request) {})
 		r.Get("/static", api.ListStaticFiles)
+		r.Get("/content", api.ListContentFiles)
+		r.Get("/content/file", api.GetContentFile)
 	})
 }
 
