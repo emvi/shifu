@@ -39,7 +39,7 @@ func main() {
 			return
 		}
 
-		if err := server.Start(nil, dir); err != nil {
+		if err := server.Start(nil); err != nil {
 			slog.Error("Error starting Shifu", "error", err)
 		}
 

@@ -115,7 +115,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 
 // Start starts the Shifu server.
 // The context.CancelFunc is optional and will be called on server shutdown or error if set.
-func (server *Server) Start(cancel context.CancelFunc, dir string) error {
+func (server *Server) Start(cancel context.CancelFunc) error {
 	slog.Info("Starting Shifu", "version", version, "directory", cfg.Get().BaseDir)
 	stop := func() {
 		server.cancel()
@@ -136,7 +136,7 @@ func (server *Server) Start(cancel context.CancelFunc, dir string) error {
 	}
 
 	analytics.Init()
-	server.setupRouter(dir)
+	server.setupRouter(cfg.Get().BaseDir)
 	<-server.startServer(server.router, stop)
 	return nil
 }

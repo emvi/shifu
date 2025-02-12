@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.13.0
+
+* removed dir parameter from `Server.Start`
+
 ## 0.12.0
 
 * added local and remote file synchronization
