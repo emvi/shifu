@@ -69,7 +69,10 @@ const (
             "X-Forwarded-For",
             "Forwarded"
         ]
-    }
+    },
+	"ui": {
+		"path": "/admin"
+	}
 }
 `
 )
@@ -118,6 +121,7 @@ func TestLoadConfig(t *testing.T) {
 	assert.Len(t, cfg.Analytics.Header, 2)
 	assert.Equal(t, "X-Forwarded-For", cfg.Analytics.Header[0])
 	assert.Equal(t, "Forwarded", cfg.Analytics.Header[1])
+	assert.Equal(t, "/admin", cfg.UI.Path)
 }
 
 func TestLoadConfigNotExists(t *testing.T) {

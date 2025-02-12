@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/emvi/shifu/pkg/admin"
 	"github.com/emvi/shifu/pkg/analytics"
 	"github.com/emvi/shifu/pkg/api"
 	"github.com/emvi/shifu/pkg/cfg"
@@ -117,6 +118,12 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 // The context.CancelFunc is optional and will be called on server shutdown or error if set.
 func (server *Server) Start(cancel context.CancelFunc) error {
 	slog.Info("Starting Shifu", "version", version, "directory", cfg.Get().BaseDir)
+
+	if cfg.Get().UI.Path != "" {
+		admin.Connect()
+		defer admin.Disconnect()
+	}
+
 	stop := func() {
 		server.cancel()
 
@@ -166,6 +173,10 @@ func (server *Server) setupRouter(dir string) {
 		server.serveAPI(router)
 	}
 
+	if cfg.Get().UI.Path != "" {
+		server.serveUI(router)
+	}
+
 	server.Sitemap.Serve(router)
 	server.serveRobotsTxt(router)
 	server.serveStaticDir(router, dir)
@@ -178,6 +189,7 @@ func (server *Server) setupRouter(dir string) {
 }
 
 func (server *Server) serveAPI(router chi.Router) {
+	slog.Info("Serving API", "path", "/api/v1")
 	router.Route("/api/v1", func(r chi.Router) {
 		r.Use(middleware.APISecret)
 		r.Get("/health", func(http.ResponseWriter, *http.Request) {})
@@ -188,6 +200,14 @@ func (server *Server) serveAPI(router chi.Router) {
 		r.Get("/content/file", api.GetContentFile)
 		r.Put("/content/file", api.PutContentFile)
 	})
+}
+
+func (server *Server) serveUI(router chi.Router) {
+	slog.Info("Serving admin UI", "path", cfg.Get().UI.Path)
+	router.Route(cfg.Get().UI.Path, func(r chi.Router) {
+		// TODO session middleware and endpoints
+	})
+	router.Get(cfg.Get().UI.Path, admin.Login)
 }
 
 func (server *Server) serveRobotsTxt(router chi.Router) {

@@ -28,5 +28,8 @@
         "out": "static/bundle.js",
         "source_map": true,
         "watch": true
+    },
+    "ui": {
+        "path": "/admin"
     }
 }
