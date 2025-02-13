@@ -7,17 +7,42 @@
     <meta name="copyright" content="Emvi Software GmbH" />
     <meta name="author" content="Emvi Software GmbH" />
     <meta name="title" content="Shifu Login" />
-    <meta name="description" content="" />
-    <link rel="stylesheet" type="text/css" href="/admin/static/admin.css" />
+    <meta name="description" content="Shifu CMS Admin Login." />
+    <!-- TODO -->
     <!--<link rel="mask-icon" href="/static/img/favicon/safari-pinned-tab.svg" color="#0a0a0a" />
     <link rel="apple-touch-icon" sizes="180x180" href="/static/img/favicon/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon/favicon-16x16.png" />
     <link rel="manifest" href="/static/img/favicon/site.webmanifest" />-->
     <title>Shifu Login</title>
-    <script src="/admin/static/admin.js"></script>
+    <link rel="stylesheet" type="text/css" href="/admin/static/admin.css" />
+    <script defer src="/admin/static/htmx.min.js"></script>
+    <script defer src="/admin/static/admin.js"></script>
 </head>
-<body>
+<body style="display: flex;justify-content: center;align-items: center;">
+    <div class="shifu shifu-box" style="min-width: 260px;">
+        <div class="shifu-box-title">Login</div>
+        <div class="shifu-box-content">
+            <form>
+                <fieldset>
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" />
+                </fieldset>
+                <fieldset>
+                    <label for="password">Passwort</label>
+                    <input type="password" name="password" id="password" />
+                </fieldset>
+                <div style="display: flex;justify-content: flex-end;">
+                    <input type="submit" value="Anmelden" />
+                </div>
+            </form>
+            <hr />
+            <p style="text-align: center;font-size: 10px;">
+                &copy; {{year}} Emvi Software GmbH<br />
+                Alle Rechte vorbehalten.<br />
+                <a href="https://emvi.com" target="_blank">Website</a>
+            </p>
+        </div>
+    </div>
 </body>
-    <h1>TODO</h1>
 </html>

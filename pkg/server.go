@@ -214,6 +214,7 @@ func (server *Server) serveUI(router chi.Router) {
 		fs.ServeHTTP(w, r)
 	})))
 	router.Get(path, admin.Login)
+	router.Post(path, admin.Login)
 }
 
 func (server *Server) serveRobotsTxt(router chi.Router) {

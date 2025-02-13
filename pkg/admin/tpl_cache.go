@@ -31,8 +31,7 @@ func (cache *cache) execute(w http.ResponseWriter, name string, data any) {
 }
 
 func (cache *cache) loadTemplate() error {
-	// TODO .Funcs(cache.funcMap)
-	t := template.New("")
+	t := template.New("").Funcs(funcMap)
 
 	if err := fs.WalkDir(static.AdminTpl, "admin/tpl", func(path string, info fs.DirEntry, err error) error {
 		if !info.IsDir() && strings.Contains(path, ".html") {
