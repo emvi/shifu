@@ -20,22 +20,10 @@
     <script defer src="/admin/static/admin.js"></script>
 </head>
 <body style="display: flex;justify-content: center;align-items: center;">
-    <div class="shifu shifu-box" style="min-width: 260px;">
+    <div class="shifu shifu-box" style="width: 260px;">
         <div class="shifu-box-title">Login</div>
         <div class="shifu-box-content">
-            <form>
-                <fieldset>
-                    <label for="email">Email</label>
-                    <input type="email" name="email" id="email" />
-                </fieldset>
-                <fieldset>
-                    <label for="password">Passwort</label>
-                    <input type="password" name="password" id="password" />
-                </fieldset>
-                <div style="display: flex;justify-content: flex-end;">
-                    <input type="submit" value="Anmelden" />
-                </div>
-            </form>
+            {{template "login-form.html" .}}
             <hr />
             <p style="text-align: center;font-size: 10px;">
                 &copy; {{year}} Emvi Software GmbH<br />

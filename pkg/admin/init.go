@@ -1,9 +1,11 @@
 package admin
 
+import template "github.com/emvi/shifu/pkg/admin/tpl"
+
 var (
-	tpl *cache
+	tpl *template.Cache
 )
 
 func init() {
-	tpl = newCache()
+	tpl = template.NewCache()
 }
