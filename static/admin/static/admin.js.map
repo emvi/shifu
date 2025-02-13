@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../assets/js/main.js"],
+  "sourcesContent": ["console.log(\"Admin\");\n"],
+  "mappings": "MAAA,QAAQ,IAAI,OAAO",
+  "names": []
+}

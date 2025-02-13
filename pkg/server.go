@@ -14,6 +14,7 @@ import (
 	"github.com/emvi/shifu/pkg/sass"
 	"github.com/emvi/shifu/pkg/sitemap"
 	"github.com/emvi/shifu/pkg/source"
+	"github.com/emvi/shifu/static"
 	"github.com/go-chi/chi/v5"
 	"github.com/klauspost/compress/gzhttp"
 	"html/template"
@@ -203,11 +204,16 @@ func (server *Server) serveAPI(router chi.Router) {
 }
 
 func (server *Server) serveUI(router chi.Router) {
-	slog.Info("Serving admin UI", "path", cfg.Get().UI.Path)
-	router.Route(cfg.Get().UI.Path, func(r chi.Router) {
+	path := cfg.Get().UI.Path
+	slog.Info("Serving admin UI", "path", path)
+	router.Route(path, func(r chi.Router) {
 		// TODO session middleware and endpoints
 	})
-	router.Get(cfg.Get().UI.Path, admin.Login)
+	fs := http.FileServerFS(static.AdminStatic)
+	router.Handle(fmt.Sprintf("%s/static/*", path), gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fs.ServeHTTP(w, r)
+	})))
+	router.Get(path, admin.Login)
 }
 
 func (server *Server) serveRobotsTxt(router chi.Router) {

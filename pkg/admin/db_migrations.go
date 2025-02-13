@@ -9,7 +9,7 @@ var migrations = []string{
 
 CREATE TABLE "user" (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email VARCHAR(320) NOT NULL,
+    email VARCHAR(320) NOT NULL UNIQUE,
     password VARCHAR(60) NOT NULL,
 	password_salt VARCHAR(20) NOT NULL,
 	full_name VARCHAR(100) NOT NULL
@@ -18,7 +18,7 @@ CREATE TABLE "user" (
 CREATE TABLE "session" (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id int NOT NULL REFERENCES "user" (id),
-	session VARCHAR(40) NOT NULL,
+	session VARCHAR(40) NOT NULL UNIQUE,
 	expires timestamp NOT NULL
 );`,
 }

@@ -22,7 +22,7 @@ type Cache struct {
 }
 
 // NewCache creates a new template cache for given directory and function map.
-// disable is used to disable the cache for testing.
+// Disable is used to disable the cache for testing.
 func NewCache(dir string, funcMap template.FuncMap, disable bool) *Cache {
 	cache := &Cache{
 		funcMap:  funcMap,
@@ -82,7 +82,7 @@ func (cache *Cache) loadTemplate() error {
 	t := template.New("").Funcs(cache.funcMap)
 
 	if err := filepath.Walk(cache.dir, func(path string, info os.FileInfo, err error) error {
-		if strings.Contains(path, ".html") {
+		if !info.IsDir() && strings.Contains(path, ".html") {
 			if _, err = t.ParseFiles(path); err != nil {
 				return err
 			}

@@ -1,7 +1,7 @@
 .PHONY: demo deps test build_mac build_windows build_linux init
 
 demo:
-	go run cmd/shifu/main.go run demo
+	modd
 
 deps:
 	go get -u -t ./...
