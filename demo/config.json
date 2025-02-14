@@ -30,6 +30,7 @@
         "watch": true
     },
     "ui": {
-        "path": "/admin"
+        "path": "/admin",
+        "admin_password": "${ADMIN_PASSWORD}"
     }
 }

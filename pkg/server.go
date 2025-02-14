@@ -209,6 +209,7 @@ func (server *Server) serveUI(router chi.Router) {
 	router.Route(path, func(r chi.Router) {
 		r.Use(admin.Auth)
 		r.Get("/toolbar", admin.Toolbar)
+		r.Get("/logout", admin.Logout)
 	})
 	fs := http.FileServerFS(static.AdminStatic)
 	router.Handle(fmt.Sprintf("%s/static/*", path), gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

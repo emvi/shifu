@@ -12,7 +12,7 @@ var db *sqlx.DB
 
 // Connect connects to SQLite.
 func Connect() {
-	path := filepath.Join(cfg.Get().BaseDir, "admin.db")
+	path := filepath.Join(cfg.Get().BaseDir, "shifu.db")
 	slog.Info("Connecting to database", "path", path)
 	var err error
 	db, err = sqlx.Open("sqlite3", path)

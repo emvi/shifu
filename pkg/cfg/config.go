@@ -110,7 +110,8 @@ type Analytics struct {
 
 // UI configures the admin user interface.
 type UI struct {
-	Path string `json:"path"`
+	Path          string `json:"path"`
+	AdminPassword string `json:"admin_password"`
 }
 
 // Load loads the configuration from config.json.
