@@ -5,6 +5,7 @@ import (
 	"github.com/emvi/shifu/pkg/cfg"
 	"log/slog"
 	"net/http"
+	"time"
 )
 
 type LoginForm struct {
@@ -66,6 +67,17 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			days = 7
 		}
 
+		expires := time.Now().Add(time.Hour * 24 * time.Duration(days))
+
+		if _, err := db.Exec(`INSERT INTO "session" (user_id, session, expires) VALUES (?, ?, ?)`, user.ID, session, expires); err != nil {
+			slog.Error("Error storing session", "error", err)
+			tpl.Execute(w, "login-form.html", LoginForm{
+				Email: email,
+				Error: "error creating session",
+			})
+			return
+		}
+
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session",
 			Value:    session,
@@ -73,7 +85,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			Secure:   cfg.Get().Server.SecureCookies,
 			HttpOnly: true,
 			SameSite: http.SameSiteStrictMode,
-			MaxAge:   24 * 60 * 60 * days,
+			Expires:  expires,
 		})
 		w.Header().Add("HX-Redirect", "/")
 		return

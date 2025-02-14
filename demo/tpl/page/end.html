@@ -1,6 +1,4 @@
-{{if loggedIn .Page.Request}}
-    <div hx-get="{{config.UI.Path}}/toolbar" hx-swap="outerHTML"></div>
-{{end}}
+{{adminBody .Page.Request}}
 
 </body>
 </html>
