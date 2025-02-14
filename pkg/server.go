@@ -209,6 +209,10 @@ func (server *Server) serveUI(router chi.Router) {
 	router.Route(path, func(r chi.Router) {
 		r.Use(admin.Auth)
 		r.Get("/toolbar", admin.Toolbar)
+		r.Get("/edit", admin.Edit)
+		r.Get("/pages", admin.Pages)
+		r.Get("/media", admin.Media)
+		r.Get("/database", admin.Database)
 		r.Get("/user", admin.User)
 		r.Get("/logout", admin.Logout)
 	})

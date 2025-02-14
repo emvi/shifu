@@ -47,24 +47,33 @@ body.shifu {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 16px;
+            gap: 64px;
 
-            span {
-                display: inline-block;
+            &-label {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 4px;
                 pointer-events: none;
+
+                svg {
+                    width: 12px;
+                    height: 12px;
+                    fill: #fff;
+                }
             }
 
             &-close {
                 display: flex;
                 align-items: center;
                 height: 100%;
-            }
 
-            svg {
-                width: 16px;
-                height: 16px;
-                fill: #fff;
-                cursor: pointer;
+                svg {
+                    width: 16px;
+                    height: 16px;
+                    fill: #fff;
+                    cursor: pointer;
+                }
             }
         }
 
@@ -78,11 +87,18 @@ body.shifu {
         z-index: 999999;
         top: 5vh;
         left: 5vh;
+        opacity: 0;
+        animation: fadeIn 500ms forwards;
 
         &-title {
             cursor: grab;
             user-select: none;
         }
+    }
+
+    @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
     }
 
     hr {

@@ -1,15 +1,28 @@
 (function() {
-    document.addEventListener("htmx:afterProcessNode", details => {
-        if (details.target.classList.contains("shifu-window")) {
-            const title = details.target.querySelector(".shifu-window-title");
+    document.addEventListener("htmx:beforeRequest", e => {
+        const id = e.target.getAttribute("data-window");
+
+        if (id) {
+            const element = document.getElementById(id);
+
+            if (element) {
+                cleanup(e);
+                element.remove();
+                e.preventDefault();
+            }
+        }
+    });
+    document.addEventListener("htmx:afterProcessNode", e => {
+        if (e.target.classList.contains("shifu-window")) {
+            const title = e.target.querySelector(".shifu-window-title");
 
             if (title) {
-                const settings = localStorage.getItem(details.target.id);
+                const settings = localStorage.getItem(e.target.id);
 
                 if (settings) {
                     const position = JSON.parse(settings);
-                    details.target.style.top = position.top;
-                    details.target.style.left = position.left;
+                    e.target.style.top = position.top;
+                    e.target.style.left = position.left;
                 }
 
                 title.addEventListener("mousedown", startDrag);
@@ -18,10 +31,10 @@
         }
     });
     document.addEventListener("htmx:beforeCleanupElement", cleanup);
-    document.addEventListener("htmx:trigger", details => {
-        if (details.target.classList.contains("shifu-window-title-close")) {
-            cleanup(details);
-            details.target.parentNode.parentNode.remove();
+    document.addEventListener("htmx:trigger", e => {
+        if (e.target.classList.contains("shifu-window-title-close")) {
+            cleanup(e);
+            e.target.parentNode.parentNode.remove();
         }
     });
     window.addEventListener("mousemove", drag);
