@@ -39,6 +39,9 @@ type Content struct {
 	Copy         Copy                 `json:"copy"`
 	Content      map[string][]Content `json:"content"`
 
+	// Request is the HTTP request.
+	Request *http.Request `json:"-"`
+
 	// Language is extracted and set from Path automatically.
 	Language string `json:"-"`
 

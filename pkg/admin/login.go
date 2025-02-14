@@ -2,6 +2,8 @@ package admin
 
 import (
 	"github.com/emvi/shifu/pkg/admin/model"
+	"github.com/emvi/shifu/pkg/cfg"
+	"log/slog"
 	"net/http"
 )
 
@@ -14,6 +16,7 @@ type LoginForm struct {
 func Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		if err := r.ParseForm(); err != nil {
+			slog.Error("Error parsing form", "error", err)
 			tpl.Execute(w, "login-form.html", LoginForm{
 				Error: "error parsing form",
 			})
@@ -22,6 +25,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 		email := r.FormValue("email")
 		password := r.FormValue("password")
+		stayLoggedIn := r.FormValue("stay_logged_in")
 		var user model.User
 
 		if err := db.Get(&user, `SELECT * FROM "user" WHERE email = ?`, email); err != nil {
@@ -40,8 +44,38 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		var session string
+		exists := true
+
+		for exists {
+			session = GenRandomString(40)
+
+			if err := db.Get(&exists, `SELECT EXISTS (SELECT 1 FROM "session" WHERE session = ?)`, session); err != nil {
+				slog.Error("Error reading session", "error", err)
+				tpl.Execute(w, "login-form.html", LoginForm{
+					Email: email,
+					Error: "error creating session",
+				})
+				return
+			}
+		}
+
+		days := 1
+
+		if stayLoggedIn == "on" {
+			days = 7
+		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session",
+			Value:    session,
+			Path:     "/",
+			Secure:   cfg.Get().Server.SecureCookies,
+			HttpOnly: true,
+			SameSite: http.SameSiteStrictMode,
+			MaxAge:   24 * 60 * 60 * days,
+		})
 		w.Header().Add("HX-Redirect", "/")
-		//http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 

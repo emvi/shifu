@@ -11,6 +11,7 @@ import (
 	"html/template"
 	"log/slog"
 	"math/rand/v2"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -39,6 +40,15 @@ var (
 		"gtFloat":       func(a, b float64) bool { return a > b },
 		"ltFloat":       func(a, b float64) bool { return a < b },
 		"html":          func(str string) template.HTML { return template.HTML(str) },
+		"loggedIn": func(r *http.Request) bool {
+			cookie, err := r.Cookie("session")
+
+			if err != nil {
+				return false
+			}
+
+			return cookie.Value != "" && cookie.Expires.Before(time.Now())
+		},
 	}
 )
 

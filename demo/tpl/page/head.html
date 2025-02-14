@@ -21,5 +21,14 @@
     <script src="/static/bundle.js?v={{.CMS.LastUpdate}}"></script>
 
     <title>{{$title}}</title>
+
+    {{if loggedIn .Page.Request}}
+        <link rel="prefetch" href="{{config.UI.Path}}/static/fonts/Inter-Medium.woff2" as="font" type="font/woff2" />
+        <link rel="prefetch" href="{{config.UI.Path}}/static/fonts/Inter-Regular.woff2" as="font" type="font/woff2" />
+        <link rel="prefetch" href="{{config.UI.Path}}/static/fonts/InterDisplay-Medium.woff2" as="font" type="font/woff2" />
+        <link rel="stylesheet" type="text/css" href="/admin/static/admin.css" />
+        <script defer src="/admin/static/htmx.min.js"></script>
+        <script defer src="/admin/static/admin.js"></script>
+    {{end}}
 </head>
 <body>

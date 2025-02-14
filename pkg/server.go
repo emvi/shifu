@@ -207,7 +207,8 @@ func (server *Server) serveUI(router chi.Router) {
 	path := cfg.Get().UI.Path
 	slog.Info("Serving admin UI", "path", path)
 	router.Route(path, func(r chi.Router) {
-		// TODO session middleware and endpoints
+		r.Use(admin.Auth)
+		r.Get("/toolbar", admin.Toolbar)
 	})
 	fs := http.FileServerFS(static.AdminStatic)
 	router.Handle(fmt.Sprintf("%s/static/*", path), gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -1,31 +1,36 @@
 @import "fonts";
 
-*,
-*::before,
-*::after {
-    font-family: inherit;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-html {
+html.shifu {
     font-family: "Inter", "Roboto", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
     scroll-behavior: smooth;
+    box-sizing: border-box;
 }
 
-body {
+body.shifu {
     margin: 0;
     padding: 0;
     font-size: 14px;
     min-height: 100vh;
     background: #b3cde6;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .shifu {
+    *,
+    *::before,
+    *::after {
+        font-family: inherit;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+
     &-box {
         background: #fff;
         border: 1px solid #000;
@@ -57,12 +62,24 @@ body {
         margin: 8px 0;
         padding: 0;
         border-width: 0;
+
+        label {
+            display: block;
+            font-size: 10px;
+            margin: 0 0 2px 0;
+            line-height: 1;
+        }
     }
 
-    label {
-        display: block;
-        font-size: 10px;
-        margin: 0 0 2px 0;
+    fieldset.checkbox {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        label {
+            font-size: 12px;
+            margin: 0;
+        }
     }
 
     input {
@@ -80,6 +97,11 @@ body {
         border-width: 0;
         cursor: pointer;
         padding: 8px 16px;
+    }
+
+    input[type~="checkbox"] {
+        width: auto;
+        margin: 0;
     }
 
     a {

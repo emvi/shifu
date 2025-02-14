@@ -125,6 +125,7 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 
 // RenderPage renders given page and returns it to the client.
 func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, args map[string]string, page *Content) {
+	page.Request = r
 	cms.selectExperiments(w, r, page)
 
 	if cms.redirectExperiment(w, r, page) {
@@ -185,6 +186,7 @@ func (cms *CMS) Render404(w http.ResponseWriter, r *http.Request, path string) {
 	page, args, ok := cms.getPage(cms.getNotFoundPath(r))
 
 	if ok {
+		page.Request = r
 		cms.RenderPage(w, r, path, args, &page)
 	}
 }
