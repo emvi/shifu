@@ -44,6 +44,28 @@ body.shifu {
             padding: 4px;
             font-size: 12px;
             font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+
+            span {
+                display: inline-block;
+                pointer-events: none;
+            }
+
+            &-close {
+                display: flex;
+                align-items: center;
+                height: 100%;
+            }
+
+            svg {
+                width: 16px;
+                height: 16px;
+                fill: #fff;
+                cursor: pointer;
+            }
         }
 
         &-content {
@@ -53,7 +75,7 @@ body.shifu {
 
     &-window {
         position: fixed;
-        z-index: 9999999;
+        z-index: 999999;
         top: 5vh;
         left: 5vh;
 
@@ -132,6 +154,12 @@ body.shifu {
     }
 
     &-toolbar {
+        &-icons {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
         a {
             display: flex;
             justify-content: center;
@@ -139,6 +167,7 @@ body.shifu {
             aspect-ratio: 1;
             border: 1px solid rgba(0, 0, 0, 0.5);
             padding: 8px;
+            cursor: pointer;
 
             svg {
                 width: 16px;
