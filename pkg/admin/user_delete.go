@@ -38,6 +38,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 			ID:         "shifu-user-delete",
 			TitleTpl:   "user-delete-window-title",
 			ContentTpl: "user-delete-window-content",
+			Overlay:    true,
 		},
 		User: user,
 	})

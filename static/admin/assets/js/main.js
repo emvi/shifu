@@ -32,9 +32,15 @@
     });
     document.addEventListener("htmx:beforeCleanupElement", cleanup);
     document.addEventListener("htmx:trigger", e => {
-        if (e.target.classList.contains("shifu-window-title-close")) {
+        if (e.target.classList.contains("shifu-window-close")) {
             cleanup(e);
-            e.target.parentNode.parentNode.remove();
+            let window = e.target;
+
+            while (!window.classList.contains("shifu-window")) {
+                window = window.parentNode;
+            }
+
+            window.remove();
         }
     });
     window.addEventListener("mousemove", drag);

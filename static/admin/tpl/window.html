@@ -1,3 +1,7 @@
+{{if .Data.WindowOptions.Overlay}}
+    <div class="shifu-window-overlay">
+{{end}}
+
 <div id="{{.Data.WindowOptions.ID}}"
     class="shifu shifu-window"
     {{if .Data.WindowOptions.MinWidth}}style="min-width: {{.Data.WindowOptions.MinWidth}}px;"{{end}}>
@@ -5,7 +9,7 @@
         <div class="shifu-window-title-label">
             {{.Tpl.Render .Data.WindowOptions.TitleTpl .}}
         </div>
-        <div class="shifu-window-title-close" hx-trigger="click">
+        <div class="shifu-window-close shifu-window-title-close" hx-trigger="click">
             <img src="{{config.UI.Path}}/static/icons/close.svg" alt="Close" />
         </div>
     </div>
@@ -13,3 +17,7 @@
         {{.Tpl.Render .Data.WindowOptions.ContentTpl .}}
     </div>
 </div>
+
+{{if .Data.WindowOptions.Overlay}}
+    </div>
+{{end}}

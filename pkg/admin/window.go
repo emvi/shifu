@@ -6,4 +6,5 @@ type WindowOptions struct {
 	TitleTpl   string
 	ContentTpl string
 	MinWidth   int
+	Overlay    bool
 }
