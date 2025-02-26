@@ -56,10 +56,10 @@ body.shifu {
                 gap: 4px;
                 pointer-events: none;
 
-                svg {
+                img {
                     width: 12px;
                     height: 12px;
-                    fill: #fff;
+                    filter: invert(100%);
                 }
             }
 
@@ -68,10 +68,10 @@ body.shifu {
                 align-items: center;
                 height: 100%;
 
-                svg {
+                img {
                     width: 16px;
                     height: 16px;
-                    fill: #fff;
+                    filter: invert(100%);
                     cursor: pointer;
                 }
             }
@@ -79,6 +79,9 @@ body.shifu {
 
         &-content {
             padding: 4px;
+            max-width: 80vw;
+            max-height: 90vh;
+            overflow: auto;
         }
     }
 
@@ -164,6 +167,22 @@ body.shifu {
         }
     }
 
+    table {
+        width: 100%;
+        border-collapse: collapse;
+
+        td {
+            padding: 4px;
+            border: 1px solid rgba(0, 0, 0, 0.5);
+        }
+
+        thead tr {
+            background: #000;
+            color: #fff;
+            font-size: 12px;
+        }
+    }
+
     .error {
         color: #f00;
         font-size: 10px;
@@ -185,7 +204,7 @@ body.shifu {
             padding: 8px;
             cursor: pointer;
 
-            svg {
+            img {
                 width: 16px;
                 height: 16px;
                 fill: #000;
@@ -195,8 +214,8 @@ body.shifu {
                 background: #000;
                 color: #fff;
 
-                svg {
-                    fill: #fff;
+                img {
+                    filter: invert(100%);
                 }
             }
         }

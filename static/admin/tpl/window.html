@@ -1,0 +1,15 @@
+<div id="{{.Data.WindowOptions.ID}}"
+    class="shifu shifu-window"
+    {{if .Data.WindowOptions.MinWidth}}style="min-width: {{.Data.WindowOptions.MinWidth}}px;"{{end}}>
+    <div class="shifu-window-title">
+        <div class="shifu-window-title-label">
+            {{.Tpl.Render .Data.WindowOptions.TitleTpl .}}
+        </div>
+        <div class="shifu-window-title-close" hx-trigger="click">
+            <img src="{{config.UI.Path}}/static/icons/close.svg" alt="Close" />
+        </div>
+    </div>
+    <div class="shifu-window-content">
+        {{.Tpl.Render .Data.WindowOptions.ContentTpl .}}
+    </div>
+</div>

@@ -6,51 +6,38 @@
            hx-target="body"
            hx-swap="beforeend"
            data-window="shifu-edit">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path d="m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.886L17.5 5.501a2.121 2.121 0 0 0-3-3L3.58 13.419a4 4 0 0 0-.885 1.343Z" />
-            </svg>
+            <img src="{{config.UI.Path}}/static/icons/edit.svg" alt="Edit" />
         </a>
         <a hx-get="{{config.UI.Path}}/pages"
            title="Seiten"
            hx-target="body"
            hx-swap="beforeend"
            data-window="shifu-pages">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path d="M3 3.5A1.5 1.5 0 0 1 4.5 2h6.879a1.5 1.5 0 0 1 1.06.44l4.122 4.12A1.5 1.5 0 0 1 17 7.622V16.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 3 16.5v-13Z" />
-            </svg>
+            <img src="{{config.UI.Path}}/static/icons/page.svg" alt="Pages" />
         </a>
         <a hx-get="{{config.UI.Path}}/media"
            title="Medien"
            hx-target="body"
            hx-swap="beforeend"
            data-window="shifu-media">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M1 5.25A2.25 2.25 0 0 1 3.25 3h13.5A2.25 2.25 0 0 1 19 5.25v9.5A2.25 2.25 0 0 1 16.75 17H3.25A2.25 2.25 0 0 1 1 14.75v-9.5Zm1.5 5.81v3.69c0 .414.336.75.75.75h13.5a.75.75 0 0 0 .75-.75v-2.69l-2.22-2.219a.75.75 0 0 0-1.06 0l-1.91 1.909.47.47a.75.75 0 1 1-1.06 1.06L6.53 8.091a.75.75 0 0 0-1.06 0l-2.97 2.97ZM12 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" clip-rule="evenodd" />
-            </svg>
+            <img src="{{config.UI.Path}}/static/icons/media.svg" alt="Media" />
         </a>
         <a hx-get="{{config.UI.Path}}/database"
            title="Datenbank"
            hx-target="body"
            hx-swap="beforeend"
            data-window="shifu-database">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 1c3.866 0 7 1.79 7 4s-3.134 4-7 4-7-1.79-7-4 3.134-4 7-4Zm5.694 8.13c.464-.264.91-.583 1.306-.952V10c0 2.21-3.134 4-7 4s-7-1.79-7-4V8.178c.396.37.842.688 1.306.953C5.838 10.006 7.854 10.5 10 10.5s4.162-.494 5.694-1.37ZM3 13.179V15c0 2.21 3.134 4 7 4s7-1.79 7-4v-1.822c-.396.37-.842.688-1.306.953-1.532.875-3.548 1.369-5.694 1.369s-4.162-.494-5.694-1.37A7.009 7.009 0 0 1 3 13.179Z" clip-rule="evenodd" />
-            </svg>
+            <img src="{{config.UI.Path}}/static/icons/db.svg" alt="Database" />
         </a>
         <a hx-get="{{config.UI.Path}}/user"
            title="Nutzerverwaltung"
            hx-target="body"
            hx-swap="beforeend"
            data-window="shifu-user">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path d="M7 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM14.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM1.615 16.428a1.224 1.224 0 0 1-.569-1.175 6.002 6.002 0 0 1 11.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 0 1 7 18a9.953 9.953 0 0 1-5.385-1.572ZM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 0 0-1.588-3.755 4.502 4.502 0 0 1 5.874 2.636.818.818 0 0 1-.36.98A7.465 7.465 0 0 1 14.5 16Z" />
-            </svg>
+            <img src="{{config.UI.Path}}/static/icons/user.svg" alt="User" />
         </a>
         <a href="{{config.UI.Path}}/logout" title="Abmelden">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M3 4.25A2.25 2.25 0 0 1 5.25 2h5.5A2.25 2.25 0 0 1 13 4.25v2a.75.75 0 0 1-1.5 0v-2a.75.75 0 0 0-.75-.75h-5.5a.75.75 0 0 0-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 0 0 .75-.75v-2a.75.75 0 0 1 1.5 0v2A2.25 2.25 0 0 1 10.75 18h-5.5A2.25 2.25 0 0 1 3 15.75V4.25Z" clip-rule="evenodd" />
-                <path fill-rule="evenodd" d="M6 10a.75.75 0 0 1 .75-.75h9.546l-1.048-.943a.75.75 0 1 1 1.004-1.114l2.5 2.25a.75.75 0 0 1 0 1.114l-2.5 2.25a.75.75 0 1 1-1.004-1.114l1.048-.943H6.75A.75.75 0 0 1 6 10Z" clip-rule="evenodd" />
-            </svg>
+            <img src="{{config.UI.Path}}/static/icons/signout.svg" alt="Sign out" />
         </a>
     </div>
 </div>

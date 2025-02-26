@@ -298,6 +298,19 @@ Shifu comes with a number of template functions that can be used within template
 | int           | Converts given string to an integer.                                                                               | `{{int "123"}}`                                            |
 | uint64        | Converts given int to an uint64.                                                                                   | `{{uint64 123}}`                                           |
 | shuffle       | Shuffles given list and returns up to n results if n > 0.                                                          | `{{shuffle .List 10}}`                                     |
+| fmt           | Formats a string.                                                                                                  | `{{fmt "foo %s" "bar"}}`                                   |
+| dict          | Creates a map from given key value pairs.                                                                          | `{{dict "key" "value" "answer" 42}}`                       |
+| default       | Returns the first value that's not nil.                                                                            | `{{default .Val0 .Val1}}`                                  |
+| year          | Returns the current year                                                                                           | `{{year}}`                                                 |
+| formatFloat   | Formats the given value with two decimal places.                                                                   | `{{formatFloat 42.34567}}`                                 |
+| formatInt     | Formats the given value with separators (comma).                                                                   | `{{formatInt 4213465576}}`                                 |
+| formatDate    | Formats a data for given layout.                                                                                   | `{{formatDate .Date "2006-01-02"}}`                        |
+| gtFloat       | Checks whether the first value is bigger than the second.                                                          | `{{gtFloat 6 3}}`                                          |
+| ltFloat       | Checks whether the first value is smaller than the second.                                                         | `{{gtFloat 6 3}}`                                          |
+| html          | Returns given string as valid HTML. This is unsafe if the input is user provided.                                  | `{{html "<p>Text</p>"}}`                                   |
+| loggedIn      | Returns true if the visitor is signed in as admin.                                                                 | `{{loggedIn}}`                                             |
+| adminHead     | Returns the HTML for the `<head>` section for the admin UI.                                                        | `{{adminHead}}`                                            |
+| adminBody     | Returns the HTML for the `<body>` section for the admin UI.                                                        | `{{adminBody}}`                                            |
 
 For more template functions, see the [Sprig documentation](github.com/Masterminds/sprig).
 

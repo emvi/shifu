@@ -1,18 +1,10 @@
-<div id="shifu-pages" class="shifu shifu-window">
-    <div class="shifu-window-title">
-        <div class="shifu-window-title-label">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path d="M3 3.5A1.5 1.5 0 0 1 4.5 2h6.879a1.5 1.5 0 0 1 1.06.44l4.122 4.12A1.5 1.5 0 0 1 17 7.622V16.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 3 16.5v-13Z" />
-            </svg>
-            <span>Seiten</span>
-        </div>
-        <div class="shifu-window-title-close" hx-trigger="click">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
-            </svg>
-        </div>
-    </div>
-    <div class="shifu-window-content">
-        <p>TODO</p>
-    </div>
-</div>
+{{define "pages-window-title"}}
+    <img src="{{config.UI.Path}}/static/icons/page.svg" alt="" />
+    <span>Seiten</span>
+{{end}}
+
+{{define "pages-window-content"}}
+    TODO
+{{end}}
+
+{{template "window.html" .}}
