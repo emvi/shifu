@@ -1,10 +1,10 @@
 <form method="post" hx-post="{{path}}" hx-swap="outerHTML">
     <fieldset>
         <label for="email">Email</label>
-        <input type="text" name="email" id="email" />
+        <input type="text" name="email" id="email" value="{{.Data.Email}}" />
 
-        {{if .Error}}
-            <span class="error">{{.Error}}</span>
+        {{if .Data.Error}}
+            <span class="error">{{.Data.Error}}</span>
         {{end}}
     </fieldset>
     <fieldset>

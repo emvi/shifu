@@ -43,3 +43,29 @@ func Auth(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+func isAdmin(r *http.Request) bool {
+	session, err := r.Cookie("session")
+
+	if err != nil {
+		return false
+	}
+
+	s := new(model.Session)
+
+	if err := db.Get(s, `SELECT * FROM "session" WHERE session = ?`, session.Value); err != nil {
+		return false
+	}
+
+	if s == nil || s.Expires.Before(time.Now()) {
+		return false
+	}
+
+	var email string
+
+	if err := db.Get(&email, `SELECT email FROM "user" WHERE id = ?`, s.UserID); err != nil {
+		return false
+	}
+
+	return email == "admin"
+}

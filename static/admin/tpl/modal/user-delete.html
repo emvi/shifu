@@ -1,0 +1,15 @@
+{{define "user-delete-window-title"}}
+    <img src="{{config.UI.Path}}/static/icons/user.svg" alt="" />
+    <span>Nutzer löschen</span>
+{{end}}
+
+{{define "user-delete-window-content"}}
+    <p>Bist du sicher, dass du den Benutzer "{{.Data.User.Email}}" löschen möchtest?</p>
+    <div class="shifu-toolbelt">
+        <!-- TODO -->
+        <button>Nutzer löschen</button>
+        <button class="secondary">Abbrechen</button>
+    </div>
+{{end}}
+
+{{template "window.html" .}}

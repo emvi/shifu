@@ -213,7 +213,10 @@ func (server *Server) serveUI(router chi.Router) {
 		r.Get("/pages", admin.Pages)
 		r.Get("/media", admin.Media)
 		r.Get("/database", admin.Database)
-		r.Get("/user", admin.User)
+		r.Route("/user", func(r chi.Router) {
+			r.Get("/delete", admin.DeleteUser)
+			r.Get("/", admin.User)
+		})
 		r.Get("/logout", admin.Logout)
 	})
 	fs := http.FileServerFS(static.AdminStatic)

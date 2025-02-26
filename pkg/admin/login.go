@@ -91,5 +91,5 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tpl.Execute(w, "login.html", nil)
+	tpl.Execute(w, "login.html", LoginForm{})
 }
