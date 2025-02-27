@@ -1,0 +1,20 @@
+{{define "user-delete-window-title"}}
+    <img src="{{config.UI.Path}}/static/icons/user.svg" alt="" />
+    <span>Nutzer löschen</span>
+{{end}}
+
+{{define "user-delete-window-content"}}
+    <p>Bist du sicher, dass du den Benutzer "{{.Data.User.Email}}" löschen möchtest?</p>
+    <div class="shifu-toolbelt">
+        <button hx-delete="{{config.UI.Path}}/user/delete?id={{.Data.User.ID}}"
+                hx-target="#shifu-user table"
+                hx-on::after-request="shifuCloseWindow('#shifu-user-delete')">
+            Nutzer löschen
+        </button>
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            Abbrechen
+        </button>
+    </div>
+{{end}}
+
+{{template "window.html" .}}

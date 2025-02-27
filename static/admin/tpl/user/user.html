@@ -1,0 +1,19 @@
+{{define "user-window-title"}}
+    <img src="{{config.UI.Path}}/static/icons/user.svg" alt="" />
+    <span>Nutzerverwaltung</span>
+{{end}}
+
+{{define "user-window-content"}}
+    <div class="shifu-toolbelt">
+        <button hx-get="{{config.UI.Path}}/user/edit"
+                hx-target="body"
+                hx-swap="beforeend">
+            <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" />
+            Benutzer anlegen
+        </button>
+    </div>
+
+    {{template "user-list.html" .}}
+{{end}}
+
+{{template "window.html" .}}

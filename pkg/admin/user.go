@@ -7,13 +7,6 @@ import (
 )
 
 func User(w http.ResponseWriter, r *http.Request) {
-	var user []model.User
-
-	if err := db.Select(&user, `SELECT * FROM "user" ORDER BY id`); err != nil {
-		slog.Error("Error selecting user", "error", err)
-		return
-	}
-
 	tpl.Execute(w, "user.html", struct {
 		Admin         bool
 		WindowOptions WindowOptions
@@ -26,6 +19,16 @@ func User(w http.ResponseWriter, r *http.Request) {
 			ContentTpl: "user-window-content",
 			MinWidth:   500,
 		},
-		User: user,
+		User: listUser(),
 	})
+}
+
+func listUser() []model.User {
+	var user []model.User
+
+	if err := db.Select(&user, `SELECT * FROM "user" ORDER BY id`); err != nil {
+		slog.Error("Error selecting user", "error", err)
+	}
+
+	return user
 }

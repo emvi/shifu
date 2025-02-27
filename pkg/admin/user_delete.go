@@ -30,6 +30,23 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.Method == http.MethodDelete {
+		if _, err := db.Exec(`DELETE FROM "user" WHERE id = ?`, user.ID); err != nil {
+			slog.Error("Error deleting user", "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		tpl.Execute(w, "user-list.html", struct {
+			Admin bool
+			User  []model.User
+		}{
+			Admin: isAdmin(r),
+			User:  listUser(),
+		})
+		return
+	}
+
 	tpl.Execute(w, "user-delete.html", struct {
 		WindowOptions WindowOptions
 		User          *model.User

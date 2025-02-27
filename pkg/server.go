@@ -215,6 +215,7 @@ func (server *Server) serveUI(router chi.Router) {
 		r.Get("/database", admin.Database)
 		r.Route("/user", func(r chi.Router) {
 			r.Get("/delete", admin.DeleteUser)
+			r.Delete("/delete", admin.DeleteUser)
 			r.Get("/", admin.User)
 		})
 		r.Get("/logout", admin.Logout)

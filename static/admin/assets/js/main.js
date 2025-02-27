@@ -1,3 +1,5 @@
+import {debounce} from "./debounce";
+
 (function() {
     document.addEventListener("htmx:beforeRequest", e => {
         const id = e.target.getAttribute("data-window");
@@ -46,7 +48,7 @@
                 window = window.parentNode;
             }
 
-            if (window.parentNode.classList.contains("shifu-window-overlay")) {
+            if (window.parentNode && window.parentNode.classList.contains("shifu-window-overlay")) {
                 window.parentNode.remove();
             }
 
@@ -93,7 +95,7 @@
     }
 
     function cleanup(details) {
-        if (details.target.classList.contains("shifu-window")) {
+        if (details.target.classList && details.target.classList.contains("shifu-window")) {
             const title = details.target.querySelector(".shifu-window-title");
 
             if (title) {
@@ -103,13 +105,28 @@
         }
     }
 
-    function debounce(func, timeout = 300) {
-        let timer;
-        return (...args) => {
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                func.apply(this, args);
-            }, timeout);
-        };
+    window.shifuCloseWindow = (target) => {
+        let window = document.querySelector(target);
+
+        if (!window) {
+            return;
+        }
+
+        while (!window.classList.contains("shifu-window")) {
+            window = window.parentNode;
+        }
+
+        const title = window.querySelector(".shifu-window-title");
+
+        if (title) {
+            title.removeEventListener("mousedown", startDrag);
+            title.removeEventListener("mouseup", endDrag);
+        }
+
+        if (window.parentNode && window.parentNode.classList.contains("shifu-window-overlay")) {
+            window.parentNode.remove();
+        }
+
+        window.remove();
     }
 })();
