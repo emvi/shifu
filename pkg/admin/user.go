@@ -9,10 +9,12 @@ import (
 func User(w http.ResponseWriter, r *http.Request) {
 	tpl.Execute(w, "user.html", struct {
 		Admin         bool
+		Self          *model.User
 		WindowOptions WindowOptions
 		User          []model.User
 	}{
 		Admin: isAdmin(r),
+		Self:  getUser(r),
 		WindowOptions: WindowOptions{
 			ID:         "shifu-user",
 			TitleTpl:   "user-window-title",

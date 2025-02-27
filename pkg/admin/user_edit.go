@@ -6,15 +6,11 @@ import (
 	"github.com/emvi/shifu/pkg/admin/model"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
 func EditUser(w http.ResponseWriter, r *http.Request) {
-	if !isAdmin(r) {
-		w.WriteHeader(http.StatusForbidden)
-		return
-	}
-
 	id := r.URL.Query().Get("id")
 	email := strings.TrimSpace(r.FormValue("email"))
 	name := strings.TrimSpace(r.FormValue("name"))
@@ -36,6 +32,13 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 		if name == "" {
 			name = user.FullName
 		}
+	}
+
+	userID, _ := strconv.Atoi(id)
+
+	if !isAdmin(r) && userID != user.ID {
+		w.WriteHeader(http.StatusForbidden)
+		return
 	}
 
 	if r.Method == http.MethodPost {
@@ -122,9 +125,11 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 
 		tpl.Execute(w, "user-list.html", struct {
 			Admin bool
+			Self  *model.User
 			User  []model.User
 		}{
 			Admin: isAdmin(r),
+			Self:  getUser(r),
 			User:  listUser(),
 		})
 		return

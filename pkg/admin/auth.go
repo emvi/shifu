@@ -69,3 +69,29 @@ func isAdmin(r *http.Request) bool {
 
 	return email == "admin"
 }
+
+func getUser(r *http.Request) *model.User {
+	session, err := r.Cookie("session")
+
+	if err != nil {
+		return nil
+	}
+
+	s := new(model.Session)
+
+	if err := db.Get(s, `SELECT * FROM "session" WHERE session = ?`, session.Value); err != nil {
+		return nil
+	}
+
+	if s == nil || s.Expires.Before(time.Now()) {
+		return nil
+	}
+
+	user := new(model.User)
+
+	if err := db.Get(user, `SELECT * FROM "user" WHERE id = ?`, s.UserID); err != nil {
+		return nil
+	}
+
+	return user
+}
