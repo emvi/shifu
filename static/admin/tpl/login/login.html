@@ -20,9 +20,10 @@
     <link rel="prefetch" href="{{config.UI.Path}}/static/fonts/InterDisplay-Medium.woff2" as="font" type="font/woff2" />
     <link rel="stylesheet" type="text/css" href="{{config.UI.Path}}/static/admin.css" />
     <script defer src="{{config.UI.Path}}/static/htmx.min.js"></script>
+    <script defer src="{{config.UI.Path}}/static/htmx-ext-response-targets.min.js"></script>
     <script defer src="{{config.UI.Path}}/static/admin.js"></script>
 </head>
-<body class="shifu">
+<body class="shifu" hx-ext="response-targets">
     <div class="shifu-box" style="width: 260px;">
         <div class="shifu-box-title">Login</div>
         <div class="shifu-box-content">

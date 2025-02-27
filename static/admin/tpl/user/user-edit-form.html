@@ -1,15 +1,14 @@
 {{$admin := eq .Data.User.Email "admin"}}
 
-<!-- TODO fix showing errors -->
-
 <form method="post"
       hx-post="{{config.UI.Path}}/user/edit{{if .Data.User.ID}}?id={{.Data.User.ID}}{{end}}"
       hx-swap="outerHTML"
       hx-target="#shifu-user table"
+      hx-target-4*="this"
       hx-on::after-request="shifuCloseWindow('#shifu-user-edit')">
     <fieldset>
         <label for="email">Email</label>
-        <input type="text" name="email" id="email" value="{{.Data.Email}}" autofocus {{if $admin}}disabled{{end}} />
+        <input type="email" name="email" id="email" value="{{.Data.Email}}" {{if $admin}}disabled{{end}} />
 
         {{if index .Data.Errors "email"}}
             <span class="error">{{index .Data.Errors "email"}}</span>
@@ -26,10 +25,18 @@
     <fieldset>
         <label for="password">Passwort</label>
         <input type="password" name="password" id="password" />
+
+        {{if index .Data.Errors "password"}}
+            <span class="error">{{index .Data.Errors "password"}}</span>
+        {{end}}
     </fieldset>
     <fieldset>
         <label for="password_confirm">Passwort wiederholen</label>
         <input type="password" name="password_confirm" id="password_confirm" />
+
+        {{if index .Data.Errors "password_confirm"}}
+            <span class="error">{{index .Data.Errors "password_confirm"}}</span>
+        {{end}}
     </fieldset>
     <input type="submit" value="Speichern" />
 </form>

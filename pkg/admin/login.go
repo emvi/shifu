@@ -21,6 +21,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			tpl.Execute(w, "login-form.html", LoginForm{
 				Error: "error parsing form",
 			})
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
@@ -34,6 +35,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				Email: email,
 				Error: "user not found",
 			})
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
@@ -42,6 +44,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				Email: email,
 				Error: "user not found",
 			})
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
@@ -57,6 +60,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 					Email: email,
 					Error: "error creating session",
 				})
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 		}
@@ -75,6 +79,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				Email: email,
 				Error: "error creating session",
 			})
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 

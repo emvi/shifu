@@ -3,8 +3,9 @@
 {{end}}
 
 <div id="{{.Data.WindowOptions.ID}}"
-    class="shifu shifu-window"
-    {{if .Data.WindowOptions.MinWidth}}style="min-width: {{.Data.WindowOptions.MinWidth}}px;"{{end}}>
+     class="shifu shifu-window"
+     {{if .Data.WindowOptions.MinWidth}}style="min-width: {{.Data.WindowOptions.MinWidth}}px;"{{end}}
+     hx-ext="response-targets">
     <div class="shifu-window-title">
         <div class="shifu-window-title-label">
             {{.Tpl.Render .Data.WindowOptions.TitleTpl .}}

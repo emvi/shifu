@@ -284,7 +284,8 @@ func adminHead(r *http.Request) template.HTML {
 			<link rel="prefetch" href="%s/static/fonts/InterDisplay-Medium.woff2" as="font" type="font/woff2" />
 			<link rel="stylesheet" type="text/css" href="%s/static/admin.css" />
 			<script defer src="%s/static/htmx.min.js"></script>
-			<script defer src="%s/static/admin.js"></script>`, path, path, path, path, path, path))
+			<script defer src="%s/static/htmx-ext-response-targets.min.js"></script>
+			<script defer src="%s/static/admin.js"></script>`, path, path, path, path, path, path, path))
 	}
 
 	return ""

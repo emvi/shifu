@@ -68,9 +68,12 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 
 		if password != passwordConfirm {
 			errs["password_confirm"] = "the passwords do not match"
+		} else if user.ID == 0 && password == "" {
+			errs["password"] = "the password is required"
 		}
 
 		if len(errs) > 0 {
+			w.WriteHeader(http.StatusBadRequest)
 			tpl.Execute(w, "user-edit-form.html", struct {
 				User   *model.User
 				Email  string
@@ -82,7 +85,6 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 				Name:   name,
 				Errors: errs,
 			})
-			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
@@ -139,6 +141,7 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 			ID:         "shifu-user-edit",
 			TitleTpl:   "user-edit-window-title",
 			ContentTpl: "user-edit-window-content",
+			MinWidth:   350,
 			Overlay:    true,
 		},
 		User:  user,
