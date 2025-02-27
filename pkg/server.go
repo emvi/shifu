@@ -214,6 +214,8 @@ func (server *Server) serveUI(router chi.Router) {
 		r.Get("/media", admin.Media)
 		r.Get("/database", admin.Database)
 		r.Route("/user", func(r chi.Router) {
+			r.Get("/edit", admin.EditUser)
+			r.Post("/edit", admin.EditUser)
 			r.Get("/delete", admin.DeleteUser)
 			r.Delete("/delete", admin.DeleteUser)
 			r.Get("/", admin.User)

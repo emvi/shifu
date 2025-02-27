@@ -17,6 +17,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	if err := db.Get(user, `SELECT * FROM "user" WHERE id = ?`, id); err != nil {
 		slog.Error("Error selecting user", "error", err)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 

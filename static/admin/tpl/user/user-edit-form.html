@@ -1,0 +1,35 @@
+{{$admin := eq .Data.User.Email "admin"}}
+
+<!-- TODO fix showing errors -->
+
+<form method="post"
+      hx-post="{{config.UI.Path}}/user/edit{{if .Data.User.ID}}?id={{.Data.User.ID}}{{end}}"
+      hx-swap="outerHTML"
+      hx-target="#shifu-user table"
+      hx-on::after-request="shifuCloseWindow('#shifu-user-edit')">
+    <fieldset>
+        <label for="email">Email</label>
+        <input type="text" name="email" id="email" value="{{.Data.Email}}" autofocus {{if $admin}}disabled{{end}} />
+
+        {{if index .Data.Errors "email"}}
+            <span class="error">{{index .Data.Errors "email"}}</span>
+        {{end}}
+    </fieldset>
+    <fieldset>
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" value="{{.Data.Name}}" {{if $admin}}disabled{{end}} />
+
+        {{if index .Data.Errors "name"}}
+            <span class="error">{{index .Data.Errors "name"}}</span>
+        {{end}}
+    </fieldset>
+    <fieldset>
+        <label for="password">Passwort</label>
+        <input type="password" name="password" id="password" />
+    </fieldset>
+    <fieldset>
+        <label for="password_confirm">Passwort wiederholen</label>
+        <input type="password" name="password_confirm" id="password_confirm" />
+    </fieldset>
+    <input type="submit" value="Speichern" />
+</form>

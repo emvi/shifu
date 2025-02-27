@@ -1,0 +1,15 @@
+{{define "user-edit-window-title"}}
+    <img src="{{config.UI.Path}}/static/icons/user.svg" alt="" />
+
+    {{if .Data.User.ID}}
+        <span>Nutzer bearbeiten</span>
+    {{else}}
+        <span>Nutzer erstellen</span>
+    {{end}}
+{{end}}
+
+{{define "user-edit-window-content"}}
+    {{template "user-edit-form.html" .}}
+{{end}}
+
+{{template "window.html" .}}
