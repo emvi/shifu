@@ -13,16 +13,22 @@
         }
     });
     document.addEventListener("htmx:afterProcessNode", e => {
-        if (e.target.classList.contains("shifu-window")) {
-            const title = e.target.querySelector(".shifu-window-title");
+        if (e.target.classList.contains("shifu-window") || e.target.classList.contains("shifu-window-overlay")) {
+            let target = e.target;
+
+            if (target.classList.contains("shifu-window-overlay")) {
+                target = target.children[0];
+            }
+
+            const title = target.querySelector(".shifu-window-title");
 
             if (title) {
-                const settings = localStorage.getItem(e.target.id);
+                const settings = localStorage.getItem(target.id);
 
                 if (settings) {
                     const position = JSON.parse(settings);
-                    e.target.style.top = position.top;
-                    e.target.style.left = position.left;
+                    target.style.top = position.top;
+                    target.style.left = position.left;
                 }
 
                 title.addEventListener("mousedown", startDrag);
@@ -38,6 +44,10 @@
 
             while (!window.classList.contains("shifu-window")) {
                 window = window.parentNode;
+            }
+
+            if (window.parentNode.classList.contains("shifu-window-overlay")) {
+                window.parentNode.remove();
             }
 
             window.remove();
