@@ -40,6 +40,7 @@ var (
 		"gtFloat":       func(a, b float64) bool { return a > b },
 		"ltFloat":       func(a, b float64) bool { return a < b },
 		"html":          func(str string) template.HTML { return template.HTML(str) },
+		"htmlAttr":      func(str string) template.HTMLAttr { return template.HTMLAttr(str) },
 		"loggedIn":      isLoggedIn,
 		"adminHead":     adminHead,
 		"adminBody":     adminBody,
