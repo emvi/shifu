@@ -1,4 +1,4 @@
-package admin
+package db
 
 import (
 	"github.com/emvi/shifu/pkg/cfg"
@@ -32,4 +32,9 @@ func Disconnect() {
 	if err := db.Close(); err != nil {
 		slog.Error("Error closing admin database", "error", err)
 	}
+}
+
+// Get returns the database connection.
+func Get() *sqlx.DB {
+	return db
 }

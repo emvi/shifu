@@ -4,7 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/emvi/shifu/pkg/admin"
+	"github.com/emvi/shifu/pkg/admin/db"
+	middleware2 "github.com/emvi/shifu/pkg/admin/middleware"
+	"github.com/emvi/shifu/pkg/admin/ui"
+	"github.com/emvi/shifu/pkg/admin/ui/content"
+	"github.com/emvi/shifu/pkg/admin/ui/database"
+	"github.com/emvi/shifu/pkg/admin/ui/media"
+	"github.com/emvi/shifu/pkg/admin/ui/user"
 	"github.com/emvi/shifu/pkg/analytics"
 	"github.com/emvi/shifu/pkg/api"
 	"github.com/emvi/shifu/pkg/cfg"
@@ -96,7 +102,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 
 	sm := sitemap.New()
 	ctx, cancel := context.WithCancel(context.Background())
-	content := cms.NewCMS(cms.Options{
+	c := cms.NewCMS(cms.Options{
 		Ctx:       ctx,
 		BaseDir:   dir,
 		HotReload: cfg.Get().Dev,
@@ -106,7 +112,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		Sitemap:   sm,
 	})
 	return &Server{
-		Content: content,
+		Content: c,
 		Sitemap: sm,
 		router:  options.Router,
 		funcMap: options.FuncMap,
@@ -121,8 +127,8 @@ func (server *Server) Start(cancel context.CancelFunc) error {
 	slog.Info("Starting Shifu", "version", version, "directory", cfg.Get().BaseDir)
 
 	if cfg.Get().UI.Path != "" {
-		admin.Connect()
-		defer admin.Disconnect()
+		db.Connect()
+		defer db.Disconnect()
 	}
 
 	stop := func() {
@@ -207,27 +213,27 @@ func (server *Server) serveUI(router chi.Router) {
 	path := cfg.Get().UI.Path
 	slog.Info("Serving admin UI", "path", path)
 	router.Route(path, func(r chi.Router) {
-		r.Use(admin.Auth)
-		r.Get("/toolbar", admin.Toolbar)
-		r.Get("/edit", admin.Edit)
-		r.Get("/pages", admin.Pages)
-		r.Get("/media", admin.Media)
-		r.Get("/database", admin.Database)
+		r.Use(middleware2.Auth)
+		r.Get("/toolbar", ui.Toolbar)
+		r.Get("/edit", content.Edit)
+		r.Get("/pages", content.Pages)
+		r.Get("/media", media.Media)
+		r.Get("/database", database.Database)
 		r.Route("/user", func(r chi.Router) {
-			r.Get("/edit", admin.EditUser)
-			r.Post("/edit", admin.EditUser)
-			r.Get("/delete", admin.DeleteUser)
-			r.Delete("/delete", admin.DeleteUser)
-			r.Get("/", admin.User)
+			r.Get("/edit", user.EditUser)
+			r.Post("/edit", user.EditUser)
+			r.Get("/delete", user.DeleteUser)
+			r.Delete("/delete", user.DeleteUser)
+			r.Get("/", user.User)
 		})
-		r.Get("/logout", admin.Logout)
+		r.Get("/logout", user.Logout)
 	})
 	fs := http.FileServerFS(static.AdminStatic)
 	router.Handle(fmt.Sprintf("%s/static/*", path), gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fs.ServeHTTP(w, r)
 	})))
-	router.Get(path, admin.Login)
-	router.Post(path, admin.Login)
+	router.Get(path, user.Login)
+	router.Post(path, user.Login)
 }
 
 func (server *Server) serveRobotsTxt(router chi.Router) {

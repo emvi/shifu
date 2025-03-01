@@ -1,15 +1,21 @@
-package admin
+package user
 
 import (
 	"database/sql"
 	"errors"
+	"github.com/emvi/shifu/pkg/admin/db"
+	"github.com/emvi/shifu/pkg/admin/middleware"
 	"github.com/emvi/shifu/pkg/admin/model"
+	"github.com/emvi/shifu/pkg/admin/tpl"
+	"github.com/emvi/shifu/pkg/admin/ui"
+	"github.com/emvi/shifu/pkg/admin/util"
 	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
+// EditUser renders the user creation or change dialog.
 func EditUser(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	email := strings.TrimSpace(r.FormValue("email"))
@@ -19,7 +25,7 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 	user := new(model.User)
 
 	if id != "" {
-		if err := db.Get(user, `SELECT * FROM "user" WHERE id = ?`, id); err != nil {
+		if err := db.Get().Get(user, `SELECT * FROM "user" WHERE id = ?`, id); err != nil {
 			slog.Error("Error selecting user", "error", err)
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -35,8 +41,9 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID, _ := strconv.Atoi(id)
+	isAdmin := middleware.IsAdmin(r)
 
-	if !isAdmin(r) && userID != user.ID {
+	if !isAdmin && userID != user.ID {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
@@ -54,7 +61,7 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 		} else {
 			exists := false
 
-			if err := db.Get(&exists, `SELECT 1 FROM "user" WHERE email = ? AND id != ?`, email, user.ID); err != nil && !errors.Is(err, sql.ErrNoRows) {
+			if err := db.Get().Get(&exists, `SELECT 1 FROM "user" WHERE email = ? AND id != ?`, email, user.ID); err != nil && !errors.Is(err, sql.ErrNoRows) {
 				slog.Error("Error selecting user by email", "error", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -77,7 +84,7 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			tpl.Execute(w, "user-edit-form.html", struct {
+			tpl.Get().Execute(w, "user-edit-form.html", struct {
 				User   *model.User
 				Email  string
 				Name   string
@@ -93,10 +100,10 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 
 		if user.ID == 0 {
 			slog.Info("Creating new user")
-			passwordSalt := GenRandomString(20)
-			passwordHash := HashPassword(password + passwordSalt)
+			passwordSalt := util.GenRandomString(20)
+			passwordHash := util.HashPassword(password + passwordSalt)
 
-			if _, err := db.Exec(`INSERT INTO "user" (email, full_name, password, password_salt) VALUES (?, ?, ?, ?)`, email, name, passwordHash, passwordSalt); err != nil {
+			if _, err := db.Get().Exec(`INSERT INTO "user" (email, full_name, password, password_salt) VALUES (?, ?, ?, ?)`, email, name, passwordHash, passwordSalt); err != nil {
 				slog.Error("Error inserting user", "error", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -104,10 +111,10 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 		} else {
 			if password != "" {
 				slog.Info("Saving user with password")
-				passwordSalt := GenRandomString(20)
-				passwordHash := HashPassword(password + passwordSalt)
+				passwordSalt := util.GenRandomString(20)
+				passwordHash := util.HashPassword(password + passwordSalt)
 
-				if _, err := db.Exec(`UPDATE "user" SET email = ?, full_name = ?, password = ?, password_salt = ? WHERE id = ?`, email, name, passwordHash, passwordSalt, user.ID); err != nil {
+				if _, err := db.Get().Exec(`UPDATE "user" SET email = ?, full_name = ?, password = ?, password_salt = ? WHERE id = ?`, email, name, passwordHash, passwordSalt, user.ID); err != nil {
 					slog.Error("Error updating user", "error", err)
 					w.WriteHeader(http.StatusInternalServerError)
 					return
@@ -115,7 +122,7 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 			} else {
 				slog.Info("Saving user without password")
 
-				if _, err := db.Exec(`UPDATE "user" SET email = ?, full_name = ? WHERE id = ?`, email, name, user.ID); err != nil {
+				if _, err := db.Get().Exec(`UPDATE "user" SET email = ?, full_name = ? WHERE id = ?`, email, name, user.ID); err != nil {
 					slog.Error("Error updating user", "error", err)
 					w.WriteHeader(http.StatusInternalServerError)
 					return
@@ -123,26 +130,26 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		tpl.Execute(w, "user-list.html", struct {
+		tpl.Get().Execute(w, "user-list.html", struct {
 			Admin bool
 			Self  *model.User
 			User  []model.User
 		}{
-			Admin: isAdmin(r),
-			Self:  getUser(r),
+			Admin: isAdmin,
+			Self:  middleware.GetUser(r),
 			User:  listUser(),
 		})
 		return
 	}
 
-	tpl.Execute(w, "user-edit.html", struct {
-		WindowOptions WindowOptions
+	tpl.Get().Execute(w, "user-edit.html", struct {
+		WindowOptions ui.WindowOptions
 		User          *model.User
 		Email         string
 		Name          string
 		Errors        map[string]string
 	}{
-		WindowOptions: WindowOptions{
+		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-user-edit",
 			TitleTpl:   "user-edit-window-title",
 			ContentTpl: "user-edit-window-content",

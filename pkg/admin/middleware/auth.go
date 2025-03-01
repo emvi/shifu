@@ -1,6 +1,7 @@
-package admin
+package middleware
 
 import (
+	"github.com/emvi/shifu/pkg/admin/db"
 	"github.com/emvi/shifu/pkg/admin/model"
 	"log/slog"
 	"net/http"
@@ -19,7 +20,7 @@ func Auth(next http.Handler) http.Handler {
 
 		s := new(model.Session)
 
-		if err := db.Get(s, `SELECT * FROM "session" WHERE session = ?`, session.Value); err != nil {
+		if err := db.Get().Get(s, `SELECT * FROM "session" WHERE session = ?`, session.Value); err != nil {
 			slog.Error("Error checking session", "error", err)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
@@ -32,7 +33,7 @@ func Auth(next http.Handler) http.Handler {
 
 		if s.Expires.Before(time.Now()) {
 			go func() {
-				if _, err := db.Exec(`DELETE FROM "session" WHERE session = ?`, session.Value); err != nil {
+				if _, err := db.Get().Exec(`DELETE FROM "session" WHERE session = ?`, session.Value); err != nil {
 					slog.Error("Error deleting session", "error", err)
 				}
 			}()
@@ -44,7 +45,8 @@ func Auth(next http.Handler) http.Handler {
 	})
 }
 
-func isAdmin(r *http.Request) bool {
+// IsAdmin returns whether the request is made by the administrator.
+func IsAdmin(r *http.Request) bool {
 	session, err := r.Cookie("session")
 
 	if err != nil {
@@ -53,7 +55,7 @@ func isAdmin(r *http.Request) bool {
 
 	s := new(model.Session)
 
-	if err := db.Get(s, `SELECT * FROM "session" WHERE session = ?`, session.Value); err != nil {
+	if err := db.Get().Get(s, `SELECT * FROM "session" WHERE session = ?`, session.Value); err != nil {
 		return false
 	}
 
@@ -63,14 +65,15 @@ func isAdmin(r *http.Request) bool {
 
 	var email string
 
-	if err := db.Get(&email, `SELECT email FROM "user" WHERE id = ?`, s.UserID); err != nil {
+	if err := db.Get().Get(&email, `SELECT email FROM "user" WHERE id = ?`, s.UserID); err != nil {
 		return false
 	}
 
 	return email == "admin"
 }
 
-func getUser(r *http.Request) *model.User {
+// GetUser returns the signed in user for the request.
+func GetUser(r *http.Request) *model.User {
 	session, err := r.Cookie("session")
 
 	if err != nil {
@@ -79,7 +82,7 @@ func getUser(r *http.Request) *model.User {
 
 	s := new(model.Session)
 
-	if err := db.Get(s, `SELECT * FROM "session" WHERE session = ?`, session.Value); err != nil {
+	if err := db.Get().Get(s, `SELECT * FROM "session" WHERE session = ?`, session.Value); err != nil {
 		return nil
 	}
 
@@ -89,7 +92,7 @@ func getUser(r *http.Request) *model.User {
 
 	user := new(model.User)
 
-	if err := db.Get(user, `SELECT * FROM "user" WHERE id = ?`, s.UserID); err != nil {
+	if err := db.Get().Get(user, `SELECT * FROM "user" WHERE id = ?`, s.UserID); err != nil {
 		return nil
 	}
 

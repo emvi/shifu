@@ -1,4 +1,4 @@
-package admin
+package ui
 
 // WindowOptions are the options for the admin UI windows.
 type WindowOptions struct {

@@ -1,6 +1,7 @@
-package admin
+package db
 
 import (
+	"github.com/emvi/shifu/pkg/admin/util"
 	"github.com/emvi/shifu/pkg/cfg"
 	"log/slog"
 )
@@ -49,17 +50,17 @@ func migrate() {
 		}
 
 		if i == 0 {
-			salt := GenRandomString(20)
+			salt := util.GenRandomString(20)
 			password := ""
 
 			if cfg.Get().UI.AdminPassword != "" {
 				password = cfg.Get().UI.AdminPassword
 			} else {
-				password = GenRandomString(10)
+				password = util.GenRandomString(10)
 				slog.Info("Creating admin user", "password", password)
 			}
 
-			pwd := HashPassword(password + salt)
+			pwd := util.HashPassword(password + salt)
 
 			if _, err := db.Exec(`INSERT INTO "user" (email, password, password_salt, full_name) VALUES ('admin', ?, ?, 'Admin')`, pwd, salt); err != nil {
 				panic(err)

@@ -1,13 +1,17 @@
-package admin
+package user
 
 import (
+	"github.com/emvi/shifu/pkg/admin/db"
 	"github.com/emvi/shifu/pkg/admin/model"
+	"github.com/emvi/shifu/pkg/admin/tpl"
+	"github.com/emvi/shifu/pkg/admin/util"
 	"github.com/emvi/shifu/pkg/cfg"
 	"log/slog"
 	"net/http"
 	"time"
 )
 
+// LoginForm is the login form data and errors.
 type LoginForm struct {
 	Email string
 	Error string
@@ -18,7 +22,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		if err := r.ParseForm(); err != nil {
 			slog.Error("Error parsing form", "error", err)
-			tpl.Execute(w, "login-form.html", LoginForm{
+			tpl.Get().Execute(w, "login-form.html", LoginForm{
 				Error: "error parsing form",
 			})
 			w.WriteHeader(http.StatusBadRequest)
@@ -30,8 +34,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		stayLoggedIn := r.FormValue("stay_logged_in")
 		var user model.User
 
-		if err := db.Get(&user, `SELECT * FROM "user" WHERE email = ?`, email); err != nil {
-			tpl.Execute(w, "login-form.html", LoginForm{
+		if err := db.Get().Get(&user, `SELECT * FROM "user" WHERE email = ?`, email); err != nil {
+			tpl.Get().Execute(w, "login-form.html", LoginForm{
 				Email: email,
 				Error: "user not found",
 			})
@@ -39,8 +43,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if !ComparePassword(password+user.PasswordSalt, user.Password) {
-			tpl.Execute(w, "login-form.html", LoginForm{
+		if !util.ComparePassword(password+user.PasswordSalt, user.Password) {
+			tpl.Get().Execute(w, "login-form.html", LoginForm{
 				Email: email,
 				Error: "user not found",
 			})
@@ -52,11 +56,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		exists := true
 
 		for exists {
-			session = GenRandomString(40)
+			session = util.GenRandomString(40)
 
-			if err := db.Get(&exists, `SELECT EXISTS (SELECT 1 FROM "session" WHERE session = ?)`, session); err != nil {
+			if err := db.Get().Get(&exists, `SELECT EXISTS (SELECT 1 FROM "session" WHERE session = ?)`, session); err != nil {
 				slog.Error("Error reading session", "error", err)
-				tpl.Execute(w, "login-form.html", LoginForm{
+				tpl.Get().Execute(w, "login-form.html", LoginForm{
 					Email: email,
 					Error: "error creating session",
 				})
@@ -73,9 +77,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 		expires := time.Now().Add(time.Hour * 24 * time.Duration(days))
 
-		if _, err := db.Exec(`INSERT INTO "session" (user_id, session, expires) VALUES (?, ?, ?)`, user.ID, session, expires); err != nil {
+		if _, err := db.Get().Exec(`INSERT INTO "session" (user_id, session, expires) VALUES (?, ?, ?)`, user.ID, session, expires); err != nil {
 			slog.Error("Error storing session", "error", err)
-			tpl.Execute(w, "login-form.html", LoginForm{
+			tpl.Get().Execute(w, "login-form.html", LoginForm{
 				Email: email,
 				Error: "error creating session",
 			})
@@ -96,5 +100,5 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tpl.Execute(w, "login.html", LoginForm{})
+	tpl.Get().Execute(w, "login.html", LoginForm{})
 }
