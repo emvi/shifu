@@ -230,6 +230,7 @@ func (server *Server) serveUI(router chi.Router) {
 	})
 	fs := http.FileServerFS(static.AdminStatic)
 	router.Handle(fmt.Sprintf("%s/static/*", path), gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "max-age=86400")
 		fs.ServeHTTP(w, r)
 	})))
 	router.Get(path, user.Login)
@@ -251,6 +252,7 @@ func (server *Server) serveRobotsTxt(router chi.Router) {
 func (server *Server) serveStaticDir(router chi.Router, dir string) {
 	fs := http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join(dir, "static"))))
 	router.Handle("/static/*", gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "max-age=86400")
 		fs.ServeHTTP(w, r)
 	})))
 }
