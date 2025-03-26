@@ -5,7 +5,6 @@ import (
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/cfg"
 	"io/fs"
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -20,6 +19,7 @@ const (
 // Directory is a media directory.
 type Directory struct {
 	Name     string
+	Path     string
 	Children []Directory
 
 	level int
@@ -27,13 +27,28 @@ type Directory struct {
 
 // Media renders the media management dialog.
 func Media(w http.ResponseWriter, _ *http.Request) {
+	tpl.Get().Execute(w, "media.html", struct {
+		WindowOptions ui.WindowOptions
+		Directories   []Directory
+	}{
+		WindowOptions: ui.WindowOptions{
+			ID:         "shifu-media",
+			TitleTpl:   "media-window-title",
+			ContentTpl: "media-window-content",
+			MinWidth:   800,
+		},
+		Directories: listDirectories(w),
+	})
+}
+
+func listDirectories(w http.ResponseWriter) []Directory {
 	dir := filepath.Join(cfg.Get().BaseDir, mediaDir)
 
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 			slog.Error("Error creating media directory", "error", err)
 			w.WriteHeader(http.StatusInternalServerError)
-			return
+			return nil
 		}
 	}
 
@@ -49,6 +64,7 @@ func Media(w http.ResponseWriter, _ *http.Request) {
 			if last == nil || level <= last.level {
 				dirs = append(dirs, Directory{
 					Name:     d.Name(),
+					Path:     path,
 					Children: make([]Directory, 0),
 					level:    level,
 				})
@@ -56,6 +72,7 @@ func Media(w http.ResponseWriter, _ *http.Request) {
 			} else {
 				last.Children = append(last.Children, Directory{
 					Name:     d.Name(),
+					Path:     path,
 					Children: make([]Directory, 0),
 					level:    level,
 				})
@@ -67,21 +84,8 @@ func Media(w http.ResponseWriter, _ *http.Request) {
 	}); err != nil {
 		slog.Error("Error reading media directory", "error", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return nil
 	}
 
-	log.Println(dirs) // TODO
-
-	tpl.Get().Execute(w, "media.html", struct {
-		WindowOptions ui.WindowOptions
-		Directories   []Directory
-	}{
-		WindowOptions: ui.WindowOptions{
-			ID:         "shifu-media",
-			TitleTpl:   "media-window-title",
-			ContentTpl: "media-window-content",
-			MinWidth:   800,
-		},
-		Directories: dirs,
-	})
+	return dirs
 }

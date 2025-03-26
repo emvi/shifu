@@ -2,13 +2,28 @@
     <ul>
         {{range $dir := .}}
             <li>
-                <details>
+                <details {{if not (len $dir.Children)}}class="empty"{{end}}>
                     <summary>
                         <span>{{$dir.Name}}</span>
                         <span>
-                            <img src="{{config.UI.Path}}/static/icons/edit.svg" alt="" title="Bearbeiten" />
-                            <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" title="Unterordner hinzufügen" />
-                            <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" title="Ordner löschen" />
+                            <img src="{{config.UI.Path}}/static/icons/edit.svg"
+                                 alt=""
+                                 title="Bearbeiten"
+                                 hx-get="{{config.UI.Path}}/media/directory/edit?path={{$dir.Path}}"
+                                 hx-target="body"
+                                 hx-swap="beforeend" />
+                            <img src="{{config.UI.Path}}/static/icons/add.svg"
+                                 alt=""
+                                 title="Unterordner hinzufügen"
+                                 hx-get="{{config.UI.Path}}/media/directory/add?path={{$dir.Path}}"
+                                 hx-target="body"
+                                 hx-swap="beforeend" />
+                            <img src="{{config.UI.Path}}/static/icons/delete.svg"
+                                 alt=""
+                                 title="Ordner löschen"
+                                 hx-get="{{config.UI.Path}}/media/directory/delete?path={{$dir.Path}}"
+                                 hx-target="body"
+                                 hx-swap="beforeend" />
                         </span>
                     </summary>
 

@@ -217,7 +217,6 @@ func (server *Server) serveUI(router chi.Router) {
 		r.Get("/toolbar", ui.Toolbar)
 		r.Get("/edit", content.Edit)
 		r.Get("/pages", content.Pages)
-		r.Get("/media", media.Media)
 		r.Get("/database", database.Database)
 		r.Route("/user", func(r chi.Router) {
 			r.Get("/edit", user.EditUser)
@@ -225,6 +224,17 @@ func (server *Server) serveUI(router chi.Router) {
 			r.Get("/delete", user.DeleteUser)
 			r.Delete("/delete", user.DeleteUser)
 			r.Get("/", user.User)
+		})
+		r.Route("/media", func(r chi.Router) {
+			r.Route("/directory", func(r chi.Router) {
+				r.Get("/add", media.AddDirectory)
+				r.Post("/add", media.AddDirectory)
+				r.Get("/edit", media.EditDirectory)
+				r.Post("/edit", media.EditDirectory)
+				r.Get("/delete", media.DeleteDirectory)
+				r.Delete("/delete", media.DeleteDirectory)
+			})
+			r.Get("/", media.Media)
 		})
 		r.Get("/logout", user.Logout)
 	})

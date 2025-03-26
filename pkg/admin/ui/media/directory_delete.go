@@ -1,0 +1,50 @@
+package media
+
+import (
+	"github.com/emvi/shifu/pkg/admin/tpl"
+	"github.com/emvi/shifu/pkg/admin/ui"
+	"github.com/emvi/shifu/pkg/cfg"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+)
+
+// DeleteDirectory deletes a directory.
+func DeleteDirectory(w http.ResponseWriter, r *http.Request) {
+	path := strings.TrimSpace(r.URL.Query().Get("path"))
+
+	if path == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else if _, err := os.Stat(filepath.Join(cfg.Get().BaseDir, mediaDir, path)); os.IsNotExist(err) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if r.Method == http.MethodDelete {
+		// TODO
+
+		tpl.Get().Execute(w, "media-tree.html", struct {
+			Directories []Directory
+		}{
+			Directories: listDirectories(w),
+		})
+		return
+	}
+
+	tpl.Get().Execute(w, "media-directory-delete.html", struct {
+		WindowOptions ui.WindowOptions
+		Directory     string
+		Path          string
+	}{
+		WindowOptions: ui.WindowOptions{
+			ID:         "shifu-media-directory-delete",
+			TitleTpl:   "media-directory-delete-window-title",
+			ContentTpl: "media-directory-delete-window-content",
+			Overlay:    true,
+		},
+		Directory: filepath.Base(path),
+		Path:      path,
+	})
+}
