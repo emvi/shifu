@@ -83,6 +83,11 @@ body.shifu {
             max-width: 80vw;
             max-height: 90vh;
             overflow: auto;
+
+            &-flex {
+                display: flex;
+                gap: 8px;
+            }
         }
 
         &-overlay {
@@ -280,4 +285,88 @@ body.shifu {
             padding: 4px 8px;
         }
     }
+
+    &-tree {
+        padding-left: 2px;
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            position: relative;
+
+            li {
+                cursor: pointer;
+                padding: 0 0 0 10px;
+            }
+
+            ul {
+                li {
+                    cursor: pointer;
+                    padding: 0 0 0 16px;
+                    margin: 0 0 0 2px;
+                    border-left: 1px solid #000000;
+
+                    &::before {
+                        content: '';
+                        display: block;
+                        position: absolute;
+                        width: 4px;
+                        height: 10px;
+                        border: solid #000000;
+                        border-width: 0 0 1px 1px;
+                        left: 2px;
+                    }
+                }
+
+                li:last-child {
+                    border-color: transparent;
+                }
+            }
+        }
+
+        summary {
+            cursor: pointer;
+            position: relative;
+            padding: 0 0 0 12px;
+
+            &::marker {
+                display: none;
+                content: "";
+            }
+
+            &::before {
+                content: "";
+                display: block;
+                position: absolute;
+                width: 10px;
+                height: 10px;
+                top: 4px;
+                left: -2px;
+                background-image: url("/admin/static/icons/folder-open.svg"); // FIXME
+                background-repeat: no-repeat;
+            }
+        }
+
+        details {
+            margin: 0 0 0 -10px;
+
+            &[open] > summary {
+                &::before {
+                    background-image: url("/admin/static/icons/folder-close.svg"); // FIXME
+                }
+            }
+
+            &.empty {
+                summary {
+                    &::before {
+                        background-image: url("/admin/static/icons/folder.svg"); // FIXME
+                    }
+                }
+            }
+        }
+    }
 }
+
+@import "media";

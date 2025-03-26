@@ -15,7 +15,7 @@ func Media(w http.ResponseWriter, _ *http.Request) {
 			ID:         "shifu-media",
 			TitleTpl:   "media-window-title",
 			ContentTpl: "media-window-content",
-			MinWidth:   500,
+			MinWidth:   800,
 		},
 	})
 }
