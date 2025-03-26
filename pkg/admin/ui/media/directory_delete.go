@@ -4,6 +4,7 @@ import (
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/cfg"
+	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -13,17 +14,22 @@ import (
 // DeleteDirectory deletes a directory.
 func DeleteDirectory(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimSpace(r.URL.Query().Get("path"))
+	fullPath := getDirectoryPath(path)
 
 	if path == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		return
-	} else if _, err := os.Stat(filepath.Join(cfg.Get().BaseDir, mediaDir, path)); os.IsNotExist(err) {
+	} else if _, err := os.Stat(fullPath); os.IsNotExist(err) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	if r.Method == http.MethodDelete {
-		// TODO
+		if err := os.RemoveAll(fullPath); err != nil {
+			slog.Error("Error while deleting directory", "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
 		tpl.Get().Execute(w, "media-tree.html", struct {
 			Directories []Directory
@@ -47,4 +53,8 @@ func DeleteDirectory(w http.ResponseWriter, r *http.Request) {
 		Directory: filepath.Base(path),
 		Path:      path,
 	})
+}
+
+func getDirectoryPath(path string) string {
+	return filepath.Join(cfg.Get().BaseDir, mediaDir, path)
 }
