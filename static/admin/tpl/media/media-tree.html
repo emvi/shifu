@@ -1,0 +1,24 @@
+{{define "media-tree-directories"}}
+    <ul>
+        {{range $dir := .}}
+            <li>
+                <details>
+                    <summary>
+                        <span>{{$dir.Name}}</span>
+                        <span>
+                            <img src="{{config.UI.Path}}/static/icons/edit.svg" alt="" title="Bearbeiten" />
+                            <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" title="Unterordner hinzufügen" />
+                            <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" title="Ordner löschen" />
+                        </span>
+                    </summary>
+
+                    {{if len $dir.Children}}
+                        {{template "media-tree-directories" $dir.Children}}
+                    {{end}}
+                </details>
+            </li>
+        {{end}}
+    </ul>
+{{end}}
+
+{{template "media-tree-directories" .Data.Directories}}

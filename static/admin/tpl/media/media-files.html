@@ -1,0 +1,39 @@
+<table>
+    <thead>
+    <tr>
+        <td>Vorschau</td>
+        <td>Dateiname</td>
+        <td>Größe</td>
+        <td>Bearbeiten</td>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>0</td>
+            <td>1</td>
+            <td>2</td>
+            <td>
+                <div class="edit">
+                    <button title="Datei bearbeiten"
+                            hx-get="{{config.UI.Path}}/media/edit?id="
+                            hx-target="body"
+                            hx-swap="beforeend">
+                        <img src="{{config.UI.Path}}/static/icons/edit.svg" alt="" />
+                    </button>
+                    <button title="Datei verschieben"
+                            hx-get="{{config.UI.Path}}/media/move?id="
+                            hx-target="body"
+                            hx-swap="beforeend">
+                        <img src="{{config.UI.Path}}/static/icons/move.svg" alt="" />
+                    </button>
+                    <button title="Datei löschen"
+                            hx-get="{{config.UI.Path}}/media/delete?id="
+                            hx-target="body"
+                            hx-swap="beforeend">
+                        <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

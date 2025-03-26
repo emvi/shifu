@@ -229,10 +229,22 @@ func (server *Server) serveUI(router chi.Router) {
 		r.Get("/logout", user.Logout)
 	})
 	fs := http.FileServerFS(static.AdminStatic)
-	router.Handle(fmt.Sprintf("%s/static/*", path), gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	router.Handle(fmt.Sprintf("%s/static/*", path), gzhttp.GzipHandler(http.StripPrefix(path, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.URL.Path = filepath.Join("/admin", r.URL.Path)
 		w.Header().Set("Cache-Control", "max-age=86400")
 		fs.ServeHTTP(w, r)
-	})))
+	}))))
+
+	// always serve on /shifu-admin
+	if strings.ToLower(path) != "/shifu-admin" {
+		slog.Info("Serving admin UI static files", "path", "/shifu-admin")
+		router.Handle("/shifu-admin/static/*", gzhttp.GzipHandler(http.StripPrefix("/shifu-admin", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			r.URL.Path = filepath.Join("/admin", r.URL.Path)
+			w.Header().Set("Cache-Control", "max-age=86400")
+			fs.ServeHTTP(w, r)
+		}))))
+	}
+
 	router.Get(path, user.Login)
 	router.Post(path, user.Login)
 }

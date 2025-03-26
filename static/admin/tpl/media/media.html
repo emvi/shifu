@@ -6,83 +6,25 @@
 {{define "media-window-content"}}
     <div class="shifu-window-content-flex">
         <div class="shifu-media-tree shifu-tree">
-            <ul>
-                <li>
-                    <details>
-                        <summary>
-                            Aaaa
-                            TODO edit, add, delete
-                        </summary>
-                        <ul>
-                            <li>
-                                <details class="empty">
-                                    <summary>1</summary>
-                                </details>
-                            </li>
-                            <li>
-                                <details class="empty">
-                                    <summary>2</summary>
-                                </details>
-                            </li>
-                            <li>
-                                <details class="empty">
-                                    <summary>3</summary>
-                                </details>
-                            </li>
-                        </ul>
-                    </details>
-                </li>
-                <li>
-                    <details class="empty">
-                        <summary>Beee</summary>
-                    </details>
-                </li>
-                <li>
-                    <details>
-                        <summary>Cccc</summary>
-                        <ul>
-                            <li>
-                                <details class="empty">
-                                    <summary>1</summary>
-                                </details>
-                            </li>
-                            <li>
-                                <details>
-                                    <summary>2</summary>
-                                    <ul>
-                                        <li>
-                                            <details class="empty">
-                                                <summary>a</summary>
-                                            </details>
-                                        </li>
-                                        <li>
-                                            <details class="empty">
-                                                <summary>b</summary>
-                                            </details>
-                                        </li>
-                                    </ul>
-                                </details>
-                            </li>
-                        </ul>
-                    </details>
-                </li>
-            </ul>
+            {{template "media-tree.html" .}}
         </div>
         <div class="shifu-media-files">
             <div class="shifu-toolbelt">
-                <button hx-get="{{config.UI.Path}}/user/edit"
+                <button hx-get="{{config.UI.Path}}/media/upload"
                         hx-target="body"
-                        hx-swap="beforeend"
-                        title="Dateien hochladen">
+                        hx-swap="beforeend">
                     <img src="{{config.UI.Path}}/static/icons/upload.svg" alt="" />
+                    Dateien hochladen
                 </button>
-                <button hx-get="{{config.UI.Path}}/user/edit"
+                <button hx-get="{{config.UI.Path}}/media/delete"
                         hx-target="body"
-                        hx-swap="beforeend"
-                        title="Dateien löschen">
+                        hx-swap="beforeend">
                     <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
+                    Dateien löschen
                 </button>
             </div>
+
+            {{template "media-files.html" .}}
         </div>
     </div>
 {{end}}

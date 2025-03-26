@@ -327,9 +327,22 @@ body.shifu {
         }
 
         summary {
+            display: flex;
+            justify-content: space-between;
             cursor: pointer;
             position: relative;
             padding: 0 0 0 12px;
+
+            & > span {
+                display: flex;
+                gap: 2px;
+                align-items: center;
+
+                img {
+                    width: 12px;
+                    height: 12px;
+                }
+            }
 
             &::marker {
                 display: none;
@@ -344,7 +357,7 @@ body.shifu {
                 height: 10px;
                 top: 4px;
                 left: -2px;
-                background-image: url("/admin/static/icons/folder-open.svg"); // FIXME
+                background-image: url("/shifu-admin/static/icons/folder-open.svg");
                 background-repeat: no-repeat;
             }
         }
@@ -354,14 +367,14 @@ body.shifu {
 
             &[open] > summary {
                 &::before {
-                    background-image: url("/admin/static/icons/folder-close.svg"); // FIXME
+                    background-image: url("/shifu-admin/static/icons/folder-close.svg");
                 }
             }
 
             &.empty {
                 summary {
                     &::before {
-                        background-image: url("/admin/static/icons/folder.svg"); // FIXME
+                        background-image: url("/shifu-admin/static/icons/folder.svg");
                     }
                 }
             }
