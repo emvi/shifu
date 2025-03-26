@@ -47,9 +47,11 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 		tpl.Get().Execute(w, "user-list.html", struct {
 			Admin bool
+			Self  *model.User
 			User  []model.User
 		}{
 			Admin: isAdmin,
+			Self:  middleware.GetUser(r),
 			User:  listUser(),
 		})
 		return
