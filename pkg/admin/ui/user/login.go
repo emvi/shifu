@@ -8,6 +8,7 @@ import (
 	"github.com/emvi/shifu/pkg/cfg"
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -29,12 +30,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		email := r.FormValue("email")
+		email := strings.ToLower(r.FormValue("email"))
 		password := r.FormValue("password")
 		stayLoggedIn := r.FormValue("stay_logged_in")
 		var user model.User
 
-		if err := db.Get().Get(&user, `SELECT * FROM "user" WHERE email = ?`, email); err != nil {
+		if err := db.Get().Get(&user, `SELECT * FROM "user" WHERE lower(email) = ?`, email); err != nil {
 			tpl.Get().Execute(w, "login-form.html", LoginForm{
 				Email: email,
 				Error: "user not found",
