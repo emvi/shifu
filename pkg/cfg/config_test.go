@@ -23,7 +23,7 @@ const (
 		"cookie_domain_name": "example.com"
     },
 	"api": {
-		"secret": "foobar"
+		"secret": "${ACCESS_KEY}"
 	},
 	"remote": {
 		"url": "https://example.com",
@@ -94,7 +94,7 @@ func TestLoadConfig(t *testing.T) {
 	assert.Equal(t, "example.com", cfg.Server.Hostname)
 	assert.True(t, cfg.Server.SecureCookies)
 	assert.Equal(t, "example.com", cfg.Server.CookieDomainName)
-	assert.Equal(t, "foobar", cfg.API.Secret)
+	assert.Equal(t, "access key", cfg.API.Secret)
 	assert.Equal(t, "https://example.com", cfg.Remote.URL)
 	assert.Equal(t, "foobar", cfg.Remote.Secret)
 	assert.Equal(t, 600, cfg.Git.UpdateSeconds)

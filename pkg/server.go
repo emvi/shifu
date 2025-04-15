@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/emvi/shifu/pkg/admin/db"
-	middleware2 "github.com/emvi/shifu/pkg/admin/middleware"
+	adminMiddleware "github.com/emvi/shifu/pkg/admin/middleware"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/ui/content"
 	"github.com/emvi/shifu/pkg/admin/ui/database"
@@ -213,7 +213,7 @@ func (server *Server) serveUI(router chi.Router) {
 	path := cfg.Get().UI.Path
 	slog.Info("Serving admin UI", "path", path)
 	router.Route(path, func(r chi.Router) {
-		r.Use(middleware2.Auth)
+		r.Use(adminMiddleware.Auth)
 		r.Get("/toolbar", ui.Toolbar)
 		r.Get("/edit", content.Edit)
 		r.Get("/pages", content.Pages)
