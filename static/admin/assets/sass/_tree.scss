@@ -1,0 +1,104 @@
+.shifu-tree {
+    padding-left: 2px;
+
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        user-select: none;
+        position: relative;
+
+        li {
+            cursor: pointer;
+            padding: 0 0 0 10px;
+        }
+
+        ul {
+            li {
+                cursor: pointer;
+                padding: 0 0 0 16px;
+                margin: 0 0 0 2px;
+                border-left: 1px solid var(--border-inner);
+
+                &::before {
+                    content: '';
+                    display: block;
+                    position: absolute;
+                    width: 4px;
+                    height: 10px;
+                    border: solid var(--border-inner);
+                    border-width: 0 0 1px 1px;
+                    left: 2px;
+                }
+            }
+
+            li:last-child {
+                border-color: transparent;
+            }
+        }
+    }
+
+    summary {
+        display: flex;
+        justify-content: space-between;
+        cursor: pointer;
+        position: relative;
+        padding: 0 0 0 12px;
+
+        & > span {
+            display: flex;
+            gap: 2px;
+            align-items: center;
+
+            img {
+                width: 12px;
+                height: 12px;
+            }
+        }
+
+        & > span:last-child {
+            display: none;
+        }
+
+        &::marker {
+            display: none;
+            content: "";
+        }
+
+        &::before {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: 4px;
+            left: -2px;
+            background-image: url("/shifu-admin/static/icons/folder-open.svg");
+            background-repeat: no-repeat;
+        }
+
+        &:hover {
+            & > span:last-child {
+                display: inline;
+            }
+        }
+    }
+
+    details {
+        margin: 0 0 0 -10px;
+
+        &[open] > summary {
+            &::before {
+                background-image: url("/shifu-admin/static/icons/folder-close.svg");
+            }
+        }
+
+        &.empty {
+            summary {
+                &::before {
+                    background-image: url("/shifu-admin/static/icons/folder.svg");
+                }
+            }
+        }
+    }
+}

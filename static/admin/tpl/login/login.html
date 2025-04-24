@@ -24,16 +24,12 @@
     <script defer src="{{config.UI.Path}}/static/admin.js"></script>
 </head>
 <body class="shifu" hx-ext="response-targets">
-    <div class="shifu-box" style="width: 260px;">
+    <div class="shifu-box" style="width: 460px;">
         <div class="shifu-box-title">Login</div>
         <div class="shifu-box-content">
             {{template "login-form.html" .}}
             <hr />
-            <p style="text-align: center;font-size: 10px;">
-                &copy; {{year}} Emvi Software GmbH<br />
-                Alle Rechte vorbehalten.<br />
-                <a href="https://emvi.com" target="_blank">Website</a>
-            </p>
+            <small>&copy; {{year}} Emvi Software GmbH / Alle Rechte vorbehalten. / <a href="https://emvi.com" target="_blank">Visit Website</a></small>
         </div>
     </div>
 </body>

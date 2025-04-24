@@ -1,3 +1,4 @@
+@import "vars";
 @import "fonts";
 
 html.shifu {
@@ -15,7 +16,7 @@ body.shifu {
     padding: 0;
     font-size: 12px;
     min-height: 100vh;
-    background: #b3cde6;
+    background: var(--bg);
     box-sizing: border-box;
     display: flex;
     justify-content: center;
@@ -24,6 +25,7 @@ body.shifu {
 
 .shifu {
     font-size: 12px;
+    color: var(--text);
 
     *,
     *::before,
@@ -34,21 +36,22 @@ body.shifu {
     }
 
     &-box, &-window {
-        background: #fff;
-        border: 1px solid #000;
-        box-shadow: 3px 3px 6px -1px rgba(0,0,0,0.33);
-        -webkit-box-shadow: 3px 3px 6px -1px rgba(0,0,0,0.33);
-        -moz-box-shadow: 3px 3px 6px -1px rgba(0,0,0,0.33);
+        background: var(--bg);
+        border: 2px solid var(--border);
+        border-radius: 4px;
+        box-shadow: 0 0 2px 0 var(--border);
 
         &-title {
-            background: #000;
-            color: #fff;
             padding: 4px;
-            font-weight: 500;
+            margin: 2px 2px 0 2px;
+            font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 64px;
+            text-transform: uppercase;
+            font-size: 10px;
+            border: 1px solid var(--border-inner);
 
             &-label {
                 display: flex;
@@ -60,7 +63,6 @@ body.shifu {
                 img {
                     width: 12px;
                     height: 12px;
-                    filter: invert(100%);
                 }
             }
 
@@ -72,17 +74,20 @@ body.shifu {
                 img {
                     width: 16px;
                     height: 16px;
-                    filter: invert(100%);
                     cursor: pointer;
                 }
             }
         }
 
         &-content {
-            padding: 4px;
+            padding: 12px;
+            margin: 0 2px 2px 2px;
             max-width: 80vw;
             max-height: 90vh;
             overflow: auto;
+            border-style: solid;
+            border-color: var(--border-inner);
+            border-width: 0 1px 1px 1px;
 
             &-flex {
                 display: flex;
@@ -130,73 +135,15 @@ body.shifu {
 
     hr {
         height: 1px;
-        background: #000;
-        margin: 16px -4px;
+        background: var(--border-inner);
+        margin: 12px -12px 8px -12px;
         border-width: 0;
-    }
-
-    fieldset {
-        margin: 8px 0;
-        padding: 0;
-        border-width: 0;
-
-        label {
-            display: block;
-            font-size: 10px;
-            margin: 0 0 2px 0;
-            line-height: 1;
-        }
-    }
-
-    fieldset.checkbox {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-
-        label {
-            margin: 0;
-        }
-    }
-
-    input, button {
-        width: 100%;
-        padding: 4px 8px;
-        font-size: 12px;
-        border: 1px solid rgba(0, 0, 0, 0.5);
-    }
-
-    input[type~="submit"], button {
-        width: auto;
-        background: #000;
-        color: #fff;
-        font-weight: 500;
-        border-width: 0;
-        cursor: pointer;
-        padding: 8px 16px;
-        display: flex;
-        gap: 8px;
-        align-items: center;
-
-        &:hover {
-            background: rgba(0, 0, 0, 0.75);
-        }
-
-        img {
-            width: 12px;
-            height: 12px;
-            filter: invert(100%);
-        }
-    }
-
-    input[type~="checkbox"] {
-        width: auto;
-        margin: 0;
     }
 
     a {
-        color: #000;
+        color: var(--border);
         opacity: 0.7;
-        text-decoration: underline;
+        text-decoration: none;
 
         &:hover {
             opacity: 1;
@@ -205,16 +152,45 @@ body.shifu {
 
     table {
         width: 100%;
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0;
+
+        tr:hover td {
+            background: var(--highlight);
+            color: var(--bg);
+        }
 
         td {
             padding: 4px;
-            border: 1px solid rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-inner);
+        }
+
+        tbody {
+            tr:last-child td:first-child {
+                border-radius: 0 0 0 4px;
+            }
+
+            tr:last-child td:last-child {
+                border-radius: 0 0 4px 0;
+            }
         }
 
         thead tr {
-            background: #000;
-            color: #fff;
+            text-transform: uppercase;
+            font-size: 10px;
+            font-weight: bold;
+
+            td {
+                background: var(--border-inner);
+            }
+
+            td:first-child {
+                border-radius: 4px 0 0 0;
+            }
+
+            td:last-child {
+                border-radius: 0 4px 0 0;
+            }
         }
     }
 
@@ -233,21 +209,16 @@ body.shifu {
     }
 
     .secondary {
-        background: none;
-        border: 1px solid #000;
-        color: #000;
-
-        &:hover {
-            background: #000;
-            color: #fff;
-        }
+        border-color: var(--border-inner);
+        box-shadow: none;
+        color: var(--border-inner);
     }
 
     &-toolbar {
         &-icons {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 16px;
         }
 
         a {
@@ -255,23 +226,11 @@ body.shifu {
             justify-content: center;
             align-items: center;
             aspect-ratio: 1;
-            border: 1px solid rgba(0, 0, 0, 0.5);
-            padding: 8px;
             cursor: pointer;
 
             img {
-                width: 16px;
-                height: 16px;
-                fill: #000;
-            }
-
-            &:hover {
-                background: #000;
-                color: #fff;
-
-                img {
-                    filter: invert(100%);
-                }
+                width: 14px;
+                height: 14px;
             }
         }
     }
@@ -279,107 +238,14 @@ body.shifu {
     &-toolbelt {
         display: flex;
         gap: 4px;
-        margin: 0 0 4px 0;
+        margin: 0 0 8px 0;
 
         button {
             padding: 4px 8px;
         }
     }
-
-    &-tree {
-        padding-left: 2px;
-
-        ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            position: relative;
-
-            li {
-                cursor: pointer;
-                padding: 0 0 0 10px;
-            }
-
-            ul {
-                li {
-                    cursor: pointer;
-                    padding: 0 0 0 16px;
-                    margin: 0 0 0 2px;
-                    border-left: 1px solid #000000;
-
-                    &::before {
-                        content: '';
-                        display: block;
-                        position: absolute;
-                        width: 4px;
-                        height: 10px;
-                        border: solid #000000;
-                        border-width: 0 0 1px 1px;
-                        left: 2px;
-                    }
-                }
-
-                li:last-child {
-                    border-color: transparent;
-                }
-            }
-        }
-
-        summary {
-            display: flex;
-            justify-content: space-between;
-            cursor: pointer;
-            position: relative;
-            padding: 0 0 0 12px;
-
-            & > span {
-                display: flex;
-                gap: 2px;
-                align-items: center;
-
-                img {
-                    width: 12px;
-                    height: 12px;
-                }
-            }
-
-            &::marker {
-                display: none;
-                content: "";
-            }
-
-            &::before {
-                content: "";
-                display: block;
-                position: absolute;
-                width: 10px;
-                height: 10px;
-                top: 4px;
-                left: -2px;
-                background-image: url("/shifu-admin/static/icons/folder-open.svg");
-                background-repeat: no-repeat;
-            }
-        }
-
-        details {
-            margin: 0 0 0 -10px;
-
-            &[open] > summary {
-                &::before {
-                    background-image: url("/shifu-admin/static/icons/folder-close.svg");
-                }
-            }
-
-            &.empty {
-                summary {
-                    &::before {
-                        background-image: url("/shifu-admin/static/icons/folder.svg");
-                    }
-                }
-            }
-        }
-    }
 }
 
+@import "form";
 @import "media";
+@import "tree";
