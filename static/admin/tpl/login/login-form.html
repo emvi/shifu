@@ -1,7 +1,7 @@
 <form method="post" hx-post="{{path}}" hx-swap="outerHTML" hx-target-*="this">
     <fieldset>
         <label for="email">Email</label>
-        <input type="text" name="email" id="email" value="{{.Data.Email}}" />
+        <input type="text" name="email" id="email" value="{{.Data.Email}}" autofocus />
 
         {{if .Data.Error}}
             <span class="error">{{.Data.Error}}</span>

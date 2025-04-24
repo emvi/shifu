@@ -8,7 +8,7 @@
       hx-on::after-request="shifuCloseWindow('#shifu-user-edit')">
     <fieldset>
         <label for="email">Email</label>
-        <input type="email" name="email" id="email" value="{{.Data.Email}}" {{if $admin}}disabled{{end}} />
+        <input type="email" name="email" id="email" value="{{.Data.Email}}" autofocus {{if $admin}}disabled{{end}} />
 
         {{if index .Data.Errors "email"}}
             <span class="error">{{index .Data.Errors "email"}}</span>

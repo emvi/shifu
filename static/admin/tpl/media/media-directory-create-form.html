@@ -1,0 +1,16 @@
+<form method="post"
+      hx-post="{{config.UI.Path}}/media/directory/add?path={{.Data.Path}}"
+      hx-swap="outerHTML"
+      hx-target=".shifu-media-tree"
+      hx-target-4*="this"
+      hx-on::after-request="shifuCloseWindow('#shifu-media-directory-create')">
+    <fieldset>
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" value="{{.Data.Name}}" autofocus />
+
+        {{if index .Data.Errors "name"}}
+            <span class="error">{{index .Data.Errors "name"}}</span>
+        {{end}}
+    </fieldset>
+    <input type="submit" value="Erstellen" />
+</form>

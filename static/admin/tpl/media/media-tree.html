@@ -36,4 +36,13 @@
     </ul>
 {{end}}
 
-{{template "media-tree-directories" .Data.Directories}}
+<div style="margin-bottom: 8px;">
+    {{template "media-tree-directories" .Data.Directories}}
+</div>
+<button title="Ordner anlegen"
+        hx-get="{{config.UI.Path}}/media/directory/add"
+        hx-target="body"
+        hx-swap="beforeend">
+    <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" />
+    Ordner anlegen
+</button>

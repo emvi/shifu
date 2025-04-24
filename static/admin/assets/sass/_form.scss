@@ -38,6 +38,10 @@
         background: var(--bg);
         border-radius: 4px;
         color: var(--text);
+
+        &:focus {
+            border-color: var(--border);
+        }
     }
 
     input[type~="submit"], button {

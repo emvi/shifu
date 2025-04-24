@@ -4,11 +4,11 @@ import (
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/cfg"
-	"io/fs"
 	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 )
 
@@ -21,8 +21,6 @@ type Directory struct {
 	Name     string
 	Path     string
 	Children []Directory
-
-	level int
 }
 
 // Media renders the media management dialog.
@@ -52,40 +50,55 @@ func listDirectories(w http.ResponseWriter) []Directory {
 		}
 	}
 
-	dirs := make([]Directory, 0)
-	var last *Directory
+	tree, err := readDirectoryTree(dir, dir)
 
-	if err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
-		path = strings.TrimPrefix(path, dir)
-
-		if d.IsDir() && path != "" {
-			level := strings.Count(path, "/")
-
-			if last == nil || level <= last.level {
-				dirs = append(dirs, Directory{
-					Name:     d.Name(),
-					Path:     path,
-					Children: make([]Directory, 0),
-					level:    level,
-				})
-				last = &dirs[len(dirs)-1]
-			} else {
-				last.Children = append(last.Children, Directory{
-					Name:     d.Name(),
-					Path:     path,
-					Children: make([]Directory, 0),
-					level:    level,
-				})
-				last = &last.Children[len(last.Children)-1]
-			}
-		}
-
-		return err
-	}); err != nil {
+	if err != nil {
 		slog.Error("Error reading media directory", "error", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		return nil
 	}
 
-	return dirs
+	return tree
+}
+
+func readDirectoryTree(prefix, dir string) ([]Directory, error) {
+	files, err := os.ReadDir(dir)
+
+	if err != nil {
+		return nil, err
+	}
+
+	dirs := make([]Directory, 0)
+
+	for _, file := range files {
+		if file.IsDir() {
+			path := filepath.Join(dir, file.Name())
+			children, err := readDirectoryTree(prefix, path)
+
+			if err != nil {
+				return nil, err
+			}
+
+			dirs = append(dirs, Directory{
+				Name:     file.Name(),
+				Path:     strings.TrimPrefix(path, prefix),
+				Children: children,
+			})
+		}
+	}
+
+	sortDirectories(dirs)
+	return dirs, nil
+}
+
+func sortDirectories(dirs []Directory) {
+	slices.SortFunc(dirs, func(a, b Directory) int {
+		if strings.ToLower(a.Name) > strings.ToLower(b.Name) {
+			return 1
+
+		} else if strings.ToLower(a.Name) < strings.ToLower(b.Name) {
+			return -1
+		}
+
+		return 0
+	})
 }
