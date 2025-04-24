@@ -3,7 +3,6 @@ package media
 import (
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -19,9 +18,6 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		name := strings.TrimSpace(r.FormValue("name"))
 		fullPath := getDirectoryPath(filepath.Join(path, name))
-
-		log.Println(fullPath)
-
 		errs := make(map[string]string)
 
 		if name == "" {
