@@ -9,6 +9,12 @@
 
     &-files {
         flex: 1;
+        white-space: nowrap;
+
+        img {
+            max-width: 80px;
+            max-height: 50px;
+        }
     }
 
     &-directory {

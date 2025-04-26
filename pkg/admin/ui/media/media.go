@@ -27,7 +27,9 @@ type Directory struct {
 func Media(w http.ResponseWriter, _ *http.Request) {
 	tpl.Get().Execute(w, "media.html", struct {
 		WindowOptions ui.WindowOptions
+		Path          string
 		Directories   []Directory
+		Files         []File
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-media",

@@ -30,7 +30,7 @@
         }
     }
 
-    input, button {
+    input, button, .button {
         width: 100%;
         padding: 4px 8px;
         font-size: 12px;
@@ -39,13 +39,14 @@
         background: var(--bg);
         border-radius: 4px;
         color: var(--text);
+        opacity: 1;
 
         &:focus {
             border-color: var(--border);
         }
     }
 
-    input[type~="submit"], button {
+    input[type~="submit"], button, .button {
         width: auto;
         background: var(--bg);
         color: var(--border);

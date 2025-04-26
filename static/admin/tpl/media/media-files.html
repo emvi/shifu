@@ -1,57 +1,72 @@
-<div class="shifu-toolbelt">
-    <button hx-get="{{config.UI.Path}}/media/file/upload"
-            hx-target="body"
-            hx-swap="beforeend">
-        <img src="{{config.UI.Path}}/static/icons/upload.svg" alt="" />
-        Dateien hochladen
-    </button>
-    <button hx-get="{{config.UI.Path}}/media/file/delete"
-            hx-target="body"
-            hx-swap="beforeend">
-        <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
-        Dateien löschen
-    </button>
-</div>
-<table>
-    <thead>
-    <tr>
-        <td></td>
-        <td>Vorschau</td>
-        <td>Dateiname</td>
-        <td>Größe</td>
-        <td>Bearbeiten</td>
-    </tr>
-    </thead>
-    <tbody>
+{{if .Data.Path}}
+    <div class="shifu-toolbelt">
+        <button hx-get="{{config.UI.Path}}/media/file/upload"
+                hx-target="body"
+                hx-swap="beforeend">
+            <img src="{{config.UI.Path}}/static/icons/upload.svg" alt="" />
+            Dateien hochladen
+        </button>
+        <button hx-get="{{config.UI.Path}}/media/file/delete"
+                hx-target="body"
+                hx-swap="beforeend">
+            <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
+            Dateien löschen
+        </button>
+    </div>
+    <table>
+        <thead>
         <tr>
-            <td>
-                <input type="checkbox" name="delete[]" value="TODO" />
-            </td>
-            <td>0</td>
-            <td>1</td>
-            <td>2</td>
-            <td>
-                <div class="edit">
-                    <button title="Datei bearbeiten"
-                            hx-get="{{config.UI.Path}}/media/edit?id="
-                            hx-target="body"
-                            hx-swap="beforeend">
-                        <img src="{{config.UI.Path}}/static/icons/edit.svg" alt="" />
-                    </button>
-                    <button title="Datei verschieben"
-                            hx-get="{{config.UI.Path}}/media/move?id="
-                            hx-target="body"
-                            hx-swap="beforeend">
-                        <img src="{{config.UI.Path}}/static/icons/move.svg" alt="" />
-                    </button>
-                    <button title="Datei löschen"
-                            hx-get="{{config.UI.Path}}/media/delete?id="
-                            hx-target="body"
-                            hx-swap="beforeend">
-                        <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
-                    </button>
-                </div>
-            </td>
+            <td></td>
+            <td>Vorschau</td>
+            <td style="width: 100%;">Dateiname</td>
+            <td>Größe</td>
+            <td>Bearbeiten</td>
         </tr>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {{if len .Data.Files}}
+                {{range $file := .Data.Files}}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="delete[]" value="TODO" />
+                        </td>
+                        <td style="text-align: center;">
+                            {{if $file.Preview}}
+                                <img src="{{$file.Preview}}" alt="{{$file.Name}}" />
+                            {{else}}
+                                <img src="{{config.UI.Path}}/static/icons/file.svg" alt="" style="width: 20px;height: 20px;margin-top: 4px;" />
+                            {{end}}
+                        </td>
+                        <td>{{$file.Name}}</td>
+                        <td>{{formatFileSize $file.Size}}</td>
+                        <td>
+                            <div class="edit">
+                                <a href="{{if $file.Preview}}{{$file.Preview}}{{else}}{{$file.Path}}{{end}}" target="_blank" class="button" title="Datei öffnen">
+                                    <img src="{{config.UI.Path}}/static/icons/view.svg" alt="" style="width: 12px;height: 12px;" />
+                                </a>
+                                <button title="Datei verschieben"
+                                        hx-get="{{config.UI.Path}}/media/move?path={{$file.Path}}"
+                                        hx-target="body"
+                                        hx-swap="beforeend">
+                                    <img src="{{config.UI.Path}}/static/icons/move.svg" alt="" />
+                                </button>
+                                <button title="Datei löschen"
+                                        hx-get="{{config.UI.Path}}/media/delete?path={$file.Path}}"
+                                        hx-target="body"
+                                        hx-swap="beforeend">
+                                    <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                {{end}}
+            {{else}}
+                <tr>
+                    <td colspan="5">Der Ordner ist leer.</td>
+                </tr>
+            {{end}}
+        </tbody>
+    </table>
+{{else}}
+    <p>Kein Ordner ausgewählt.</p>
+{{end}}
