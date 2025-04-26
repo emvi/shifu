@@ -13,18 +13,19 @@
             Dateien löschen
         </button>
     </div>
-    <table>
-        <thead>
-        <tr>
-            <td></td>
-            <td>Vorschau</td>
-            <td style="width: 100%;">Dateiname</td>
-            <td>Größe</td>
-            <td>Bearbeiten</td>
-        </tr>
-        </thead>
-        <tbody>
-            {{if len .Data.Files}}
+
+    {{if len .Data.Files}}
+        <table>
+            <thead>
+            <tr>
+                <td></td>
+                <td>Vorschau</td>
+                <td style="width: 100%;">Dateiname</td>
+                <td>Größe</td>
+                <td>Bearbeiten</td>
+            </tr>
+            </thead>
+            <tbody>
                 {{range $file := .Data.Files}}
                     <tr>
                         <td>
@@ -60,13 +61,11 @@
                         </td>
                     </tr>
                 {{end}}
-            {{else}}
-                <tr>
-                    <td colspan="5">Der Ordner ist leer.</td>
-                </tr>
-            {{end}}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    {{else}}
+        <p>Der Ordner ist leer.</p>
+    {{end}}
 {{else}}
     <p>Kein Ordner ausgewählt.</p>
 {{end}}
