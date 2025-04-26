@@ -8,21 +8,6 @@
             {{template "media-tree.html" .}}
         </div>
         <div class="shifu-media-files">
-            <div class="shifu-toolbelt">
-                <button hx-get="{{config.UI.Path}}/media/file/upload"
-                        hx-target="body"
-                        hx-swap="beforeend">
-                    <img src="{{config.UI.Path}}/static/icons/upload.svg" alt="" />
-                    Dateien hochladen
-                </button>
-                <button hx-get="{{config.UI.Path}}/media/file/delete"
-                        hx-target="body"
-                        hx-swap="beforeend">
-                    <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
-                    Dateien löschen
-                </button>
-            </div>
-
             {{template "media-files.html" .}}
         </div>
     </div>

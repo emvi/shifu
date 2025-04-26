@@ -4,7 +4,11 @@
             <li>
                 <details {{if not (len $dir.Children)}}class="empty"{{end}}>
                     <summary>
-                        <span>{{$dir.Name}}</span>
+                        <span class="shifu-media-directory-name"
+                              hx-get="{{config.UI.Path}}/media/directory?path={{$dir.Path}}"
+                              hx-target=".shifu-media-files">
+                            {{$dir.Name}}
+                        </span>
                         <span>
                             <img src="{{config.UI.Path}}/static/icons/edit.svg"
                                  alt=""
@@ -46,3 +50,16 @@
     <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" />
     Ordner anlegen
 </button>
+
+<script>
+    document.querySelectorAll(".shifu-media-directory-name").forEach(e => {
+        e.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+            document.querySelectorAll(".shifu-media-directory-name").forEach(e => {
+                e.classList.remove("shifu-media-directory-selected");
+            });
+            e.target.classList.add("shifu-media-directory-selected");
+        });
+    });
+</script>

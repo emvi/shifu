@@ -10,4 +10,16 @@
     &-files {
         flex: 1;
     }
+
+    &-directory {
+        &-name {
+            padding: 0 2px;
+        }
+
+        &-selected {
+            background: var(--highlight);
+            color: var(--bg);
+            border-radius: 4px;
+        }
+    }
 }
