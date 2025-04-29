@@ -12,6 +12,19 @@
         {{if index .Data.Errors "files"}}
             <span class="error">{{index .Data.Errors "files"}}</span>
         {{end}}
+
+        {{if len .Data.ExistingFiles}}
+            <p>Die folgenden Dateien existieren bereits. Bitte ändere den Namen bevor du sie hochlädst oder wähle die Checkbox zum Überschreiben aus.</p>
+            <ul>
+                {{range $filename := .Data.ExistingFiles}}
+                    <li>{{$filename}}</li>
+                {{end}}
+            </ul>
+        {{end}}
+    </fieldset>
+    <fieldset>
+        <label for="overwrite">Dateien überschreiben</label>
+        <input type="checkbox" name="overwrite" id="overwrite" {{if .Data.Overwrite}}checked{{end}} />
     </fieldset>
     <input type="submit" value="Hochladen" />
 </form>

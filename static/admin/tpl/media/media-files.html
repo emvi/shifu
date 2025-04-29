@@ -56,6 +56,12 @@
                                 <a href="{{if $file.Preview}}{{$file.Preview}}{{else}}{{$file.Path}}{{end}}" target="_blank" class="button" title="Datei öffnen">
                                     <img src="{{config.UI.Path}}/static/icons/view.svg" alt="" style="width: 12px;height: 12px;" />
                                 </a>
+                                <button title="Datei umbenennen"
+                                        hx-get="{{config.UI.Path}}/media/file/edit?path={{$path}}&name={{$file.Name}}"
+                                        hx-target="body"
+                                        hx-swap="beforeend">
+                                    <img src="{{config.UI.Path}}/static/icons/edit.svg" alt="" />
+                                </button>
                                 <button title="Datei verschieben"
                                         hx-get="{{config.UI.Path}}/media/file/move?path={{$path}}&name={{$file.Name}}"
                                         hx-target="body"

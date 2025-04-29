@@ -12,15 +12,20 @@ import (
 	"strings"
 )
 
+const (
+	maxSize = 100_000_000
+)
+
 // UploadFiles uploads one or more files.
 func UploadFiles(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimSpace(r.URL.Query().Get("path"))
 
 	if r.Method == http.MethodPost {
+		overwrite := strings.ToLower(r.FormValue("overwrite")) == "on"
 		errs := make(map[string]string)
 
 		// 100 MB
-		if err := r.ParseMultipartForm(100_000_000); err != nil {
+		if err := r.ParseMultipartForm(maxSize); err != nil {
 			errs["files"] = "files exceed the maximum size"
 		}
 
@@ -36,9 +41,20 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		existingFiles := make([]string, 0)
+
 		if len(errs) == 0 {
 			for _, file := range files {
 				p := filepath.Join(getDirectoryPath(path), file.Filename)
+
+				if !overwrite {
+					if _, err := os.Stat(p); !os.IsNotExist(err) {
+						errs["files"] = "file already exists"
+						existingFiles = append(existingFiles, file.Filename)
+						continue
+					}
+				}
+
 				f, err := file.Open()
 
 				if err != nil {
@@ -70,11 +86,15 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "media-file-upload-form.html", struct {
-				Path   string
-				Errors map[string]string
+				Path          string
+				Overwrite     bool
+				Errors        map[string]string
+				ExistingFiles []string
 			}{
-				Path:   path,
-				Errors: errs,
+				Path:          path,
+				Overwrite:     overwrite,
+				Errors:        errs,
+				ExistingFiles: existingFiles,
 			})
 			return
 		}
@@ -93,7 +113,9 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 	tpl.Get().Execute(w, "media-file-upload.html", struct {
 		WindowOptions ui.WindowOptions
 		Path          string
+		Overwrite     bool
 		Errors        map[string]string
+		ExistingFiles []string
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-media-file-upload",

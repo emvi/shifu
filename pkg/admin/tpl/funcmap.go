@@ -18,9 +18,9 @@ func formatFileSize(size int64) string {
 	value := float64(size)
 
 	if size >= 1024*1024*1024 {
-		return fmt.Sprintf("%.1f GB", value/1024*1024*1024)
+		return fmt.Sprintf("%.1f GB", value/(1024*1024*1024))
 	} else if size >= 1024*1024 {
-		return fmt.Sprintf("%.1f MB", value/1024*1024)
+		return fmt.Sprintf("%.1f MB", value/(1024*1024))
 	} else if size >= 1024 {
 		return fmt.Sprintf("%.1f KB", value/1024)
 	}
