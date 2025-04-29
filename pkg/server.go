@@ -235,6 +235,10 @@ func (server *Server) serveUI(router chi.Router) {
 				r.Delete("/delete", media.DeleteDirectory)
 				r.Get("/", media.DirectoryContent)
 			})
+			r.Route("/file", func(r chi.Router) {
+				r.Get("/delete", media.DeleteFile)
+				r.Delete("/delete", media.DeleteFile)
+			})
 			r.Get("/", media.Media)
 		})
 		r.Get("/logout", user.Logout)

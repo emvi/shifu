@@ -1,4 +1,7 @@
 {{if .Data.Path}}
+    {{$path := .Data.Path}}
+
+    <!-- TODO -->
     <div class="shifu-toolbelt">
         <button hx-get="{{config.UI.Path}}/media/file/upload"
                 hx-target="body"
@@ -6,12 +9,21 @@
             <img src="{{config.UI.Path}}/static/icons/upload.svg" alt="" />
             Dateien hochladen
         </button>
-        <button hx-get="{{config.UI.Path}}/media/file/delete"
-                hx-target="body"
-                hx-swap="beforeend">
-            <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
-            Dateien löschen
-        </button>
+
+        {{if len .Data.Files}}
+            <button hx-get="{{config.UI.Path}}/media/file/move?path={{$path}}"
+                    hx-target="body"
+                    hx-swap="beforeend">
+                <img src="{{config.UI.Path}}/static/icons/move.svg" alt="" />
+                Dateien verschieben
+            </button>
+            <button hx-get="{{config.UI.Path}}/media/file/delete?path={{$path}}"
+                    hx-target="body"
+                    hx-swap="beforeend">
+                <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
+                Dateien löschen
+            </button>
+        {{end}}
     </div>
 
     {{if len .Data.Files}}
@@ -46,13 +58,13 @@
                                     <img src="{{config.UI.Path}}/static/icons/view.svg" alt="" style="width: 12px;height: 12px;" />
                                 </a>
                                 <button title="Datei verschieben"
-                                        hx-get="{{config.UI.Path}}/media/move?path={{$file.Path}}"
+                                        hx-get="{{config.UI.Path}}/media/file/move?path={{$path}}&name={{$file.Name}}"
                                         hx-target="body"
                                         hx-swap="beforeend">
                                     <img src="{{config.UI.Path}}/static/icons/move.svg" alt="" />
                                 </button>
                                 <button title="Datei löschen"
-                                        hx-get="{{config.UI.Path}}/media/delete?path={$file.Path}}"
+                                        hx-get="{{config.UI.Path}}/media/file/delete?path={{$path}}&name={{$file.Name}}"
                                         hx-target="body"
                                         hx-swap="beforeend">
                                     <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
