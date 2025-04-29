@@ -1,0 +1,11 @@
+.shifu {
+    &-toolbelt {
+        display: flex;
+        gap: 4px;
+        margin: 0 0 8px 0;
+
+        button, .button {
+            padding: 4px 8px;
+        }
+    }
+}

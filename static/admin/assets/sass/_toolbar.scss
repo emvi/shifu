@@ -1,0 +1,22 @@
+.shifu {
+    &-toolbar {
+        &-icons {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            aspect-ratio: 1;
+            cursor: pointer;
+
+            img {
+                width: 14px;
+                height: 14px;
+            }
+        }
+    }
+}

@@ -80,4 +80,24 @@
         width: auto;
         margin: 0;
     }
+
+    .error {
+        color: #f00;
+        font-size: 10px;
+    }
+
+    .edit {
+        display: flex;
+        gap: 4px;
+
+        button, .button {
+            padding: 4px;
+        }
+    }
+
+    .secondary {
+        border-color: var(--border-inner);
+        box-shadow: none;
+        color: var(--border-inner);
+    }
 }

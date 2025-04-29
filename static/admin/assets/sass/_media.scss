@@ -10,6 +10,8 @@
     &-files {
         flex: 1;
         white-space: nowrap;
+        max-height: 75vh;
+        overflow-y: scroll;
 
         img {
             max-width: 80px;

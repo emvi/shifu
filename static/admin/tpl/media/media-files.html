@@ -1,9 +1,8 @@
 {{if .Data.Path}}
     {{$path := .Data.Path}}
 
-    <!-- TODO -->
     <div class="shifu-toolbelt">
-        <button hx-get="{{config.UI.Path}}/media/file/upload"
+        <button hx-get="{{config.UI.Path}}/media/file/upload?path={{$path}}"
                 hx-target="body"
                 hx-swap="beforeend">
             <img src="{{config.UI.Path}}/static/icons/upload.svg" alt="" />
@@ -41,7 +40,7 @@
                 {{range $file := .Data.Files}}
                     <tr>
                         <td>
-                            <input type="checkbox" name="delete[]" value="TODO" />
+                            <input type="checkbox" name="name[]" value="{{$file.Name}}" />
                         </td>
                         <td style="text-align: center;">
                             {{if $file.Preview}}

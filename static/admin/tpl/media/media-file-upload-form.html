@@ -1,0 +1,17 @@
+<form method="post"
+      enctype="multipart/form-data"
+      hx-post="{{config.UI.Path}}/media/file/upload?path={{.Data.Path}}"
+      hx-swap="outerHTML"
+      hx-target=".shifu-media-files"
+      hx-target-4*="this"
+      hx-on::after-request="shifuCloseWindow('#shifu-media-file-upload')">
+    <fieldset>
+        <label for="files">Dateien</label>
+        <input type="file" name="files" id="files" multiple />
+
+        {{if index .Data.Errors "files"}}
+            <span class="error">{{index .Data.Errors "files"}}</span>
+        {{end}}
+    </fieldset>
+    <input type="submit" value="Hochladen" />
+</form>

@@ -236,6 +236,8 @@ func (server *Server) serveUI(router chi.Router) {
 				r.Get("/", media.DirectoryContent)
 			})
 			r.Route("/file", func(r chi.Router) {
+				r.Get("/upload", media.UploadFiles)
+				r.Post("/upload", media.UploadFiles)
 				r.Get("/delete", media.DeleteFile)
 				r.Delete("/delete", media.DeleteFile)
 			})
