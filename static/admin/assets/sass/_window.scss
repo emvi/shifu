@@ -1,9 +1,10 @@
 .shifu {
     &-box, &-window {
-        background: var(--bg);
+        background: var(--bg90);
         border: 2px solid var(--border);
         border-radius: 4px;
         box-shadow: 0 0 2px 0 var(--border);
+        backdrop-filter: blur(8px);
 
         &-title {
             padding: 4px;
@@ -70,6 +71,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            backdrop-filter: blur(8px);
 
             .shifu-window {
                 top: auto;
@@ -89,6 +91,13 @@
         &-title {
             cursor: grab;
             user-select: none;
+            background: repeating-linear-gradient(
+                -45deg,
+                var(--border5),
+                var(--border5) 4px,
+                var(--bg) 4px,
+                var(--bg) 8px
+            );
         }
     }
 
