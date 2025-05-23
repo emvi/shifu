@@ -16,12 +16,10 @@
                 <img src="{{config.UI.Path}}/static/icons/move.svg" alt="" />
                 Dateien verschieben
             </button>
-            <!-- TODO -->
             <button hx-get="{{config.UI.Path}}/media/file/delete?path={{$path}}"
                     hx-include=".shifu-multi-file-select"
                     hx-target="body"
                     hx-swap="beforeend">
-            <!--<button id="shifu-media-delete-files">-->
                 <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
                 Dateien löschen
             </button>
@@ -54,7 +52,7 @@
                                 <img src="{{config.UI.Path}}/static/icons/file.svg" alt="" style="width: 20px;height: 20px;margin-top: 4px;" />
                             {{end}}
                         </td>
-                        <td style="word-wrap: anywhere;">{{$file.Name}}</td>
+                        <td>{{$file.Name}}</td>
                         <td>{{formatFileSize $file.Size}}</td>
                         <td>
                             <div class="edit">

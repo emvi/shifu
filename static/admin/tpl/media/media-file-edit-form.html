@@ -1,0 +1,16 @@
+<form method="post"
+      hx-post="{{config.UI.Path}}/media/file/edit?path={{.Data.Path}}&name={{.Data.Name}}"
+      hx-swap="outerHTML"
+      hx-target=".shifu-media-files"
+      hx-target-4*="this"
+      hx-on::after-request="shifuCloseWindow('#shifu-media-file-edit')">
+    <fieldset>
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" value="{{.Data.Name}}" autofocus />
+
+        {{if index .Data.Errors "name"}}
+            <span class="error">{{index .Data.Errors "name"}}</span>
+        {{end}}
+    </fieldset>
+    <input type="submit" value="Umbenennen" />
+</form>
