@@ -12,5 +12,10 @@
             <span class="error">{{index .Data.Errors "name"}}</span>
         {{end}}
     </fieldset>
-    <input type="submit" value="Speichern" />
+    <div class="shifu-toolbelt">
+        <input type="submit" value="Speichern" />
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            Abbrechen
+        </button>
+    </div>
 </form>

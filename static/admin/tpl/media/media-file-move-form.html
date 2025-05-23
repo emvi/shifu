@@ -12,5 +12,10 @@
         <span class="error">{{index .Data.Errors "path"}}</span>
     {{end}}
 
-    <input type="submit" value="Verschieben" />
+    <div class="shifu-toolbelt">
+        <input type="submit" value="Verschieben" />
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            Abbrechen
+        </button>
+    </div>
 </form>

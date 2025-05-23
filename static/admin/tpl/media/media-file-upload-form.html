@@ -26,5 +26,10 @@
         <label for="overwrite">Dateien überschreiben</label>
         <input type="checkbox" name="overwrite" id="overwrite" {{if .Data.Overwrite}}checked{{end}} />
     </fieldset>
-    <input type="submit" value="Hochladen" />
+    <div class="shifu-toolbelt">
+        <input type="submit" value="Hochladen" />
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            Abbrechen
+        </button>
+    </div>
 </form>
