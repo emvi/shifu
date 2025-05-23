@@ -1,4 +1,9 @@
 .shifu {
+    p {
+        margin: 0 0 8px 0;
+        padding: 0;
+    }
+
     hr {
         height: 1px;
         background: var(--border-inner);
@@ -62,6 +67,23 @@
 
             td:last-child {
                 border-radius: 0 4px 0 0;
+            }
+        }
+    }
+
+    ul {
+        margin: 0 0 8px 8px;
+        padding: 0;
+        list-style: none;
+
+        li {
+            position: relative;
+
+            &:before {
+                content: "/";
+                display: block;
+                position: absolute;
+                left: -8px;
             }
         }
     }

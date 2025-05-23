@@ -16,9 +16,12 @@
                 <img src="{{config.UI.Path}}/static/icons/move.svg" alt="" />
                 Dateien verschieben
             </button>
+            <!-- TODO -->
             <button hx-get="{{config.UI.Path}}/media/file/delete?path={{$path}}"
+                    hx-include=".shifu-multi-file-select"
                     hx-target="body"
                     hx-swap="beforeend">
+            <!--<button id="shifu-media-delete-files">-->
                 <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
                 Dateien löschen
             </button>
@@ -29,7 +32,9 @@
         <table>
             <thead>
             <tr>
-                <td></td>
+                <td>
+                    <input type="checkbox" name="name-all" id="shifu-multi-file-select-all" />
+                </td>
                 <td>Vorschau</td>
                 <td style="width: 100%;">Dateiname</td>
                 <td>Größe</td>
@@ -40,7 +45,7 @@
                 {{range $file := .Data.Files}}
                     <tr>
                         <td>
-                            <input type="checkbox" name="name[]" value="{{$file.Name}}" />
+                            <input type="checkbox" name="name[]" value="{{$file.Name}}" class="shifu-multi-file-select" />
                         </td>
                         <td style="text-align: center;">
                             {{if $file.Preview}}
@@ -49,7 +54,7 @@
                                 <img src="{{config.UI.Path}}/static/icons/file.svg" alt="" style="width: 20px;height: 20px;margin-top: 4px;" />
                             {{end}}
                         </td>
-                        <td>{{$file.Name}}</td>
+                        <td style="word-wrap: anywhere;">{{$file.Name}}</td>
                         <td>{{formatFileSize $file.Size}}</td>
                         <td>
                             <div class="edit">
@@ -80,6 +85,13 @@
                 {{end}}
             </tbody>
         </table>
+        <script>
+            document.getElementById("shifu-multi-file-select-all").addEventListener("click", e => {
+                document.querySelectorAll("input[name='name[]']").forEach(input => {
+                    input.checked = e.target.checked;
+                });
+            });
+        </script>
     {{else}}
         <p>Der Ordner ist leer.</p>
     {{end}}

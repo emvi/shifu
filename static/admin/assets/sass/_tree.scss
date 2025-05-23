@@ -9,19 +9,28 @@
         position: relative;
 
         li {
+            position: static;
             cursor: pointer;
             padding: 0 0 0 10px;
+
+            &::before {
+                display: none;
+            }
         }
 
         ul {
+            margin: 0;
+            padding: 0;
+
             li {
+                position: static;
                 cursor: pointer;
                 padding: 0 0 0 16px;
                 margin: 0 0 0 2px;
                 border-left: 1px solid var(--border-inner);
 
                 &::before {
-                    content: '';
+                    content: "";
                     display: block;
                     position: absolute;
                     width: 4px;
@@ -29,6 +38,7 @@
                     border: solid var(--border-inner);
                     border-width: 0 0 1px 1px;
                     left: 2px;
+                    margin: 0;
                 }
             }
 

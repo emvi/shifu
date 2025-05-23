@@ -3,9 +3,19 @@
 {{end}}
 
 {{define "media-file-delete-window-content"}}
-    <p>Bist du sicher, dass du die Datei "{{.Data.Name}}" löschen möchtest?</p>
+    {{if eq (len .Data.Name) 1}}
+        <p>Bist du sicher, dass du die Datei "{{index .Data.Name 0}}" löschen möchtest?</p>
+    {{else}}
+        <p>Bist du dir sicher, dass du die folgenden Dateien löschen möchtest?</p>
+        <ul>
+            {{range .Data.Name}}
+                <li>{{.}}</li>
+            {{end}}
+        </ul>
+    {{end}}
+
     <div class="shifu-toolbelt">
-        <button hx-delete="{{config.UI.Path}}/media/file/delete?path={{.Data.Path}}&name={{.Data.Name}}"
+        <button hx-delete="{{config.UI.Path}}/media/file/delete?path={{.Data.Path}}{{range .Data.Name}}&name[]={{.}}{{end}}"
                 hx-target=".shifu-media-files"
                 hx-on::after-request="shifuCloseWindow('#shifu-media-file-delete')">
             Datei löschen
