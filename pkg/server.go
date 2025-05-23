@@ -242,6 +242,8 @@ func (server *Server) serveUI(router chi.Router) {
 				r.Delete("/delete", media.DeleteFile)
 				r.Get("/edit", media.EditFile)
 				r.Post("/edit", media.EditFile)
+				r.Get("/move", media.MoveFile)
+				r.Post("/move", media.MoveFile)
 			})
 			r.Get("/", media.Media)
 		})

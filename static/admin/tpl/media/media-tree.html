@@ -1,38 +1,47 @@
 {{define "media-tree-directories"}}
+    {{$interactive := index . "interactive"}}
+
     <ul>
-        {{range $dir := .}}
+        {{range $dir := index . "dirs"}}
             <li>
                 <details {{if not (len $dir.Children)}}class="empty"{{end}}>
                     <summary>
-                        <span class="shifu-media-directory-name"
-                              hx-get="{{config.UI.Path}}/media/directory?path={{$dir.Path}}"
-                              hx-target=".shifu-media-files">
-                            {{$dir.Name}}
-                        </span>
-                        <span>
-                            <img src="{{config.UI.Path}}/static/icons/edit.svg"
-                                 alt=""
-                                 title="Bearbeiten"
-                                 hx-get="{{config.UI.Path}}/media/directory/edit?path={{$dir.Path}}"
-                                 hx-target="body"
-                                 hx-swap="beforeend" />
-                            <img src="{{config.UI.Path}}/static/icons/add.svg"
-                                 alt=""
-                                 title="Unterordner hinzufügen"
-                                 hx-get="{{config.UI.Path}}/media/directory/add?path={{$dir.Path}}"
-                                 hx-target="body"
-                                 hx-swap="beforeend" />
-                            <img src="{{config.UI.Path}}/static/icons/delete.svg"
-                                 alt=""
-                                 title="Ordner löschen"
-                                 hx-get="{{config.UI.Path}}/media/directory/delete?path={{$dir.Path}}"
-                                 hx-target="body"
-                                 hx-swap="beforeend" />
-                        </span>
+                        {{if $interactive}}
+                            <span class="shifu-media-directory-name"
+                                  hx-get="{{config.UI.Path}}/media/directory?path={{$dir.Path}}"
+                                  hx-target=".shifu-media-files">
+                                {{$dir.Name}}
+                            </span>
+                            <span>
+                                <img src="{{config.UI.Path}}/static/icons/edit.svg"
+                                     alt=""
+                                     title="Bearbeiten"
+                                     hx-get="{{config.UI.Path}}/media/directory/edit?path={{$dir.Path}}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
+                                <img src="{{config.UI.Path}}/static/icons/add.svg"
+                                     alt=""
+                                     title="Unterordner hinzufügen"
+                                     hx-get="{{config.UI.Path}}/media/directory/add?path={{$dir.Path}}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
+                                <img src="{{config.UI.Path}}/static/icons/delete.svg"
+                                     alt=""
+                                     title="Ordner löschen"
+                                     hx-get="{{config.UI.Path}}/media/directory/delete?path={{$dir.Path}}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
+                            </span>
+                        {{else}}
+                            <span class="shifu-media-directory-name shifu-media-directory-selection" data-path="{{$dir.Path}}">
+                                {{$dir.Name}}
+                            </span>
+                            <span></span>
+                        {{end}}
                     </summary>
 
                     {{if len $dir.Children}}
-                        {{template "media-tree-directories" $dir.Children}}
+                        {{template "media-tree-directories" dict "dirs" $dir.Children "interactive" $interactive}}
                     {{end}}
                 </details>
             </li>
@@ -40,26 +49,43 @@
     </ul>
 {{end}}
 
+{{$interactive := .Data.Interactive}}
+{{$selector := ".shifu-media-directory-selection"}}
+
 <div style="margin-bottom: 8px;">
-    {{template "media-tree-directories" .Data.Directories}}
+    {{template "media-tree-directories" dict "dirs" .Data.Directories "interactive" $interactive}}
 </div>
-<button title="Ordner anlegen"
-        hx-get="{{config.UI.Path}}/media/directory/add"
-        hx-target="body"
-        hx-swap="beforeend">
-    <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" />
-    Ordner anlegen
-</button>
+
+{{if $interactive}}
+    {{$selector = ".shifu-media-directory-name"}}
+
+    <button title="Ordner anlegen"
+            hx-get="{{config.UI.Path}}/media/directory/add"
+            hx-target="body"
+            hx-swap="beforeend">
+        <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" />
+        Ordner anlegen
+    </button>
+{{else}}
+    <input type="hidden" name="path" value="" id="shifu-media-directory-selection-path" />
+{{end}}
 
 <script>
-    document.querySelectorAll(".shifu-media-directory-name").forEach(e => {
-        e.addEventListener("click", e => {
-            e.preventDefault();
-            e.stopPropagation();
-            document.querySelectorAll(".shifu-media-directory-name").forEach(e => {
-                e.classList.remove("shifu-media-directory-selected");
+    (function(){
+        const input = document.getElementById("shifu-media-directory-selection-path");
+        document.querySelectorAll({{$selector}}).forEach(e => {
+            e.addEventListener("click", e => {
+                e.preventDefault();
+                e.stopPropagation();
+                document.querySelectorAll({{$selector}}).forEach(e => {
+                    e.classList.remove("shifu-media-directory-selected");
+                });
+                e.target.classList.add("shifu-media-directory-selected");
+
+                if (input) {
+                    input.value = e.target.getAttribute("data-path");
+                }
             });
-            e.target.classList.add("shifu-media-directory-selected");
         });
-    });
+    })();
 </script>

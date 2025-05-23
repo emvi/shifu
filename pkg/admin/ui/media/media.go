@@ -30,6 +30,7 @@ func Media(w http.ResponseWriter, _ *http.Request) {
 		Path          string
 		Directories   []Directory
 		Files         []File
+		Interactive   bool
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-media",
@@ -38,6 +39,7 @@ func Media(w http.ResponseWriter, _ *http.Request) {
 			MinWidth:   800,
 		},
 		Directories: listDirectories(w),
+		Interactive: true,
 	})
 }
 

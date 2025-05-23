@@ -11,6 +11,7 @@
 
         {{if len .Data.Files}}
             <button hx-get="{{config.UI.Path}}/media/file/move?path={{$path}}"
+                    hx-include=".shifu-multi-file-select"
                     hx-target="body"
                     hx-swap="beforeend">
                 <img src="{{config.UI.Path}}/static/icons/move.svg" alt="" />
@@ -65,14 +66,14 @@
                                         hx-swap="beforeend">
                                     <img src="{{config.UI.Path}}/static/icons/edit.svg" alt="" />
                                 </button>
-                                <button title="Datei verschieben"
-                                        hx-get="{{config.UI.Path}}/media/file/move?path={{$path}}&name={{$file.Name}}"
+                                <button title="Dateien verschieben"
+                                        hx-get="{{config.UI.Path}}/media/file/move?path={{$path}}&name[]={{$file.Name}}"
                                         hx-target="body"
                                         hx-swap="beforeend">
                                     <img src="{{config.UI.Path}}/static/icons/move.svg" alt="" />
                                 </button>
-                                <button title="Datei löschen"
-                                        hx-get="{{config.UI.Path}}/media/file/delete?path={{$path}}&name={{$file.Name}}"
+                                <button title="Dateien löschen"
+                                        hx-get="{{config.UI.Path}}/media/file/delete?path={{$path}}&name[]={{$file.Name}}"
                                         hx-target="body"
                                         hx-swap="beforeend">
                                     <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
