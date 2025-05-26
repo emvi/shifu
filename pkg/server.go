@@ -10,6 +10,7 @@ import (
 	"github.com/emvi/shifu/pkg/admin/ui/content"
 	"github.com/emvi/shifu/pkg/admin/ui/database"
 	"github.com/emvi/shifu/pkg/admin/ui/media"
+	"github.com/emvi/shifu/pkg/admin/ui/pages"
 	"github.com/emvi/shifu/pkg/admin/ui/user"
 	"github.com/emvi/shifu/pkg/analytics"
 	"github.com/emvi/shifu/pkg/api"
@@ -216,7 +217,6 @@ func (server *Server) serveUI(router chi.Router) {
 		r.Use(adminMiddleware.Auth)
 		r.Get("/toolbar", ui.Toolbar)
 		r.Get("/edit", content.Edit)
-		r.Get("/pages", content.Pages)
 		r.Get("/database", database.Database)
 		r.Route("/user", func(r chi.Router) {
 			r.Get("/edit", user.EditUser)
@@ -246,6 +246,9 @@ func (server *Server) serveUI(router chi.Router) {
 				r.Post("/move", media.MoveFile)
 			})
 			r.Get("/", media.Media)
+		})
+		r.Route("/pages", func(r chi.Router) {
+			r.Get("/", pages.Pages)
 		})
 		r.Get("/logout", user.Logout)
 	})

@@ -3,7 +3,15 @@
 {{end}}
 
 {{define "pages-window-content"}}
-    TODO
+    <div class="shifu-window-content-flex">
+        <div class="shifu-pages-tree shifu-tree">
+            {{template "pages-tree.html" .}}
+        </div>
+        <div class="shifu-pages-page">
+            <!-- TODO -->
+            <p>TODO</p>
+        </div>
+    </div>
 {{end}}
 
 {{template "window.html" .}}
