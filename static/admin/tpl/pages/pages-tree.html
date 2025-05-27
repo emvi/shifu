@@ -39,7 +39,7 @@
                         <summary>
                             <span class="shifu-pages-entry-name shifu-pages-entry-selection"
                                   data-path="{{$entry.Path}}"
-                                  hx-get="{{config.UI.Path}}/pages/entry?path={{$entry.Path}}"
+                                  hx-get="{{config.UI.Path}}/pages/page?path={{$entry.Path}}"
                                   hx-target=".shifu-pages-page">
                                         {{$entry.Name}}
                                     </span>
@@ -55,13 +55,22 @@
 <div style="margin-bottom: 8px;">
     {{template "pages-tree-entries" dict "entries" .Data.Entries}}
 </div>
-<button title="Ordner anlegen"
-        hx-get="{{config.UI.Path}}/pages/directory/add"
-        hx-target="body"
-        hx-swap="beforeend">
-    <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" />
-    Ordner anlegen
-</button>
+<div style="display: inline-flex;gap: 4px;flex-direction: column">
+    <button title="Ordner anlegen"
+            hx-get="{{config.UI.Path}}/pages/directory/add"
+            hx-target="body"
+            hx-swap="beforeend">
+        <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" />
+        Ordner anlegen
+    </button>
+    <button title="Seite anlegen"
+            hx-get="{{config.UI.Path}}/pages/page/add"
+            hx-target="body"
+            hx-swap="beforeend">
+        <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" />
+        Seite anlegen
+    </button>
+</div>
 
 <script>
     (function(){

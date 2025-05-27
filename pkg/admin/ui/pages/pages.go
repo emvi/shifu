@@ -35,7 +35,7 @@ func Pages(w http.ResponseWriter, _ *http.Request) {
 			ID:         "shifu-pages",
 			TitleTpl:   "pages-window-title",
 			ContentTpl: "pages-window-content",
-			MinWidth:   800,
+			MinWidth:   680,
 		},
 		Entries: listEntries(w),
 	})
