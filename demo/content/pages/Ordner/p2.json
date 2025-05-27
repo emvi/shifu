@@ -1,0 +1,64 @@
+{
+    "path": {
+        "en": "/p2"
+    },
+    "sitemap": {
+        "priority": "1.0"
+    },
+    "content": {
+        "content": [
+            {
+                "ref": "head",
+                "copy": {
+                    "en": {
+                        "title": "Shifu Demo",
+                        "meta_description": "This is the Shifu demo."
+                    }
+                }
+            },
+            {
+                "tpl": "text_md",
+                "analytics": {
+                    "experiment": {
+                        "name": "headline",
+                        "variant": "a"
+                    }
+                },
+                "copy": {
+                    "en": {
+                        "headline": "Shifu Demo",
+                        "text": "<p>Hello from Shifu! See the repository on <a href='https://github.com/emvi/shifu' target='_blank'>GitHub</a>. This is variant A for the A/B test of this element.</p>"
+                    }
+                }
+            },
+            {
+                "tpl": "text_md",
+                "analytics": {
+                    "experiment": {
+                        "name": "headline",
+                        "variant": "b"
+                    }
+                },
+                "copy": {
+                    "en": {
+                        "headline": "Shifu Content Mangagement System",
+                        "text": "<p>Hello from Shifu! See the repository on <a href='https://github.com/emvi/shifu' target='_blank'>GitHub</a>. This is variant B for the A/B test of this element.</p>"
+                    }
+                }
+            },
+            {
+                "tpl": "img",
+                "data": {
+                    "src": "/static/img/test.jpg"
+                },
+                "copy": {
+                    "en": {
+                        "alt": "Test Image"
+                    }
+                }
+
+            },
+            {"ref": "end"}
+        ]
+    }
+}

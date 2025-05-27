@@ -110,5 +110,11 @@
                 }
             }
         }
+
+        &.file > summary {
+            &::before {
+                background-image: url("/shifu-admin/static/icons/file.svg");
+            }
+        }
     }
 }

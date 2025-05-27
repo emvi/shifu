@@ -1,86 +1,79 @@
-{{define "pages-tree-directories"}}
-    {{$interactive := index . "interactive"}}
-
+{{define "pages-tree-entries"}}
     <ul>
-        {{range $dir := index . "dirs"}}
+        {{range $entry := index . "entries"}}
             <li>
-                <details {{if not (len $dir.Children)}}class="empty"{{end}}>
-                    <summary>
-                        {{if $interactive}}
-                            <span class="shifu-pages-directory-name"
-                                  hx-get="{{config.UI.Path}}/pages/directory?path={{$dir.Path}}"
-                                  hx-target=".shifu-pages-page">
-                                {{$dir.Name}}
+                {{if $entry.IsDir}}
+                    <details {{if not (len $entry.Children)}}class="empty"{{end}}>
+                        <summary>
+                            <span class="shifu-pages-entry-name">
+                                {{$entry.Name}}
                             </span>
                             <span>
                                 <img src="{{config.UI.Path}}/static/icons/edit.svg"
                                      alt=""
                                      title="Bearbeiten"
-                                     hx-get="{{config.UI.Path}}/pages/directory/edit?path={{$dir.Path}}"
+                                     hx-get="{{config.UI.Path}}/pages/directory/edit?path={{$entry.Path}}"
                                      hx-target="body"
                                      hx-swap="beforeend" />
                                 <img src="{{config.UI.Path}}/static/icons/add.svg"
                                      alt=""
                                      title="Unterordner hinzufügen"
-                                     hx-get="{{config.UI.Path}}/pages/directory/add?path={{$dir.Path}}"
+                                     hx-get="{{config.UI.Path}}/pages/directory/add?path={{$entry.Path}}"
                                      hx-target="body"
                                      hx-swap="beforeend" />
                                 <img src="{{config.UI.Path}}/static/icons/delete.svg"
                                      alt=""
                                      title="Ordner löschen"
-                                     hx-get="{{config.UI.Path}}/pages/directory/delete?path={{$dir.Path}}"
+                                     hx-get="{{config.UI.Path}}/pages/directory/delete?path={{$entry.Path}}"
                                      hx-target="body"
                                      hx-swap="beforeend" />
                             </span>
-                        {{else}}
-                            <span class="shifu-pages-directory-name shifu-pages-directory-selection" data-path="{{$dir.Path}}">
-                                {{$dir.Name}}
-                            </span>
-                            <span></span>
-                        {{end}}
-                    </summary>
+                        </summary>
 
-                    {{if len $dir.Children}}
-                        {{template "pages-tree-directories" dict "dirs" $dir.Children "interactive" $interactive}}
-                    {{end}}
-                </details>
+                        {{if len $entry.Children}}
+                            {{template "pages-tree-entries" dict "entries" $entry.Children}}
+                        {{end}}
+                    </details>
+                {{else}}
+                    <details class="file">
+                        <summary>
+                            <span class="shifu-pages-entry-name shifu-pages-entry-selection"
+                                  data-path="{{$entry.Path}}"
+                                  hx-get="{{config.UI.Path}}/pages/entry?path={{$entry.Path}}"
+                                  hx-target=".shifu-pages-page">
+                                        {{$entry.Name}}
+                                    </span>
+                            <span></span>
+                        </summary>
+                    </details>
+                {{end}}
             </li>
         {{end}}
     </ul>
 {{end}}
 
-{{$interactive := .Data.Interactive}}
-{{$selector := ".shifu-pages-directory-selection"}}
-
 <div style="margin-bottom: 8px;">
-    {{template "pages-tree-directories" dict "dirs" .Data.Directories "interactive" $interactive}}
+    {{template "pages-tree-entries" dict "entries" .Data.Entries}}
 </div>
-
-{{if $interactive}}
-    {{$selector = ".shifu-pages-directory-name"}}
-
-    <button title="Ordner anlegen"
-            hx-get="{{config.UI.Path}}/pages/add"
-            hx-target="body"
-            hx-swap="beforeend">
-        <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" />
-        Ordner anlegen
-    </button>
-{{else}}
-    <input type="hidden" name="path" value="" id="shifu-pages-directory-selection-path" />
-{{end}}
+<button title="Ordner anlegen"
+        hx-get="{{config.UI.Path}}/pages/directory/add"
+        hx-target="body"
+        hx-swap="beforeend">
+    <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" />
+    Ordner anlegen
+</button>
 
 <script>
     (function(){
-        const input = document.getElementById("shifu-pages-directory-selection-path");
-        document.querySelectorAll({{$selector}}).forEach(e => {
+        const input = document.getElementById("shifu-pages-entry-selection-path");
+        document.querySelectorAll(".shifu-pages-entry-selection").forEach(e => {
             e.addEventListener("click", e => {
                 e.preventDefault();
                 e.stopPropagation();
-                document.querySelectorAll({{$selector}}).forEach(e => {
-                    e.classList.remove("shifu-pages-directory-selected");
+                document.querySelectorAll(".shifu-pages-entry-selection").forEach(e => {
+                    e.classList.remove("shifu-pages-entry-selected");
                 });
-                e.target.classList.add("shifu-pages-directory-selected");
+                e.target.classList.add("shifu-pages-entry-selected");
 
                 if (input) {
                     input.value = e.target.getAttribute("data-path");

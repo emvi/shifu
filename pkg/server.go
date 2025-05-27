@@ -248,6 +248,14 @@ func (server *Server) serveUI(router chi.Router) {
 			r.Get("/", media.Media)
 		})
 		r.Route("/pages", func(r chi.Router) {
+			r.Route("/directory", func(r chi.Router) {
+				r.Get("/add", pages.AddDirectory)
+				r.Post("/add", pages.AddDirectory)
+				r.Get("/edit", pages.EditDirectory)
+				r.Post("/edit", pages.EditDirectory)
+				r.Get("/delete", pages.DeleteDirectory)
+				r.Delete("/delete", pages.DeleteDirectory)
+			})
 			r.Get("/", pages.Pages)
 		})
 		r.Get("/logout", user.Logout)

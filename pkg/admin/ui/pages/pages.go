@@ -13,14 +13,15 @@ import (
 )
 
 const (
-	contentDir = "content"
+	contentDir = "content/pages"
 )
 
-// Directory is a content directory.
-type Directory struct {
+// Entry is a content directory or page.
+type Entry struct {
 	Name     string
 	Path     string
-	Children []Directory
+	IsDir    bool
+	Children []Entry
 }
 
 // Pages renders the pages management dialog.
@@ -28,8 +29,7 @@ func Pages(w http.ResponseWriter, _ *http.Request) {
 	tpl.Get().Execute(w, "pages.html", struct {
 		WindowOptions ui.WindowOptions
 		Path          string
-		Directories   []Directory
-		Interactive   bool
+		Entries       []Entry
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-pages",
@@ -37,12 +37,11 @@ func Pages(w http.ResponseWriter, _ *http.Request) {
 			ContentTpl: "pages-window-content",
 			MinWidth:   800,
 		},
-		Directories: listDirectories(w),
-		Interactive: true,
+		Entries: listEntries(w),
 	})
 }
 
-func listDirectories(w http.ResponseWriter) []Directory {
+func listEntries(w http.ResponseWriter) []Entry {
 	dir := filepath.Join(cfg.Get().BaseDir, contentDir)
 
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
@@ -53,7 +52,7 @@ func listDirectories(w http.ResponseWriter) []Directory {
 		}
 	}
 
-	tree, err := readDirectoryTree(dir, dir)
+	tree, err := readContentTree(dir, dir)
 
 	if err != nil {
 		slog.Error("Error reading content directory", "error", err)
@@ -63,38 +62,41 @@ func listDirectories(w http.ResponseWriter) []Directory {
 	return tree
 }
 
-func readDirectoryTree(prefix, dir string) ([]Directory, error) {
+func readContentTree(prefix, dir string) ([]Entry, error) {
 	files, err := os.ReadDir(dir)
 
 	if err != nil {
 		return nil, err
 	}
 
-	dirs := make([]Directory, 0)
+	dirs := make([]Entry, 0)
 
 	for _, file := range files {
+		path := filepath.Join(dir, file.Name())
+		children := make([]Entry, 0)
+
 		if file.IsDir() {
-			path := filepath.Join(dir, file.Name())
-			children, err := readDirectoryTree(prefix, path)
+			children, err = readContentTree(prefix, path)
 
 			if err != nil {
 				return nil, err
 			}
-
-			dirs = append(dirs, Directory{
-				Name:     file.Name(),
-				Path:     strings.TrimPrefix(path, prefix),
-				Children: children,
-			})
 		}
+
+		dirs = append(dirs, Entry{
+			Name:     file.Name(),
+			Path:     strings.TrimPrefix(path, prefix),
+			IsDir:    file.IsDir(),
+			Children: children,
+		})
 	}
 
-	sortDirectories(dirs)
+	sortEntries(dirs)
 	return dirs, nil
 }
 
-func sortDirectories(dirs []Directory) {
-	slices.SortFunc(dirs, func(a, b Directory) int {
+func sortEntries(entries []Entry) {
+	slices.SortFunc(entries, func(a, b Entry) int {
 		if strings.ToLower(a.Name) > strings.ToLower(b.Name) {
 			return 1
 
