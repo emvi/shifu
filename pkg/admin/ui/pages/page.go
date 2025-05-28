@@ -9,7 +9,7 @@ import (
 // Page renders the page details.
 func Page(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimSpace(r.URL.Query().Get("path"))
-	fullPath := getDirectoryPath(path)
+	fullPath := getPagePath(path)
 
 	tpl.Get().Execute(w, "pages-page.html", struct {
 		Path string

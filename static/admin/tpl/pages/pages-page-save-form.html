@@ -1,0 +1,21 @@
+<form method="post"
+      hx-post="{{config.UI.Path}}/pages/page/save?path={{.Data.Path}}"
+      hx-swap="outerHTML"
+      hx-target=".shifu-pages-tree"
+      hx-target-4*="this"
+      hx-on::after-request="shifuCloseWindow('#shifu-pages-page-save')">
+    <fieldset>
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" value="{{.Data.Name}}" autofocus />
+
+        {{if index .Data.Errors "name"}}
+            <span class="error">{{index .Data.Errors "name"}}</span>
+        {{end}}
+    </fieldset>
+    <div class="shifu-toolbelt">
+        <input type="submit" value="Erstellen" />
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            Abbrechen
+        </button>
+    </div>
+</form>

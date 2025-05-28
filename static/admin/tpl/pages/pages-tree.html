@@ -5,7 +5,7 @@
                 {{if $entry.IsDir}}
                     <details {{if not (len $entry.Children)}}class="empty"{{end}}>
                         <summary>
-                            <span class="shifu-pages-entry-name">
+                            <span class="shifu-pages-entry-name" data-path="{{$entry.Path}}">
                                 {{$entry.Name}}
                             </span>
                             <span>
@@ -37,13 +37,20 @@
                 {{else}}
                     <details class="file">
                         <summary>
-                            <span class="shifu-pages-entry-name shifu-pages-entry-selection"
+                            <span class="shifu-pages-entry-name"
                                   data-path="{{$entry.Path}}"
                                   hx-get="{{config.UI.Path}}/pages/page?path={{$entry.Path}}"
                                   hx-target=".shifu-pages-page">
                                         {{$entry.Name}}
                                     </span>
-                            <span></span>
+                            <span>
+                                <img src="{{config.UI.Path}}/static/icons/delete.svg"
+                                     alt=""
+                                     title="Seite löschen"
+                                     hx-get="{{config.UI.Path}}/pages/page/delete?path={{$entry.Path}}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
+                            </span>
                         </summary>
                     </details>
                 {{end}}
@@ -55,6 +62,7 @@
 <div style="margin-bottom: 8px;">
     {{template "pages-tree-entries" dict "entries" .Data.Entries}}
 </div>
+<input type="hidden" name="path" value="" id="shifu-pages-entry-selection-path" />
 <div style="display: inline-flex;gap: 4px;flex-direction: column">
     <button title="Ordner anlegen"
             hx-get="{{config.UI.Path}}/pages/directory/add"
@@ -64,7 +72,8 @@
         Ordner anlegen
     </button>
     <button title="Seite anlegen"
-            hx-get="{{config.UI.Path}}/pages/page/add"
+            hx-get="{{config.UI.Path}}/pages/page/save"
+            hx-include=".shifu-pages-entry-selection-path"
             hx-target="body"
             hx-swap="beforeend">
         <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" />
@@ -75,11 +84,11 @@
 <script>
     (function(){
         const input = document.getElementById("shifu-pages-entry-selection-path");
-        document.querySelectorAll(".shifu-pages-entry-selection").forEach(e => {
+        document.querySelectorAll(".shifu-pages-entry-name").forEach(e => {
             e.addEventListener("click", e => {
                 e.preventDefault();
                 e.stopPropagation();
-                document.querySelectorAll(".shifu-pages-entry-selection").forEach(e => {
+                document.querySelectorAll(".shifu-pages-entry-name").forEach(e => {
                     e.classList.remove("shifu-pages-entry-selected");
                 });
                 e.target.classList.add("shifu-pages-entry-selected");

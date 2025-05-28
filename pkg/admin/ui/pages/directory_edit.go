@@ -22,12 +22,12 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 			errs["name"] = "the name is required"
 		} else if !isValidDirectoryName(name) {
 			errs["name"] = "the name contains invalid characters"
-		} else if info, _ := os.Stat(getDirectoryPath(path)); info == nil {
+		} else if info, _ := os.Stat(getPagePath(path)); info == nil {
 			errs["name"] = "the directory does not exist"
-		} else if info, _ := os.Stat(getDirectoryPath(filepath.Join(filepath.Dir(path), name))); info != nil {
+		} else if info, _ := os.Stat(getPagePath(filepath.Join(filepath.Dir(path), name))); info != nil {
 			errs["name"] = "the directory already exists"
 		} else {
-			if err := os.Rename(getDirectoryPath(path), getDirectoryPath(filepath.Join(filepath.Dir(path), name))); err != nil {
+			if err := os.Rename(getPagePath(path), getPagePath(filepath.Join(filepath.Dir(path), name))); err != nil {
 				slog.Error("Error while creating directory", "error", err)
 				errs["name"] = "error renaming directory"
 			}

@@ -258,6 +258,10 @@ func (server *Server) serveUI(router chi.Router) {
 			})
 			r.Route("/page", func(r chi.Router) {
 				r.Get("/", pages.Page)
+				r.Get("/save", pages.SavePage)
+				r.Post("/save", pages.SavePage)
+				r.Get("/delete", pages.DeletePage)
+				r.Delete("/delete", pages.DeletePage)
 			})
 			r.Get("/", pages.Pages)
 		})

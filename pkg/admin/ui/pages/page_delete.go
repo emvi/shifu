@@ -3,7 +3,6 @@ package pages
 import (
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
-	"github.com/emvi/shifu/pkg/cfg"
 	"log/slog"
 	"net/http"
 	"os"
@@ -11,8 +10,8 @@ import (
 	"strings"
 )
 
-// DeleteDirectory deletes a directory.
-func DeleteDirectory(w http.ResponseWriter, r *http.Request) {
+// DeletePage deletes a page.
+func DeletePage(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimSpace(r.URL.Query().Get("path"))
 	fullPath := getPagePath(path)
 
@@ -25,8 +24,8 @@ func DeleteDirectory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodDelete {
-		if err := os.RemoveAll(fullPath); err != nil {
-			slog.Error("Error while deleting directory", "error", err)
+		if err := os.Remove(fullPath); err != nil {
+			slog.Error("Error while deleting page", "error", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -39,22 +38,18 @@ func DeleteDirectory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tpl.Get().Execute(w, "pages-directory-delete.html", struct {
+	tpl.Get().Execute(w, "pages-page-delete.html", struct {
 		WindowOptions ui.WindowOptions
-		Directory     string
+		Page          string
 		Path          string
 	}{
 		WindowOptions: ui.WindowOptions{
-			ID:         "shifu-pages-directory-delete",
-			TitleTpl:   "pages-directory-delete-window-title",
-			ContentTpl: "pages-directory-delete-window-content",
+			ID:         "shifu-pages-page-delete",
+			TitleTpl:   "pages-page-delete-window-title",
+			ContentTpl: "pages-page-delete-window-content",
 			Overlay:    true,
 		},
-		Directory: filepath.Base(path),
-		Path:      path,
+		Page: getPageName(filepath.Base(path)),
+		Path: path,
 	})
-}
-
-func getPagePath(path string) string {
-	return filepath.Join(cfg.Get().BaseDir, contentDir, path)
 }

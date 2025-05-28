@@ -17,7 +17,7 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 		name := strings.TrimSpace(r.FormValue("name"))
-		fullPath := getDirectoryPath(filepath.Join(path, name))
+		fullPath := getPagePath(filepath.Join(path, name))
 		errs := make(map[string]string)
 
 		if name == "" {

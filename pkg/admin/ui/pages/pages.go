@@ -84,7 +84,7 @@ func readContentTree(prefix, dir string) ([]Entry, error) {
 		}
 
 		dirs = append(dirs, Entry{
-			Name:     file.Name(),
+			Name:     getPageName(file.Name()),
 			Path:     strings.TrimPrefix(path, prefix),
 			IsDir:    file.IsDir(),
 			Children: children,
@@ -106,4 +106,9 @@ func sortEntries(entries []Entry) {
 
 		return 0
 	})
+}
+
+func getPageName(filename string) string {
+	name, _, _ := strings.Cut(filename, ".")
+	return name
 }
