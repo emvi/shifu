@@ -1,3 +1,5 @@
+{{$lang := .Data.Languages}}
+
 <form method="post"
       hx-post="{{config.UI.Path}}/pages/page/save?path={{.Data.Path}}"
       hx-swap="outerHTML"
@@ -12,10 +14,121 @@
             <span class="error">{{index .Data.Errors "name"}}</span>
         {{end}}
     </fieldset>
-    <div class="shifu-toolbelt">
-        <input type="submit" value="Erstellen" />
-        <button class="secondary shifu-window-close" hx-trigger="click">
-            Abbrechen
+    <div id="shifu-pages-page-path-list">
+        {{range $key, $value := .Data.PagePath}}
+            <div class="shifu-pages-page-path" style="display: flex;gap: 8px;align-items: flex-end;">
+                <fieldset style="flex: 1;">
+                    <label for="language">Sprache</label>
+                    <select name="language[]" id="language">
+                        {{range $lang}}
+                            <option value="{{.Code}}" {{if eq .Code $key}}selected{{end}}>{{.Name}}</option>
+                        {{end}}
+                    </select>
+                </fieldset>
+                <fieldset style="flex: 4;">
+                    <label for="path">Pfad</label>
+                    <input type="text" name="path[]" id="path" value="{{$value}}" />
+                </fieldset>
+                <button title="Pfad entfernen"
+                        class="shifu-pages-page-remove-path"
+                        style="height: 28px;margin-bottom: 8px;">
+                    <img src="{{config.UI.Path}}/static/icons/close.svg" alt="" />
+                </button>
+            </div>
+        {{end}}
+    </div>
+
+    {{if index .Data.Errors "path"}}
+        <span class="error">{{index .Data.Errors "path"}}</span>
+    {{end}}
+
+    <button id="shifu-pages-page-add-path">Pfad hinzufügen</button>
+    <fieldset>
+        <input type="checkbox" name="cache" id="cache" {{if .Data.Cache}}checked{{end}} />
+        <label for="cache">Cache deaktivieren</label>
+    </fieldset>
+    <fieldset>
+        <label for="sitemap">Sitemap Priorität</label>
+        <input type="number" name="sitemap" id="sitemap" value="{{.Data.Sitemap}}" step="0.01" />
+
+        {{if index .Data.Errors "sitemap"}}
+            <span class="error">{{index .Data.Errors "sitemap"}}</span>
+        {{end}}
+    </fieldset>
+    <fieldset>
+        <label for="handler">Handler</label>
+        <input type="text" name="handler" id="handler" value="{{.Data.Handler}}" />
+    </fieldset>
+
+    {{if .Data.New}}
+        <div class="shifu-toolbelt">
+            <button class="secondary shifu-window-close" hx-trigger="click">
+                Abbrechen
+            </button>
+            <input type="submit" value="Erstellen" />
+        </div>
+    {{else}}
+        <input type="submit" value="Speichern" />
+    {{end}}
+</form>
+
+<template id="shifu-pages-page-path-template">
+    <div class="shifu-pages-page-path" style="display: flex;gap: 8px;align-items: flex-end;">
+        <fieldset style="flex: 1;">
+            <label data-name="language">Sprache</label>
+            <select name="language[]">
+                {{range $lang}}
+                    <option value="{{.Code}}">{{.Name}}</option>
+                {{end}}
+            </select>
+        </fieldset>
+        <fieldset style="flex: 4;">
+            <label data-name="path">Pfad</label>
+            <input type="text" name="path[]" />
+        </fieldset>
+        <button title="Pfad entfernen"
+                class="shifu-pages-page-remove-path"
+                style="height: 28px;margin-bottom: 8px;">
+            <img src="{{config.UI.Path}}/static/icons/close.svg" alt="" />
         </button>
     </div>
-</form>
+</template>
+
+<script>
+    (function (){
+        const tpl = document.getElementById("shifu-pages-page-path-template");
+        let index = 0;
+
+        document.getElementById("shifu-pages-page-add-path").addEventListener("click", e => {
+            e.preventDefault();
+            const selection = tpl.content.cloneNode(true);
+            selection.querySelector("label[data-name='language']").setAttribute("for", `language-${index}`);
+            selection.querySelector("label[data-name='path']").setAttribute("for", `path-${index}`);
+            selection.querySelector("select").id = `language-${index}`;
+            selection.querySelector("input").id = `path-${index}`;
+            document.getElementById("shifu-pages-page-path-list").append(selection);
+            index++;
+            remove();
+        });
+
+        function remove() {
+            document.querySelectorAll(".shifu-pages-page-remove-path").forEach(button => {
+                button.removeEventListener("click", removeClick);
+                button.addEventListener("click", removeClick);
+            });
+        }
+
+        function removeClick(e) {
+            e.preventDefault();
+            let node = e.target.parentNode;
+
+            while (!node.classList.contains("shifu-pages-page-path")) {
+                node = node.parentNode;
+            }
+
+            node.remove();
+        }
+
+        remove();
+    })();
+</script>
