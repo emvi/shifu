@@ -1,6 +1,7 @@
 {{$lang := .Data.Languages}}
 
 <form method="post"
+      id="shifu-save-page-form"
       hx-post="{{config.UI.Path}}/pages/page/save?path={{.Data.Path}}"
       hx-swap="outerHTML"
       hx-target=".shifu-pages-tree"
@@ -97,7 +98,15 @@
             <input type="submit" value="Erstellen" />
         </div>
     {{else}}
-        <input type="submit" value="Speichern" />
+        <div class="shifu-toolbelt">
+            {{if .Data.Saved}}
+                <div class="shifu-saved">
+                    Gespeichert!
+                </div>
+            {{end}}
+
+            <input type="submit" value="Speichern" />
+        </div>
     {{end}}
 </form>
 

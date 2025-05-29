@@ -19,11 +19,27 @@ import (
 	"unicode"
 )
 
+// SavePageData is the data for the page form.
+type SavePageData struct {
+	Name      string
+	PagePath  map[string]string
+	Cache     bool
+	Sitemap   float64
+	Handler   string
+	Path      string
+	Header    map[string]string
+	Errors    map[string]string
+	New       bool
+	Saved     bool
+	Languages map[string]iso6391.Language
+}
+
 // SavePage creates or updates a page.
 func SavePage(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimSpace(r.URL.Query().Get("path"))
 
 	if r.Method == http.MethodPost {
+		overwrite := strings.HasSuffix(path, ".json")
 		name := strings.TrimSpace(r.FormValue("name"))
 		cache := strings.ToLower(strings.TrimSpace(r.FormValue("cache"))) == "on"
 		sitemap := strings.TrimSpace(r.FormValue("sitemap"))
@@ -97,7 +113,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 			errs["name"] = "the name is required"
 		} else if !isValidPageName(name) {
 			errs["name"] = "the name contains invalid characters"
-		} else if pageExists(name) {
+		} else if !overwrite && pageExists(name) {
 			errs["name"] = "the page already exists"
 		}
 
@@ -113,18 +129,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			tpl.Get().Execute(w, "pages-page-save-form.html", struct {
-				Name      string
-				PagePath  map[string]string
-				Cache     bool
-				Sitemap   float64
-				Handler   string
-				Path      string
-				Header    map[string]string
-				Errors    map[string]string
-				New       bool
-				Languages map[string]iso6391.Language
-			}{
+			tpl.Get().Execute(w, "pages-page-save-form.html", SavePageData{
 				Name:      name,
 				PagePath:  pagePath,
 				Cache:     cache,
@@ -138,14 +143,35 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		} else {
-			page := cms.Content{
-				DisableCache: cache,
-				Path:         pagePath,
-				Sitemap: cms.Sitemap{
+			outPath := getPagePath(filepath.Join(path, name+".json"))
+			var page *cms.Content
+
+			if overwrite {
+				outPath = getPagePath(path)
+				page, err = loadPage(outPath)
+
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+
+				page.DisableCache = cache
+				page.Path = pagePath
+				page.Sitemap = cms.Sitemap{
 					Priority: fmt.Sprintf("%f", sitemapFloat),
-				},
-				Header:  header,
-				Handler: handler,
+				}
+				page.Header = header
+				page.Handler = handler
+			} else {
+				page = &cms.Content{
+					DisableCache: cache,
+					Path:         pagePath,
+					Sitemap: cms.Sitemap{
+						Priority: fmt.Sprintf("%f", sitemapFloat),
+					},
+					Header:  header,
+					Handler: handler,
+				}
 			}
 
 			pageJson, err := json.Marshal(page)
@@ -156,9 +182,26 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			if err := os.WriteFile(getPagePath(filepath.Join(path, name+".json")), pageJson, 0644); err != nil {
+			if err := os.WriteFile(outPath, pageJson, 0644); err != nil {
 				slog.Error("Error writing page data", "error", err)
 				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			if overwrite {
+				w.Header().Add("HX-Retarget", "#shifu-save-page-form")
+				tpl.Get().Execute(w, "pages-page-save-form.html", SavePageData{
+					Name:      name,
+					PagePath:  pagePath,
+					Cache:     cache,
+					Sitemap:   sitemapFloat,
+					Handler:   handler,
+					Path:      path,
+					Header:    header,
+					Errors:    errs,
+					Saved:     true,
+					Languages: iso6391.Languages,
+				})
 				return
 			}
 		}
@@ -173,17 +216,8 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tpl.Get().Execute(w, "pages-page-save.html", struct {
+		SavePageData
 		WindowOptions ui.WindowOptions
-		Name          string
-		PagePath      map[string]string
-		Cache         bool
-		Sitemap       float64
-		Handler       string
-		Path          string
-		Header        map[string]string
-		Errors        map[string]string
-		New           bool
-		Languages     map[string]iso6391.Language
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-pages-page-save",
@@ -192,10 +226,13 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 			Overlay:    true,
 			MinWidth:   520,
 		},
-		PagePath:  map[string]string{"de": "/"},
-		Path:      path,
-		New:       true,
-		Languages: iso6391.Languages,
+		SavePageData: SavePageData{
+			PagePath:  map[string]string{"de": "/"},
+			Path:      path,
+			Sitemap:   1,
+			New:       true,
+			Languages: iso6391.Languages,
+		},
 	})
 }
 

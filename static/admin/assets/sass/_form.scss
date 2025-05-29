@@ -100,4 +100,31 @@
         box-shadow: none;
         color: var(--border-inner);
     }
+
+    &-saved {
+        background: var(--highlight);
+        color: var(--bg);
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 10px;
+        border: 1px solid var(--highlight);
+        border-radius: 4px;
+        cursor: pointer;
+        padding: 4px 6px;
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        box-shadow: 0 0 2px 0 var(--highlight);
+        animation: shifu-fade-out 3s forwards;
+        animation-iteration-count: 1;
+    }
+
+    @keyframes shifu-fade-out {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+        }
+    }
 }
