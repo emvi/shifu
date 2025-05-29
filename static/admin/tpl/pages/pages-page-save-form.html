@@ -15,7 +15,7 @@
             <span class="error">{{index .Data.Errors "name"}}</span>
         {{end}}
     </fieldset>
-    <div>
+    <div class="shifu-form-group">
         <div id="shifu-pages-page-path-list">
             {{range $key, $value := .Data.PagePath}}
                 <div class="shifu-pages-page-path" style="display: flex;gap: 8px;align-items: flex-end;">
@@ -62,7 +62,7 @@
         <label for="handler">Handler</label>
         <input type="text" name="handler" id="handler" value="{{.Data.Handler}}" />
     </fieldset>
-    <div>
+    <div class="shifu-form-group">
         <div id="shifu-pages-page-header-list">
             {{range $key, $value := .Data.Header}}
                 <div class="shifu-pages-page-header" style="display: flex;gap: 8px;align-items: flex-end;">
