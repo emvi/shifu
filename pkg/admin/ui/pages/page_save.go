@@ -1,15 +1,18 @@
 package pages
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/emvi/iso-639-1"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/emvi/shifu/pkg/cms"
 	"io/fs"
 	"log"
 	"log/slog"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -27,7 +30,10 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 		handler := strings.TrimSpace(r.FormValue("handler"))
 		languages := make([]string, 0)
 		paths := make([]string, 0)
+		headerKeys := make([]string, 0)
+		headerValues := make([]string, 0)
 		pagePath := make(map[string]string)
+		header := make(map[string]string)
 		errs := make(map[string]string)
 
 		for k, v := range r.Form {
@@ -35,6 +41,10 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 				languages = v
 			} else if k == "path[]" {
 				paths = v
+			} else if k == "header[]" {
+				headerKeys = v
+			} else if k == "header_value[]" {
+				headerValues = v
 			}
 		}
 
@@ -42,7 +52,23 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 			errs["path"] = "the selected languages do not match the number of paths"
 		} else {
 			for i, l := range languages {
-				pagePath[l] = strings.TrimSpace(paths[i])
+				l = strings.TrimSpace(l)
+
+				if l != "" {
+					pagePath[l] = strings.TrimSpace(paths[i])
+				}
+			}
+		}
+
+		if len(headerKeys) != len(headerValues) {
+			errs["header"] = "the headers do not match the number of values"
+		} else {
+			for i, k := range headerKeys {
+				k = strings.TrimSpace(k)
+
+				if k != "" {
+					header[k] = strings.TrimSpace(headerValues[i])
+				}
 			}
 		}
 
@@ -75,13 +101,13 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 			errs["name"] = "the page already exists"
 		}
 
-		sitemapf, err := strconv.ParseFloat(sitemap, 64)
+		sitemapFloat, err := strconv.ParseFloat(sitemap, 64)
 
 		if err != nil {
 			errs["sitemap"] = "the number is invalid"
-		} else if sitemapf < 0 {
+		} else if sitemapFloat < 0 {
 			errs["sitemap"] = "the sitemap must be a positive number"
-		} else if sitemapf > 1 {
+		} else if sitemapFloat > 1 {
 			errs["sitemap"] = "the sitemap must be less than 1"
 		}
 
@@ -94,6 +120,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 				Sitemap   float64
 				Handler   string
 				Path      string
+				Header    map[string]string
 				Errors    map[string]string
 				New       bool
 				Languages map[string]iso6391.Language
@@ -101,17 +128,39 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 				Name:      name,
 				PagePath:  pagePath,
 				Cache:     cache,
-				Sitemap:   sitemapf,
+				Sitemap:   sitemapFloat,
 				Handler:   handler,
 				Path:      path,
+				Header:    header,
 				Errors:    errs,
 				New:       true,
 				Languages: iso6391.Languages,
 			})
 			return
 		} else {
-			// TODO create page
-			//fullPath := getPagePath(filepath.Join(path, name))
+			page := cms.Content{
+				DisableCache: cache,
+				Path:         pagePath,
+				Sitemap: cms.Sitemap{
+					Priority: fmt.Sprintf("%f", sitemapFloat),
+				},
+				Header:  header,
+				Handler: handler,
+			}
+
+			pageJson, err := json.Marshal(page)
+
+			if err != nil {
+				slog.Error("Error marshalling page data", "error", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			if err := os.WriteFile(getPagePath(filepath.Join(path, name+".json")), pageJson, 0644); err != nil {
+				slog.Error("Error writing page data", "error", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
 		}
 
 		w.Header().Add("HX-Reswap", "innerHTML")
@@ -131,6 +180,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 		Sitemap       float64
 		Handler       string
 		Path          string
+		Header        map[string]string
 		Errors        map[string]string
 		New           bool
 		Languages     map[string]iso6391.Language

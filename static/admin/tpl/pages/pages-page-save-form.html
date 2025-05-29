@@ -14,35 +14,37 @@
             <span class="error">{{index .Data.Errors "name"}}</span>
         {{end}}
     </fieldset>
-    <div id="shifu-pages-page-path-list">
-        {{range $key, $value := .Data.PagePath}}
-            <div class="shifu-pages-page-path" style="display: flex;gap: 8px;align-items: flex-end;">
-                <fieldset style="flex: 1;">
-                    <label for="language">Sprache</label>
-                    <select name="language[]" id="language">
-                        {{range $lang}}
-                            <option value="{{.Code}}" {{if eq .Code $key}}selected{{end}}>{{.Name}}</option>
-                        {{end}}
-                    </select>
-                </fieldset>
-                <fieldset style="flex: 4;">
-                    <label for="path">Pfad</label>
-                    <input type="text" name="path[]" id="path" value="{{$value}}" />
-                </fieldset>
-                <button title="Pfad entfernen"
-                        class="shifu-pages-page-remove-path"
-                        style="height: 28px;margin-bottom: 8px;">
-                    <img src="{{config.UI.Path}}/static/icons/close.svg" alt="" />
-                </button>
-            </div>
+    <div>
+        <div id="shifu-pages-page-path-list">
+            {{range $key, $value := .Data.PagePath}}
+                <div class="shifu-pages-page-path" style="display: flex;gap: 8px;align-items: flex-end;">
+                    <fieldset style="flex: 1;">
+                        <label for="language">Sprache</label>
+                        <select name="language[]" id="language">
+                            {{range $lang}}
+                                <option value="{{.Code}}" {{if eq .Code $key}}selected{{end}}>{{.Name}}</option>
+                            {{end}}
+                        </select>
+                    </fieldset>
+                    <fieldset style="flex: 4;">
+                        <label for="path">Pfad</label>
+                        <input type="text" name="path[]" id="path" value="{{$value}}" />
+                    </fieldset>
+                    <button title="Pfad entfernen"
+                            class="shifu-pages-page-remove-path"
+                            style="height: 28px;margin-bottom: 8px;">
+                        <img src="{{config.UI.Path}}/static/icons/close.svg" alt="" />
+                    </button>
+                </div>
+            {{end}}
+        </div>
+
+        {{if index .Data.Errors "path"}}
+            <span class="error">{{index .Data.Errors "path"}}</span>
         {{end}}
+
+        <button id="shifu-pages-page-add-path">Pfad hinzufügen</button>
     </div>
-
-    {{if index .Data.Errors "path"}}
-        <span class="error">{{index .Data.Errors "path"}}</span>
-    {{end}}
-
-    <button id="shifu-pages-page-add-path">Pfad hinzufügen</button>
     <fieldset>
         <input type="checkbox" name="cache" id="cache" {{if .Data.Cache}}checked{{end}} />
         <label for="cache">Cache deaktivieren</label>
@@ -59,6 +61,33 @@
         <label for="handler">Handler</label>
         <input type="text" name="handler" id="handler" value="{{.Data.Handler}}" />
     </fieldset>
+    <div>
+        <div id="shifu-pages-page-header-list">
+            {{range $key, $value := .Data.Header}}
+                <div class="shifu-pages-page-header" style="display: flex;gap: 8px;align-items: flex-end;">
+                    <fieldset style="flex: 1;">
+                        <label for="header">Header</label>
+                        <input type="text" name="header[]" id="header" value="{{$key}}" />
+                    </fieldset>
+                    <fieldset style="flex: 1;">
+                        <label for="header_value">Wert</label>
+                        <input type="text" name="header_value[]" id="header_value" value="{{$value}}" />
+                    </fieldset>
+                    <button title="Header entfernen"
+                            class="shifu-pages-page-remove-header"
+                            style="height: 28px;margin-bottom: 8px;">
+                        <img src="{{config.UI.Path}}/static/icons/close.svg" alt="" />
+                    </button>
+                </div>
+            {{end}}
+        </div>
+
+        {{if index .Data.Errors "header"}}
+            <span class="error">{{index .Data.Errors "header"}}</span>
+        {{end}}
+
+        <button id="shifu-pages-page-add-header">Header hinzufügen</button>
+    </div>
 
     {{if .Data.New}}
         <div class="shifu-toolbelt">
@@ -94,6 +123,24 @@
     </div>
 </template>
 
+<template id="shifu-pages-page-header-template">
+    <div class="shifu-pages-page-header" style="display: flex;gap: 8px;align-items: flex-end;">
+        <fieldset style="flex: 1;">
+            <label data-name="header">Header</label>
+            <input type="text" name="header[]" />
+        </fieldset>
+        <fieldset style="flex: 1;">
+            <label data-name="value">Wert</label>
+            <input type="text" name="header_value[]" />
+        </fieldset>
+        <button title="Header entfernen"
+                class="shifu-pages-page-remove-header"
+                style="height: 28px;margin-bottom: 8px;">
+            <img src="{{config.UI.Path}}/static/icons/close.svg" alt="" />
+        </button>
+    </div>
+</template>
+
 <script>
     (function (){
         const tpl = document.getElementById("shifu-pages-page-path-template");
@@ -123,6 +170,43 @@
             let node = e.target.parentNode;
 
             while (!node.classList.contains("shifu-pages-page-path")) {
+                node = node.parentNode;
+            }
+
+            node.remove();
+        }
+
+        remove();
+    })();
+
+    (function (){
+        const tpl = document.getElementById("shifu-pages-page-header-template");
+        let index = 0;
+
+        document.getElementById("shifu-pages-page-add-header").addEventListener("click", e => {
+            e.preventDefault();
+            const selection = tpl.content.cloneNode(true);
+            selection.querySelector("label[data-name='header']").setAttribute("for", `header-${index}`);
+            selection.querySelector("label[data-name='value']").setAttribute("for", `header_value-${index}`);
+            selection.querySelector("input[name='header[]']").id = `header-${index}`;
+            selection.querySelector("input[name='header_value[]']").id = `header_value-${index}`;
+            document.getElementById("shifu-pages-page-header-list").append(selection);
+            index++;
+            remove();
+        });
+
+        function remove() {
+            document.querySelectorAll(".shifu-pages-page-remove-header").forEach(button => {
+                button.removeEventListener("click", removeClick);
+                button.addEventListener("click", removeClick);
+            });
+        }
+
+        function removeClick(e) {
+            e.preventDefault();
+            let node = e.target.parentNode;
+
+            while (!node.classList.contains("shifu-pages-page-header")) {
                 node = node.parentNode;
             }
 
