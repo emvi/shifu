@@ -88,6 +88,8 @@
         }
 
         &:hover {
+            color: var(--highlight);
+
             & > span:last-child {
                 display: inline;
             }
