@@ -1,33 +1,33 @@
-{{if .Data.Path}}
-    {{$path := .Data.Path}}
+{{ if .Data.Path }}
+    {{ $path := .Data.Path }}
 
     <div class="shifu-toolbelt">
-        <button hx-get="{{config.UI.Path}}/media/file/upload?path={{$path}}"
+        <button hx-get="{{ config.UI.Path }}/media/file/upload?path={{ $path }}"
                 hx-target="body"
                 hx-swap="beforeend">
-            <img src="{{config.UI.Path}}/static/icons/upload.svg" alt="" />
+            <img src="{{ config.UI.Path }}/static/icons/upload.svg" alt="" />
             Dateien hochladen
         </button>
 
-        {{if len .Data.Files}}
-            <button hx-get="{{config.UI.Path}}/media/file/move?path={{$path}}"
+        {{ if len .Data.Files }}
+            <button hx-get="{{ config.UI.Path }}/media/file/move?path={{ $path }}"
                     hx-include=".shifu-multi-file-select"
                     hx-target="body"
                     hx-swap="beforeend">
-                <img src="{{config.UI.Path}}/static/icons/move.svg" alt="" />
+                <img src="{{ config.UI.Path }}/static/icons/move.svg" alt="" />
                 Dateien verschieben
             </button>
-            <button hx-get="{{config.UI.Path}}/media/file/delete?path={{$path}}"
+            <button hx-get="{{ config.UI.Path }}/media/file/delete?path={{ $path }}"
                     hx-include=".shifu-multi-file-select"
                     hx-target="body"
                     hx-swap="beforeend">
-                <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
+                <img src="{{ config.UI.Path }}/static/icons/delete.svg" alt="" />
                 Dateien löschen
             </button>
-        {{end}}
+        {{ end }}
     </div>
 
-    {{if len .Data.Files}}
+    {{ if len .Data.Files }}
         <table>
             <thead>
             <tr>
@@ -41,47 +41,47 @@
             </tr>
             </thead>
             <tbody>
-                {{range $file := .Data.Files}}
+                {{ range $file := .Data.Files }}
                     <tr>
                         <td>
-                            <input type="checkbox" name="name[]" value="{{$file.Name}}" class="shifu-multi-file-select" />
+                            <input type="checkbox" name="name[]" value="{{ $file.Name }}" class="shifu-multi-file-select" />
                         </td>
                         <td style="text-align: center;">
-                            {{if $file.Preview}}
-                                <img src="{{$file.Preview}}" alt="{{$file.Name}}" />
-                            {{else}}
-                                <img src="{{config.UI.Path}}/static/icons/file.svg" alt="" style="width: 20px;height: 20px;margin-top: 4px;" />
-                            {{end}}
+                            {{ if $file.Preview }}
+                                <img src="{{ $file.Preview }}" alt="{{ $file.Name }}" />
+                            {{ else }}
+                                <img src="{{ config.UI.Path }}/static/icons/file.svg" alt="" style="width: 20px;height: 20px;margin-top: 4px;" />
+                            {{ end }}
                         </td>
-                        <td>{{$file.Name}}</td>
-                        <td>{{formatFileSize $file.Size}}</td>
+                        <td>{{ $file.Name }}</td>
+                        <td>{{ formatFileSize $file.Size }}</td>
                         <td>
                             <div class="edit">
-                                <a href="{{if $file.Preview}}{{$file.Preview}}{{else}}{{$file.Path}}{{end}}" target="_blank" class="button" title="Datei öffnen">
-                                    <img src="{{config.UI.Path}}/static/icons/view.svg" alt="" style="width: 12px;height: 12px;" />
+                                <a href="{{ if $file.Preview }}{{ $file.Preview }}{{ else }}{{ $file.Path }}{{ end }}" target="_blank" class="button" title="Datei öffnen">
+                                    <img src="{{ config.UI.Path }}/static/icons/view.svg" alt="" style="width: 12px;height: 12px;" />
                                 </a>
                                 <button title="Datei umbenennen"
-                                        hx-get="{{config.UI.Path}}/media/file/edit?path={{$path}}&name={{$file.Name}}"
+                                        hx-get="{{ config.UI.Path }}/media/file/edit?path={{ $path }}&name={{ $file.Name }}"
                                         hx-target="body"
                                         hx-swap="beforeend">
-                                    <img src="{{config.UI.Path}}/static/icons/edit.svg" alt="" />
+                                    <img src="{{ config.UI.Path }}/static/icons/edit.svg" alt="" />
                                 </button>
                                 <button title="Dateien verschieben"
-                                        hx-get="{{config.UI.Path}}/media/file/move?path={{$path}}&name[]={{$file.Name}}"
+                                        hx-get="{{ config.UI.Path }}/media/file/move?path={{ $path }}&name[]={{ $file.Name }}"
                                         hx-target="body"
                                         hx-swap="beforeend">
-                                    <img src="{{config.UI.Path}}/static/icons/move.svg" alt="" />
+                                    <img src="{{ config.UI.Path }}/static/icons/move.svg" alt="" />
                                 </button>
                                 <button title="Dateien löschen"
-                                        hx-get="{{config.UI.Path}}/media/file/delete?path={{$path}}&name[]={{$file.Name}}"
+                                        hx-get="{{ config.UI.Path }}/media/file/delete?path={{ $path }}&name[]={{ $file.Name }}"
                                         hx-target="body"
                                         hx-swap="beforeend">
-                                    <img src="{{config.UI.Path}}/static/icons/delete.svg" alt="" />
+                                    <img src="{{ config.UI.Path }}/static/icons/delete.svg" alt="" />
                                 </button>
                             </div>
                         </td>
                     </tr>
-                {{end}}
+                {{ end }}
             </tbody>
         </table>
         <script>
@@ -91,9 +91,9 @@
                 });
             });
         </script>
-    {{else}}
+    {{ else }}
         <p>Der Ordner ist leer.</p>
-    {{end}}
-{{else}}
+    {{ end }}
+{{ else }}
     <p>Kein Ordner ausgewählt.</p>
-{{end}}
+{{ end }}

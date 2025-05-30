@@ -1,19 +1,19 @@
-{{define "pages-directory-delete-window-title"}}
+{{ define "pages-directory-delete-window-title" }}
     <span>Ordner löschen</span>
-{{end}}
+{{ end }}
 
-{{define "pages-directory-delete-window-content"}}
-    <p>Bist du sicher, dass du den Ordner "{{.Data.Directory}}" löschen möchtest?</p>
+{{ define "pages-directory-delete-window-content" }}
+    <p>Bist du sicher, dass du den Ordner "{{ .Data.Directory }}" löschen möchtest?</p>
     <div class="shifu-toolbelt">
         <button class="secondary shifu-window-close" hx-trigger="click">
             Abbrechen
         </button>
-        <button hx-delete="{{config.UI.Path}}/pages/directory/delete?path={{.Data.Path}}"
+        <button hx-delete="{{ config.UI.Path }}/pages/directory/delete?path={{ .Data.Path }}"
                 hx-target=".shifu-pages-tree"
                 hx-on::after-request="shifuCloseWindow('#shifu-pages-directory-delete')">
             Ordner löschen
         </button>
     </div>
-{{end}}
+{{ end }}
 
-{{template "window.html" .}}
+{{ template "window.html" . }}

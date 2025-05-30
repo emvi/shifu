@@ -1,16 +1,16 @@
 <form method="post"
-      hx-post="{{config.UI.Path}}/media/file/move?path={{.Data.Path}}{{range .Data.Name}}&name[]={{.}}{{end}}"
+      hx-post="{{ config.UI.Path }}/media/file/move?path={{ .Data.Path }}{{ range .Data.Name }}&name[]={{ . }}{{ end }}"
       hx-swap="outerHTML"
       hx-target=".shifu-media-files"
       hx-target-4*="this"
       hx-on::after-request="shifuCloseWindow('#shifu-media-file-move')">
     <div class="shifu-media-tree shifu-tree">
-        {{template "media-tree.html" .}}
+        {{ template "media-tree.html" . }}
     </div>
 
-    {{if index .Data.Errors "path"}}
-        <span class="error">{{index .Data.Errors "path"}}</span>
-    {{end}}
+    {{ if index .Data.Errors "path" }}
+        <span class="error">{{ index .Data.Errors "path" }}</span>
+    {{ end }}
 
     <div class="shifu-toolbelt">
         <button class="secondary shifu-window-close" hx-trigger="click">

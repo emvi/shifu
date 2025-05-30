@@ -1,16 +1,16 @@
 <form method="post"
-      hx-post="{{config.UI.Path}}/pages/directory/add?path={{.Data.Path}}"
+      hx-post="{{ config.UI.Path }}/pages/directory/add?path={{ .Data.Path }}"
       hx-swap="outerHTML"
       hx-target=".shifu-pages-tree"
       hx-target-4*="this"
       hx-on::after-request="shifuCloseWindow('#shifu-pages-directory-create')">
     <fieldset>
         <label for="name">Name</label>
-        <input type="text" name="name" id="name" value="{{.Data.Name}}" autofocus />
+        <input type="text" name="name" id="name" value="{{ .Data.Name }}" autofocus />
 
-        {{if index .Data.Errors "name"}}
-            <span class="error">{{index .Data.Errors "name"}}</span>
-        {{end}}
+        {{ if index .Data.Errors "name" }}
+            <span class="error">{{ index .Data.Errors "name" }}</span>
+        {{ end }}
     </fieldset>
     <div class="shifu-toolbelt">
         <button class="secondary shifu-window-close" hx-trigger="click">

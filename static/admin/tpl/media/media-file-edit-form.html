@@ -1,17 +1,17 @@
 <p>Achtung! Beim Bearbeiten können Links kaputtgehen!</p>
 <form method="post"
-      hx-post="{{config.UI.Path}}/media/file/edit?path={{.Data.Path}}&name={{.Data.Name}}"
+      hx-post="{{ config.UI.Path }}/media/file/edit?path={{ .Data.Path }}&name={{ .Data.Name }}"
       hx-swap="outerHTML"
       hx-target=".shifu-media-files"
       hx-target-4*="this"
       hx-on::after-request="shifuCloseWindow('#shifu-media-file-edit')">
     <fieldset>
         <label for="name">Name</label>
-        <input type="text" name="name" id="name" value="{{.Data.Name}}" autofocus />
+        <input type="text" name="name" id="name" value="{{ .Data.Name }}" autofocus />
 
-        {{if index .Data.Errors "name"}}
-            <span class="error">{{index .Data.Errors "name"}}</span>
-        {{end}}
+        {{ if index .Data.Errors "name" }}
+            <span class="error">{{ index .Data.Errors "name" }}</span>
+        {{ end }}
     </fieldset>
     <div class="shifu-toolbelt">
         <button class="secondary shifu-window-close" hx-trigger="click">

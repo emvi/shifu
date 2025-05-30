@@ -15,21 +15,21 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon/favicon-16x16.png" />
     <link rel="manifest" href="/static/img/favicon/site.webmanifest" />-->
     <title>Shifu Login</title>
-    <link rel="prefetch" href="{{config.UI.Path}}/static/fonts/Inter-Medium.woff2" as="font" type="font/woff2" />
-    <link rel="prefetch" href="{{config.UI.Path}}/static/fonts/Inter-Regular.woff2" as="font" type="font/woff2" />
-    <link rel="prefetch" href="{{config.UI.Path}}/static/fonts/InterDisplay-Medium.woff2" as="font" type="font/woff2" />
-    <link rel="stylesheet" type="text/css" href="{{config.UI.Path}}/static/admin.css" />
-    <script defer src="{{config.UI.Path}}/static/htmx.min.js"></script>
-    <script defer src="{{config.UI.Path}}/static/htmx-ext-response-targets.min.js"></script>
-    <script defer src="{{config.UI.Path}}/static/admin.js"></script>
+    <link rel="prefetch" href="{{ config.UI.Path }}/static/fonts/Inter-Medium.woff2" as="font" type="font/woff2" />
+    <link rel="prefetch" href="{{ config.UI.Path }}/static/fonts/Inter-Regular.woff2" as="font" type="font/woff2" />
+    <link rel="prefetch" href="{{ config.UI.Path }}/static/fonts/InterDisplay-Medium.woff2" as="font" type="font/woff2" />
+    <link rel="stylesheet" type="text/css" href="{{ config.UI.Path }}/static/admin.css" />
+    <script defer src="{{ config.UI.Path }}/static/htmx.min.js"></script>
+    <script defer src="{{ config.UI.Path }}/static/htmx-ext-response-targets.min.js"></script>
+    <script defer src="{{ config.UI.Path }}/static/admin.js"></script>
 </head>
 <body class="shifu" hx-ext="response-targets">
     <div class="shifu-box" style="width: 460px;">
         <div class="shifu-box-title">Login</div>
         <div class="shifu-box-content">
-            {{template "login-form.html" .}}
+            {{ template "login-form.html" . }}
             <hr />
-            <small>&copy; {{year}} Emvi Software GmbH / Alle Rechte vorbehalten. / <a href="https://emvi.com" target="_blank">Visit Website</a></small>
+            <small>&copy; {{ year }} Emvi Software GmbH / Alle Rechte vorbehalten. / <a href="https://emvi.com" target="_blank">Visit Website</a></small>
         </div>
     </div>
 </body>

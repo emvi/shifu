@@ -29,6 +29,41 @@
                         "headline": "Shifu Demo",
                         "text": "<p>Hello from Shifu! See the repository on <a href='https://github.com/emvi/shifu' target='_blank'>GitHub</a>. This is variant A for the A/B test of this element.</p>"
                     }
+                },
+                "content": {
+                    "content": [
+                        {
+                            "tpl": "text",
+                            "copy": {
+                                "en": {
+                                    "headline": "1",
+                                    "text": "<p>Level 1</p>"
+                                }
+                            },
+                            "content": {
+                                "content": [
+                                    {
+                                        "tpl": "text",
+                                        "copy": {
+                                            "en": {
+                                                "headline": "2",
+                                                "text": "<p>Level 2</p>"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "tpl": "text",
+                                        "copy": {
+                                            "en": {
+                                                "headline": "2",
+                                                "text": "<p>Level 2</p>"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
                 }
             },
             {

@@ -1,20 +1,20 @@
-{{define "user-window-title"}}
+{{ define "user-window-title" }}
     <span>Nutzerverwaltung</span>
-{{end}}
+{{ end }}
 
-{{define "user-window-content"}}
-    {{if .Data.Admin}}
+{{ define "user-window-content" }}
+    {{ if .Data.Admin }}
         <div class="shifu-toolbelt">
-            <button hx-get="{{config.UI.Path}}/user/edit"
+            <button hx-get="{{ config.UI.Path }}/user/edit"
                     hx-target="body"
                     hx-swap="beforeend">
-                <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" />
+                <img src="{{ config.UI.Path }}/static/icons/add.svg" alt="" />
                 Benutzer anlegen
             </button>
         </div>
-    {{end}}
+    {{ end }}
 
-    {{template "user-list.html" .}}
-{{end}}
+    {{ template "user-list.html" . }}
+{{ end }}
 
-{{template "window.html" .}}
+{{ template "window.html" . }}

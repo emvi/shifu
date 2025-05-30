@@ -28,6 +28,7 @@ func Page(w http.ResponseWriter, r *http.Request) {
 			ID:         "shifu-page",
 			TitleTpl:   "page-window-title",
 			ContentTpl: "page-window-content",
+			MinWidth:   300,
 		},
 		Page: page,
 	})

@@ -1,16 +1,16 @@
-{{define "pages-window-title"}}
+{{ define "pages-window-title" }}
     <span>Seiten</span>
-{{end}}
+{{ end }}
 
-{{define "pages-window-content"}}
+{{ define "pages-window-content" }}
     <div class="shifu-window-content-flex">
         <div class="shifu-pages-tree shifu-tree">
-            {{template "pages-tree.html" .}}
+            {{ template "pages-tree.html" . }}
         </div>
         <div class="shifu-pages-page">
             <p>Wähle eine Seite aus der Liste um sie zu bearbeiten.</p>
         </div>
     </div>
-{{end}}
+{{ end }}
 
-{{template "window.html" .}}
+{{ template "window.html" . }}

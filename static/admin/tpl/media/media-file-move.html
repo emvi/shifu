@@ -1,22 +1,22 @@
-{{define "media-file-move-window-title"}}
+{{ define "media-file-move-window-title" }}
     <span>Dateien verschieben</span>
-{{end}}
+{{ end }}
 
-{{define "media-file-move-window-content"}}
-    {{if eq (len .Data.Name) 1}}
-        <p>Wähle den Zielordner, um die Datei "{{index .Data.Name 0}}" zu verschieben.</p>
+{{ define "media-file-move-window-content" }}
+    {{ if eq (len .Data.Name) 1 }}
+        <p>Wähle den Zielordner, um die Datei "{{ index .Data.Name 0 }}" zu verschieben.</p>
         <p>Achtung! Beim Verschieben können Links kaputtgehen!</p>
-    {{else}}
+    {{ else }}
         <p>Wähle den Zielordner, um die folgenden Dateien zu verschieben.</p>
         <p>Achtung! Beim Verschieben können Links kaputtgehen!</p>
         <ul>
-            {{range .Data.Name}}
-                <li>{{.}}</li>
-            {{end}}
+            {{ range .Data.Name }}
+                <li>{{ . }}</li>
+            {{ end }}
         </ul>
-    {{end}}
+    {{ end }}
 
-    {{template "media-file-move-form.html" .}}
-{{end}}
+    {{ template "media-file-move-form.html" . }}
+{{ end }}
 
-{{template "window.html" .}}
+{{ template "window.html" . }}

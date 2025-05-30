@@ -1,13 +1,13 @@
-{{define "user-edit-window-title"}}
-    {{if .Data.User.ID}}
+{{ define "user-edit-window-title" }}
+    {{ if .Data.User.ID }}
         <span>Nutzer bearbeiten</span>
-    {{else}}
+    {{ else }}
         <span>Nutzer erstellen</span>
-    {{end}}
-{{end}}
+    {{ end }}
+{{ end }}
 
-{{define "user-edit-window-content"}}
-    {{template "user-edit-form.html" .}}
-{{end}}
+{{ define "user-edit-window-content" }}
+    {{ template "user-edit-form.html" . }}
+{{ end }}
 
-{{template "window.html" .}}
+{{ template "window.html" . }}

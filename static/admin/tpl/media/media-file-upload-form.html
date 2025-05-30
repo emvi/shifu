@@ -1,6 +1,6 @@
 <form method="post"
       enctype="multipart/form-data"
-      hx-post="{{config.UI.Path}}/media/file/upload?path={{.Data.Path}}"
+      hx-post="{{ config.UI.Path }}/media/file/upload?path={{ .Data.Path }}"
       hx-swap="outerHTML"
       hx-target=".shifu-media-files"
       hx-target-4*="this"
@@ -9,22 +9,22 @@
         <label for="files">Dateien</label>
         <input type="file" name="files" id="files" multiple />
 
-        {{if index .Data.Errors "files"}}
-            <span class="error">{{index .Data.Errors "files"}}</span>
-        {{end}}
+        {{ if index .Data.Errors "files" }}
+            <span class="error">{{ index .Data.Errors "files" }}</span>
+        {{ end }}
 
-        {{if len .Data.ExistingFiles}}
+        {{ if len .Data.ExistingFiles }}
             <p>Die folgenden Dateien existieren bereits. Bitte ändere den Namen bevor du sie hochlädst oder wähle die Checkbox zum Überschreiben aus.</p>
             <ul>
-                {{range $filename := .Data.ExistingFiles}}
-                    <li>{{$filename}}</li>
-                {{end}}
+                {{ range $filename := .Data.ExistingFiles }}
+                    <li>{{ $filename }}</li>
+                {{ end }}
             </ul>
-        {{end}}
+        {{ end }}
     </fieldset>
     <fieldset>
         <label for="overwrite">Dateien überschreiben</label>
-        <input type="checkbox" name="overwrite" id="overwrite" {{if .Data.Overwrite}}checked{{end}} />
+        <input type="checkbox" name="overwrite" id="overwrite" {{ if .Data.Overwrite }}checked{{ end }} />
     </fieldset>
     <div class="shifu-toolbelt">
         <button class="secondary shifu-window-close" hx-trigger="click">

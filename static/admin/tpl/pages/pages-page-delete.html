@@ -1,19 +1,19 @@
-{{define "pages-page-delete-window-title"}}
+{{ define "pages-page-delete-window-title" }}
     <span>Seite löschen</span>
-{{end}}
+{{ end }}
 
-{{define "pages-page-delete-window-content"}}
-    <p>Bist du sicher, dass du die Seite "{{.Data.Page}}" löschen möchtest?</p>
+{{ define "pages-page-delete-window-content" }}
+    <p>Bist du sicher, dass du die Seite "{{ .Data.Page }}" löschen möchtest?</p>
     <div class="shifu-toolbelt">
         <button class="secondary shifu-window-close" hx-trigger="click">
             Abbrechen
         </button>
-        <button hx-delete="{{config.UI.Path}}/pages/page/delete?path={{.Data.Path}}"
+        <button hx-delete="{{ config.UI.Path }}/pages/page/delete?path={{ .Data.Path }}"
                 hx-target=".shifu-pages-tree"
                 hx-on::after-request="shifuCloseWindow('#shifu-pages-page-delete')">
             Seite löschen
         </button>
     </div>
-{{end}}
+{{ end }}
 
-{{template "window.html" .}}
+{{ template "window.html" . }}

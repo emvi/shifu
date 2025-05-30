@@ -1,19 +1,19 @@
-{{define "user-delete-window-title"}}
+{{ define "user-delete-window-title" }}
     <span>Nutzer löschen</span>
-{{end}}
+{{ end }}
 
-{{define "user-delete-window-content"}}
-    <p>Bist du sicher, dass du den Benutzer "{{.Data.User.Email}}" löschen möchtest?</p>
+{{ define "user-delete-window-content" }}
+    <p>Bist du sicher, dass du den Benutzer "{{ .Data.User.Email }}" löschen möchtest?</p>
     <div class="shifu-toolbelt">
         <button class="secondary shifu-window-close" hx-trigger="click">
             Abbrechen
         </button>
-        <button hx-delete="{{config.UI.Path}}/user/delete?id={{.Data.User.ID}}"
+        <button hx-delete="{{ config.UI.Path }}/user/delete?id={{ .Data.User.ID }}"
                 hx-target="#shifu-user table"
                 hx-on::after-request="shifuCloseWindow('#shifu-user-delete')">
             Nutzer löschen
         </button>
     </div>
-{{end}}
+{{ end }}
 
-{{template "window.html" .}}
+{{ template "window.html" . }}

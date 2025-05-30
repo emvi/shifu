@@ -1,24 +1,24 @@
-{{if .Data.WindowOptions.Overlay}}
+{{ if .Data.WindowOptions.Overlay }}
     <div class="shifu-window-overlay">
-{{end}}
+{{ end }}
 
-<div id="{{.Data.WindowOptions.ID}}"
+<div id="{{ .Data.WindowOptions.ID }}"
      class="shifu shifu-window"
-     {{if .Data.WindowOptions.MinWidth}}style="min-width: {{.Data.WindowOptions.MinWidth}}px;"{{end}}
+     {{ if .Data.WindowOptions.MinWidth }}style="min-width: {{ .Data.WindowOptions.MinWidth }}px;"{{ end }}
      hx-ext="response-targets">
     <div class="shifu-window-title">
         <div class="shifu-window-title-label">
-            {{.Tpl.Render .Data.WindowOptions.TitleTpl .}}
+            {{ .Tpl.Render .Data.WindowOptions.TitleTpl . }}
         </div>
         <div class="shifu-window-close shifu-window-title-close" hx-trigger="click">
-            <img src="{{config.UI.Path}}/static/icons/close.svg" alt="Close" />
+            <img src="{{ config.UI.Path }}/static/icons/close.svg" alt="Close" />
         </div>
     </div>
     <div class="shifu-window-content">
-        {{.Tpl.Render .Data.WindowOptions.ContentTpl .}}
+        {{ .Tpl.Render .Data.WindowOptions.ContentTpl . }}
     </div>
 </div>
 
-{{if .Data.WindowOptions.Overlay}}
+{{ if .Data.WindowOptions.Overlay }}
     </div>
-{{end}}
+{{ end }}

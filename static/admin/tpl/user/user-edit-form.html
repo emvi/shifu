@@ -1,42 +1,42 @@
-{{$admin := eq .Data.User.Email "admin"}}
+{{ $admin := eq .Data.User.Email "admin" }}
 
 <form method="post"
-      hx-post="{{config.UI.Path}}/user/edit{{if .Data.User.ID}}?id={{.Data.User.ID}}{{end}}"
+      hx-post="{{ config.UI.Path }}/user/edit{{ if .Data.User.ID }}?id={{ .Data.User.ID }}{{ end }}"
       hx-swap="outerHTML"
       hx-target="#shifu-user table"
       hx-target-4*="this"
       hx-on::after-request="shifuCloseWindow('#shifu-user-edit')">
     <fieldset>
         <label for="email">Email</label>
-        <input type="email" name="email" id="email" value="{{.Data.Email}}" autofocus {{if $admin}}disabled{{end}} />
+        <input type="email" name="email" id="email" value="{{ .Data.Email }}" autofocus {{ if $admin }}disabled{{ end }} />
 
-        {{if index .Data.Errors "email"}}
-            <span class="error">{{index .Data.Errors "email"}}</span>
-        {{end}}
+        {{ if index .Data.Errors "email" }}
+            <span class="error">{{ index .Data.Errors "email" }}</span>
+        {{ end }}
     </fieldset>
     <fieldset>
         <label for="name">Name</label>
-        <input type="text" name="name" id="name" value="{{.Data.Name}}" {{if $admin}}disabled{{end}} />
+        <input type="text" name="name" id="name" value="{{ .Data.Name }}" {{ if $admin }}disabled{{ end }} />
 
-        {{if index .Data.Errors "name"}}
-            <span class="error">{{index .Data.Errors "name"}}</span>
-        {{end}}
+        {{ if index .Data.Errors "name" }}
+            <span class="error">{{ index .Data.Errors "name" }}</span>
+        {{ end }}
     </fieldset>
     <fieldset>
         <label for="password">Passwort</label>
         <input type="password" name="password" id="password" />
 
-        {{if index .Data.Errors "password"}}
-            <span class="error">{{index .Data.Errors "password"}}</span>
-        {{end}}
+        {{ if index .Data.Errors "password" }}
+            <span class="error">{{ index .Data.Errors "password" }}</span>
+        {{ end }}
     </fieldset>
     <fieldset>
         <label for="password_confirm">Passwort wiederholen</label>
         <input type="password" name="password_confirm" id="password_confirm" />
 
-        {{if index .Data.Errors "password_confirm"}}
-            <span class="error">{{index .Data.Errors "password_confirm"}}</span>
-        {{end}}
+        {{ if index .Data.Errors "password_confirm" }}
+            <span class="error">{{ index .Data.Errors "password_confirm" }}</span>
+        {{ end }}
     </fieldset>
     <div class="shifu-toolbelt">
         <button class="secondary shifu-window-close" hx-trigger="click">
