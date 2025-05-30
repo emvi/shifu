@@ -6,6 +6,10 @@ import (
 )
 
 // Toolbar renders the CMS toolbar.
-func Toolbar(w http.ResponseWriter, _ *http.Request) {
-	tpl.Get().Execute(w, "toolbar.html", nil)
+func Toolbar(w http.ResponseWriter, r *http.Request) {
+	tpl.Get().Execute(w, "toolbar.html", struct {
+		Path string
+	}{
+		Path: r.URL.Query().Get("path"),
+	})
 }

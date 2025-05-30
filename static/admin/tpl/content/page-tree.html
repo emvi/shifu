@@ -1,0 +1,78 @@
+{{define "page-element-tree"}}
+    <ul>
+        {{range $content, $elements := index . "content"}}
+            <li>
+                {{$content}}
+
+                {{/*}}
+                <details>
+                    <summary>
+                        <span class="shifu-page-page-name">
+                            TODO
+                        </span>
+                        <span>
+                            TODO
+                        </span>
+                    </summary>
+                </details>
+                {{*/}}
+            </li>
+
+            {{/*}}
+            <li>
+                <details {{if not (len $dir.Children)}}class="empty"{{end}}>
+                    <summary>
+                        {{if $interactive}}
+                            <span class="shifu-media-directory-name"
+                                  hx-get="{{config.UI.Path}}/media/directory?path={{$dir.Path}}"
+                                  hx-target=".shifu-media-files">
+                                {{$dir.Name}}
+                            </span>
+                            <span>
+                                <img src="{{config.UI.Path}}/static/icons/edit.svg"
+                                     alt=""
+                                     title="Bearbeiten"
+                                     hx-get="{{config.UI.Path}}/media/directory/edit?path={{$dir.Path}}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
+                                <img src="{{config.UI.Path}}/static/icons/add.svg"
+                                     alt=""
+                                     title="Unterordner hinzufügen"
+                                     hx-get="{{config.UI.Path}}/media/directory/add?path={{$dir.Path}}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
+                                <img src="{{config.UI.Path}}/static/icons/delete.svg"
+                                     alt=""
+                                     title="Ordner löschen"
+                                     hx-get="{{config.UI.Path}}/media/directory/delete?path={{$dir.Path}}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
+                            </span>
+                        {{else}}
+                            <span class="shifu-media-directory-name shifu-media-directory-selection" data-path="{{$dir.Path}}">
+                                {{$dir.Name}}
+                            </span>
+                            <span></span>
+                        {{end}}
+                    </summary>
+
+                    {{if len $dir.Children}}
+                        {{template "media-tree-directories" dict "content" $dir.Children}}
+                    {{end}}
+                </details>
+            </li>
+            {{*/}}
+        {{end}}
+    </ul>
+{{end}}
+
+<div style="margin-bottom: 8px;">
+    {{template "page-element-tree" dict "content" .Data.Page.Content}}
+</div>
+<button title="Element hinzufügen"
+        hx-get="{{config.UI.Path}}/content/element/add"
+        hx-target="body"
+        hx-swap="beforeend">
+    <img src="{{config.UI.Path}}/static/icons/add.svg" alt="" />
+    Element hinzufügen
+</button>

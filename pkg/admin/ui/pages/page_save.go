@@ -6,6 +6,7 @@ import (
 	"github.com/emvi/iso-639-1"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
+	"github.com/emvi/shifu/pkg/admin/ui/shared"
 	"github.com/emvi/shifu/pkg/cfg"
 	"github.com/emvi/shifu/pkg/cms"
 	"io/fs"
@@ -148,7 +149,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 
 			if overwrite {
 				outPath = getPagePath(path)
-				page, err = loadPage(outPath)
+				page, err = shared.LoadPage(outPath)
 
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)

@@ -310,8 +310,8 @@ Shifu comes with a number of template functions that can be used within template
 | html          | Returns given string as valid HTML. This is unsafe if the input is user provided.                                  | `{{html "<p>Text</p>"}}`                                   |
 | htmlAttr      | Returns given string as a valid HTML attribute. This is unsafe if the input is user provided.                      | `{{htmlAttr "value"}}`                                     |
 | loggedIn      | Returns true if the visitor is signed in as admin.                                                                 | `{{loggedIn}}`                                             |
-| adminHead     | Returns the HTML for the `<head>` section for the admin UI.                                                        | `{{adminHead}}`                                            |
-| adminBody     | Returns the HTML for the `<body>` section for the admin UI.                                                        | `{{adminBody}}`                                            |
+| adminHead     | Returns the HTML for the `<head>` section for the admin UI.                                                        | `{{adminHead .Page.Request}}`                              |
+| adminBody     | Returns the HTML for the `<body>` section for the admin UI.                                                        | `{{adminBody .Page.Request .Page.File}}`                   |
 
 For more template functions, see the [Sprig documentation](github.com/Masterminds/sprig).
 

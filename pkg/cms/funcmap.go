@@ -292,12 +292,12 @@ func adminHead(r *http.Request) template.HTML {
 	return ""
 }
 
-func adminBody(r *http.Request) template.HTML {
+func adminBody(r *http.Request, file string) template.HTML {
 	if isLoggedIn(r) {
 		path := cfg.Get().UI.Path
-		return template.HTML(fmt.Sprintf(`<div hx-get="%s/toolbar"
+		return template.HTML(fmt.Sprintf(`<div hx-get="%s/toolbar?path=%s"
 			hx-swap="outerHTML"
-			hx-trigger="load"></div>`, path))
+			hx-trigger="load"></div>`, path, file))
 	}
 
 	return ""

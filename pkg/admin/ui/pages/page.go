@@ -1,13 +1,10 @@
 package pages
 
 import (
-	"encoding/json"
 	iso6391 "github.com/emvi/iso-639-1"
 	"github.com/emvi/shifu/pkg/admin/tpl"
-	"github.com/emvi/shifu/pkg/cms"
-	"log/slog"
+	"github.com/emvi/shifu/pkg/admin/ui/shared"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -17,7 +14,7 @@ import (
 func Page(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimSpace(r.URL.Query().Get("path"))
 	fullPath := getPagePath(path)
-	page, err := loadPage(fullPath)
+	page, err := shared.LoadPage(fullPath)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -35,22 +32,4 @@ func Page(w http.ResponseWriter, r *http.Request) {
 		Header:    page.Header,
 		Languages: iso6391.Languages,
 	})
-}
-
-func loadPage(path string) (*cms.Content, error) {
-	content, err := os.ReadFile(path)
-
-	if err != nil {
-		slog.Error("Error reading content file", "error", err)
-		return nil, err
-	}
-
-	var page cms.Content
-
-	if err := json.Unmarshal(content, &page); err != nil {
-		slog.Error("Error parsing content file", "error", err)
-		return nil, err
-	}
-
-	return &page, nil
 }

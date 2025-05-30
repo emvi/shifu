@@ -39,6 +39,9 @@ type Content struct {
 	Copy         Copy                 `json:"copy"`
 	Content      map[string][]Content `json:"content"`
 
+	// File is the path for the current content file.
+	File string `json:"-"`
+
 	// Request is the HTTP request.
 	Request *http.Request `json:"-"`
 

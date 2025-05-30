@@ -1,0 +1,11 @@
+{{define "page-window-title"}}
+    <span>Seite</span>
+{{end}}
+
+{{define "page-window-content"}}
+    <div class="shifu-tree shifu-page-tree">
+        {{template "page-tree.html" .}}
+    </div>
+{{end}}
+
+{{template "window.html" .}}

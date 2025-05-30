@@ -55,7 +55,7 @@ type Options struct {
 	Sitemap   *sitemap.Sitemap
 }
 
-// NewCMS sets up a new CMS instance for given configuration.
+// NewCMS sets up a new CMS instance for the given configuration.
 func NewCMS(options Options) *CMS {
 	if len(options.NotFound) == 0 {
 		options.NotFound = map[string]string{"en": notFoundPath}
@@ -84,7 +84,7 @@ func NewCMS(options Options) *CMS {
 	return cms
 }
 
-// Serve matches the path and renders the page for given request.
+// Serve matches the path and renders the page for the given request.
 // If no page is found, it will redirect to the 404 page.
 func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 	if cms.hotReload {
@@ -123,7 +123,7 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 	slog.Debug("Served page", "time_ms", time.Now().Sub(start).Milliseconds())
 }
 
-// RenderPage renders given page and returns it to the client.
+// RenderPage renders the given page and returns it to the client.
 func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, args map[string]string, page *Content) {
 	page.Request = r
 	cms.selectExperiments(w, r, page)
@@ -178,7 +178,7 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 	}
 }
 
-// Render404 renders the 404 page for given path and language if it exists.
+// Render404 renders the 404 page for the given path and language if it exists.
 // The language will fall back to en if not found or empty.
 func (cms *CMS) Render404(w http.ResponseWriter, r *http.Request, path string) {
 	slog.Debug("Page not found", "path", path)
@@ -191,7 +191,7 @@ func (cms *CMS) Render404(w http.ResponseWriter, r *http.Request, path string) {
 	}
 }
 
-// Render renders and returns the content for given page.
+// Render renders and returns the content for the given page.
 func (cms *CMS) Render(args map[string]string, page *Content, content []Content) template.HTML {
 	out, err := cms.renderContent(args, page, content)
 
@@ -203,7 +203,7 @@ func (cms *CMS) Render(args map[string]string, page *Content, content []Content)
 	return template.HTML(out)
 }
 
-// SetHandler sets the handler function for given name.
+// SetHandler sets the handler function for the given name.
 func (cms *CMS) SetHandler(name string, handler Handler) {
 	cms.m.Lock()
 	defer cms.m.Unlock()
@@ -516,7 +516,7 @@ func (cms *CMS) updateContent() {
 		slog.Error("Error reading website content directory", "error", err)
 	}
 
-	// longest path goes first
+	// the longest path goes first
 	slices.SortFunc(pages, func(a, b Route) int {
 		if len(a.raw) > len(b.raw) {
 			return -1
@@ -546,6 +546,7 @@ func (cms *CMS) getContent(path string) (*Content, error) {
 		return nil, errors.New(fmt.Sprintf("error parsing website content file '%s': %s", path, err))
 	}
 
+	content.File = strings.TrimPrefix(path, cfg.Get().BaseDir)
 	return &content, nil
 }
 

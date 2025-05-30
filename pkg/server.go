@@ -216,7 +216,6 @@ func (server *Server) serveUI(router chi.Router) {
 	router.Route(path, func(r chi.Router) {
 		r.Use(adminMiddleware.Auth)
 		r.Get("/toolbar", ui.Toolbar)
-		r.Get("/edit", content.Edit)
 		r.Get("/database", database.Database)
 		r.Route("/user", func(r chi.Router) {
 			r.Get("/edit", user.EditUser)
@@ -264,6 +263,9 @@ func (server *Server) serveUI(router chi.Router) {
 				r.Delete("/delete", pages.DeletePage)
 			})
 			r.Get("/", pages.Pages)
+		})
+		r.Route("/content", func(r chi.Router) {
+			r.Get("/", content.Page)
 		})
 		r.Get("/logout", user.Logout)
 	})

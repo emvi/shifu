@@ -1,15 +1,15 @@
-{{$headline := copy .Page .Content "headline"}}
-{{$n := index .Args "n"}}
+{{ $headline := copy .Page .Content "headline" }}
+{{ $n := index .Args "n" }}
 
 <section>
     <article>
-        {{if $headline}}<h1>{{$headline}}</h1>{{end}}
-        {{html (copy .Page .Content "text")}}
+        {{ if $headline }}<h1>{{ $headline }}</h1>{{ end }}
+        {{ html (copy .Page .Content "text") }}
     </article>
 </section>
 
-{{if $n}}
+{{ if $n }}
     <section>
-        <p>Arg: {{$n}}</p>
+        <p>Arg: {{ $n }}</p>
     </section>
-{{end}}
+{{ end }}
