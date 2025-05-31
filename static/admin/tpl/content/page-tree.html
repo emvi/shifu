@@ -1,6 +1,7 @@
 {{ define "page-element-tree" }}
     {{ $path := index . "path" }}
     {{ $content := index . "content" }}
+    {{ $parentPath := index . "p" }}
 
     {{ range $content, $elements := $content }}
         <div>
@@ -8,7 +9,9 @@
                 {{ $content }}
             </small>
             <ul>
-                {{ range $element := $elements }}
+                {{ range $index, $element := $elements }}
+                    {{ $p := fmt "%s%s.%d" $parentPath $content $index }}
+
                     <li>
                         <details>
                             <summary
@@ -22,45 +25,44 @@
                                 <span>
                                     {{ $element.Tpl }}
                                     {{ $element.Ref }}
-                                    {{ $element.File }}
                                 </span>
                                 <span>
                                     <img src="{{ config.UI.Path }}/static/icons/edit.svg"
                                          alt=""
                                          title="Bearbeiten"
-                                         hx-get="{{ config.UI.Path }}/content/element/edit"
+                                         hx-get="{{ config.UI.Path }}/content/element/edit?path={{ $path }}&element={{ $p }}"
                                          hx-target="body"
                                          hx-swap="beforeend" />
                                     <img src="{{ config.UI.Path }}/static/icons/add.svg"
                                          alt=""
                                          title="Element hinzufügen"
-                                         hx-get="{{ config.UI.Path }}/content/element/add"
+                                         hx-get="{{ config.UI.Path }}/content/element/add?path={{ $path }}&element={{ $p }}"
                                          hx-target="body"
                                          hx-swap="beforeend" />
                                     <img src="{{ config.UI.Path }}/static/icons/chevron.svg"
                                          alt=""
                                          title="Nach oben verschieben"
-                                         hx-get="{{ config.UI.Path }}/content/element/move"
+                                         hx-get="{{ config.UI.Path }}/content/element/move?path={{ $path }}&element={{ $p }}&direction=up"
                                          hx-target="body"
                                          hx-swap="beforeend" />
                                     <img src="{{ config.UI.Path }}/static/icons/chevron.svg"
                                          alt=""
                                          title="Nach unten verschieben"
                                          style="transform: rotate(180deg);"
-                                         hx-get="{{ config.UI.Path }}/content/element/move"
+                                         hx-get="{{ config.UI.Path }}/content/element/move?path={{ $path }}&element={{ $p }}&direction=down"
                                          hx-target="body"
                                          hx-swap="beforeend" />
                                     <img src="{{ config.UI.Path }}/static/icons/delete.svg"
                                          alt=""
                                          title="Löschen"
-                                         hx-get="{{ config.UI.Path }}/content/element/delete?path={{ $path }}"
+                                         hx-get="{{ config.UI.Path }}/content/element/delete?path={{ $path }}&element={{ $p }}"
                                          hx-target="body"
                                          hx-swap="beforeend" />
                                 </span>
                             </summary>
 
                             {{ if len $element.Content }}
-                                {{ template "page-element-tree" dict "path" .Data.Path "content" $element.Content }}
+                                {{ template "page-element-tree" dict "path" $path "content" $element.Content "p" (fmt "%s." $p) }}
                             {{ end }}
                         </details>
                     </li>
@@ -71,7 +73,7 @@
 {{ end }}
 
 <div style="margin-bottom: 8px;">
-    {{ template "page-element-tree" dict "path" .Data.Path "content" .Data.Page.Content }}
+    {{ template "page-element-tree" dict "path" .Data.Path "content" .Data.Page.Content "p" "" }}
 </div>
 <button title="Element hinzufügen"
         hx-get="{{ config.UI.Path }}/content/element/add"

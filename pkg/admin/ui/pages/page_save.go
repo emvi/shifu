@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/emvi/iso-639-1"
 	"github.com/emvi/shifu/pkg/admin/tpl"
@@ -174,16 +173,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			pageJson, err := json.Marshal(page)
-
-			if err != nil {
-				slog.Error("Error marshalling page data", "error", err)
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-
-			if err := os.WriteFile(outPath, pageJson, 0644); err != nil {
-				slog.Error("Error writing page data", "error", err)
+			if err := shared.SavePage(page, outPath); err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}

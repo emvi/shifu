@@ -10,7 +10,7 @@ type Copy map[string]map[string]any
 
 // Sitemap is the sitemap data for the Content.
 type Sitemap struct {
-	Priority string `json:"priority"`
+	Priority string `json:"priority,omitempty"`
 }
 
 // Experiment is an A/B testing experiment.
@@ -21,23 +21,23 @@ type Experiment struct {
 
 // Analytics is the analytics metadata for the Content.
 type Analytics struct {
-	Tags       map[string]string `json:"tags"`
-	Experiment Experiment        `json:"experiment"`
+	Tags       map[string]string `json:"tags,omitempty"`
+	Experiment Experiment        `json:"experiment,omitempty"`
 }
 
 // Content is a page or element for the CMS.
 type Content struct {
-	DisableCache bool                 `json:"disable_cache"`
-	Path         map[string]string    `json:"path"`
+	DisableCache bool                 `json:"disable_cache,omitempty"`
+	Path         map[string]string    `json:"path,omitempty"`
 	Sitemap      Sitemap              `json:"sitemap"`
-	Header       map[string]string    `json:"header"`
-	Handler      string               `json:"handler"`
+	Header       map[string]string    `json:"header,omitempty"`
+	Handler      string               `json:"handler,omitempty"`
 	Analytics    Analytics            `json:"analytics"`
-	Ref          string               `json:"ref"`
-	Tpl          string               `json:"tpl"`
-	Data         map[string]any       `json:"data"`
-	Copy         Copy                 `json:"copy"`
-	Content      map[string][]Content `json:"content"`
+	Ref          string               `json:"ref,omitempty"`
+	Tpl          string               `json:"tpl,omitempty"`
+	Data         map[string]any       `json:"data,omitempty"`
+	Copy         Copy                 `json:"copy,omitempty"`
+	Content      map[string][]Content `json:"content,omitempty"`
 
 	// File is the path for the current content file.
 	File string `json:"-"`

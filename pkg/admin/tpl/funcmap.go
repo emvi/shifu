@@ -13,6 +13,7 @@ var funcMap = template.FuncMap{
 	"year":           func() int { return time.Now().Year() },
 	"formatFileSize": formatFileSize,
 	"dict":           dict,
+	"fmt":            fmt.Sprintf,
 }
 
 func formatFileSize(size int64) string {
