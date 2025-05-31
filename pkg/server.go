@@ -265,6 +265,10 @@ func (server *Server) serveUI(router chi.Router) {
 			r.Get("/", pages.Pages)
 		})
 		r.Route("/content", func(r chi.Router) {
+			r.Route("/element", func(r chi.Router) {
+				r.Get("/delete", content.DeleteElement)
+				r.Delete("/delete", content.DeleteElement)
+			})
 			r.Get("/", content.Page)
 		})
 		r.Get("/logout", user.Logout)

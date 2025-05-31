@@ -23,5 +23,6 @@ func LoadPage(path string) (*cms.Content, error) {
 		return nil, err
 	}
 
+	page.File = path
 	return &page, nil
 }

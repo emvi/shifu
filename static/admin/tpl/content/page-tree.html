@@ -1,5 +1,8 @@
 {{ define "page-element-tree" }}
-    {{ range $content, $elements := index . "content" }}
+    {{ $path := index . "path" }}
+    {{ $content := index . "content" }}
+
+    {{ range $content, $elements := $content }}
         <div>
             <small>
                 {{ $content }}
@@ -19,6 +22,7 @@
                                 <span>
                                     {{ $element.Tpl }}
                                     {{ $element.Ref }}
+                                    {{ $element.File }}
                                 </span>
                                 <span>
                                     <img src="{{ config.UI.Path }}/static/icons/edit.svg"
@@ -49,14 +53,14 @@
                                     <img src="{{ config.UI.Path }}/static/icons/delete.svg"
                                          alt=""
                                          title="Löschen"
-                                         hx-get="{{ config.UI.Path }}/content/element/delete"
+                                         hx-get="{{ config.UI.Path }}/content/element/delete?path={{ $path }}"
                                          hx-target="body"
                                          hx-swap="beforeend" />
                                 </span>
                             </summary>
 
                             {{ if len $element.Content }}
-                                {{ template "page-element-tree" dict "content" $element.Content }}
+                                {{ template "page-element-tree" dict "path" .Data.Path "content" $element.Content }}
                             {{ end }}
                         </details>
                     </li>
@@ -67,7 +71,7 @@
 {{ end }}
 
 <div style="margin-bottom: 8px;">
-    {{ template "page-element-tree" dict "content" .Data.Page.Content }}
+    {{ template "page-element-tree" dict "path" .Data.Path "content" .Data.Page.Content }}
 </div>
 <button title="Element hinzufügen"
         hx-get="{{ config.UI.Path }}/content/element/add"

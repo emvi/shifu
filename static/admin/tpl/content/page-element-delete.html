@@ -1,0 +1,19 @@
+{{ define "page-element-delete-window-title" }}
+    <span>Element löschen</span>
+{{ end }}
+
+{{ define "page-element-delete-window-content" }}
+    <p>Bist du sicher, dass du das Element "TODO" löschen möchtest?</p>
+    <div class="shifu-toolbelt">
+        <button hx-delete="{{ config.UI.Path }}/content/element/delete?path={{ .Data.Path }}"
+                hx-target=".shifu-page-tree"
+                hx-on::after-request="shifuCloseWindow('#shifu-page-element-delete')">
+            Element löschen
+        </button>
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            Abbrechen
+        </button>
+    </div>
+{{ end }}
+
+{{ template "window.html" . }}
