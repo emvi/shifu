@@ -1,0 +1,54 @@
+package content
+
+import (
+	"github.com/emvi/shifu/pkg/admin/tpl"
+	"github.com/emvi/shifu/pkg/admin/ui/shared"
+	"github.com/emvi/shifu/pkg/cms"
+	"log/slog"
+	"net/http"
+	"strings"
+)
+
+// MoveElement moves an element to a new position.
+func MoveElement(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Query().Get("path")
+	element := strings.TrimSpace(r.URL.Query().Get("element"))
+	direction := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("direction")))
+	fullPath := getPagePath(path)
+	page, err := shared.LoadPage(fullPath)
+
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	d := 0
+
+	if direction == "up" {
+		d = -1
+	} else if direction == "down" {
+		d = 1
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if shared.MoveElement(page, element, d) {
+		if err := shared.SavePage(page, fullPath); err != nil {
+			slog.Error("Error while saving page", "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	tpl.Get().Execute(w, "page-tree.html", struct {
+		Path string
+		Page *cms.Content
+	}{
+		Path: path,
+		Page: page,
+	})
+}

@@ -30,6 +30,9 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
+		} else {
+			w.WriteHeader(http.StatusBadRequest)
+			return
 		}
 
 		w.Header().Add("HX-Reswap", "innerHTML")

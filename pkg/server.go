@@ -266,6 +266,7 @@ func (server *Server) serveUI(router chi.Router) {
 		})
 		r.Route("/content", func(r chi.Router) {
 			r.Route("/element", func(r chi.Router) {
+				r.Post("/move", content.MoveElement)
 				r.Get("/delete", content.DeleteElement)
 				r.Delete("/delete", content.DeleteElement)
 			})
