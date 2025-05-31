@@ -1,3 +1,4 @@
 .secrets.env
 shifu.db
 static/media/
+content/pages/
