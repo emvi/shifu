@@ -1,1 +1,1 @@
-{"disable_cache":false,"path":{"de":"/test"},"sitemap":{"priority":"1.000000"},"header":{},"handler":"","analytics":{"tags":null,"experiment":{"name":"","variant":""}},"ref":"","tpl":"","data":null,"copy":null,"content":null}
+{"disable_cache":true,"path":{"de":"/test"},"sitemap":{"priority":"1.000000"},"header":{"FOO":"bar"},"handler":"","analytics":{"tags":null,"experiment":{"name":"","variant":""}},"ref":"","tpl":"","data":null,"copy":null,"content":null}
