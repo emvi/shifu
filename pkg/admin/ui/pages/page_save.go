@@ -10,7 +10,6 @@ import (
 	"github.com/emvi/shifu/pkg/cfg"
 	"github.com/emvi/shifu/pkg/cms"
 	"io/fs"
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -189,21 +188,13 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			if overwrite {
-				w.Header().Add("HX-Retarget", "#shifu-save-page-form")
-				tpl.Get().Execute(w, "pages-page-save-form.html", SavePageData{
-					Name:      name,
-					PagePath:  pagePath,
-					Cache:     cache,
-					Sitemap:   sitemapFloat,
-					Handler:   handler,
-					Path:      path,
-					Header:    header,
-					Errors:    errs,
-					Saved:     true,
-					Languages: iso6391.Languages,
-				})
-				return
+			// rename the file if name changed
+			if overwrite && getPageName(filepath.Base(outPath)) != name {
+				if err := os.Rename(outPath, getPagePath(filepath.Join(filepath.Dir(path), name+".json"))); err != nil {
+					slog.Error("Error renaming page", "error", err)
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
 			}
 		}
 
@@ -261,8 +252,6 @@ func pageExists(name string) bool {
 		slog.Error("Error reading content directory", "error", err)
 		return false
 	}
-
-	log.Println(files)
 
 	for _, file := range files {
 		if file == name {
