@@ -14,7 +14,6 @@ const (
 	templateConfigDir = "admin/tpl"
 )
 
-// TODO watch
 // TemplateCache is a cache for template configurations.
 type TemplateCache struct {
 	templates map[string]TemplateConfig

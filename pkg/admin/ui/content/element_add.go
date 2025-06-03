@@ -13,7 +13,7 @@ import (
 // AddElement adds a new element to the page or to a parent element.
 func AddElement(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
-	element := strings.TrimSpace(r.URL.Query().Get("element"))
+	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
 	fullPath := getPagePath(path)
 	page, err := shared.LoadPage(fullPath)
 
@@ -25,13 +25,13 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 	var parent *cms.Content
 	positions := make(map[string]string)
 
-	if element != "" {
+	if elementPath != "" {
 		var key string
 		var index int
-		parent, key, index = shared.FindElement(page, element)
+		parent, key, index = shared.FindParentElement(page, elementPath)
 
 		if parent == nil {
-			slog.Debug("Parent element not found", "element", element)
+			slog.Debug("Parent element not found", "element", elementPath)
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -81,7 +81,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 				Errors    map[string]string
 			}{
 				Path:      path,
-				Element:   element,
+				Element:   elementPath,
 				Templates: tplCache.List(),
 				Positions: positions,
 				Template:  template,
@@ -130,7 +130,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 			MinWidth:   300,
 		},
 		Path:      path,
-		Element:   element,
+		Element:   elementPath,
 		Templates: tplCache.List(),
 		Positions: positions,
 	})

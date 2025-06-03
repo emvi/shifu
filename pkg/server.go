@@ -182,7 +182,10 @@ func (server *Server) setupRouter(dir string) {
 	}
 
 	if cfg.Get().UI.Path != "" {
-		content.Init()
+		if err := content.Init(server.ctx); err != nil {
+			slog.Error("Error initializing admin content", "error", err)
+		}
+
 		server.serveUI(router)
 	}
 

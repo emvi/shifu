@@ -12,7 +12,7 @@ import (
 // MoveElement moves an element to a new position.
 func MoveElement(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
-	element := strings.TrimSpace(r.URL.Query().Get("element"))
+	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
 	direction := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("direction")))
 	fullPath := getPagePath(path)
 	page, err := shared.LoadPage(fullPath)
@@ -33,7 +33,7 @@ func MoveElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if shared.MoveElement(page, element, d) {
+	if shared.MoveElement(page, elementPath, d) {
 		if err := shared.SavePage(page, fullPath); err != nil {
 			slog.Error("Error while saving page", "error", err)
 			w.WriteHeader(http.StatusInternalServerError)

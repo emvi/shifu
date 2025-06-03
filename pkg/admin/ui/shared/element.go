@@ -32,7 +32,7 @@ func AddElement(content *cms.Content, position, template string, positions []str
 
 // MoveElement finds an element by JSON path and moves it up or down.
 func MoveElement(content *cms.Content, path string, direction int) bool {
-	parentElement, key, index := FindElement(content, path)
+	parentElement, key, index := FindParentElement(content, path)
 
 	if parentElement != nil {
 		if index == 0 && direction == -1 || index == len(parentElement.Content[key])-1 && direction == 1 {
@@ -53,7 +53,7 @@ func MoveElement(content *cms.Content, path string, direction int) bool {
 
 // DeleteElement finds an element by JSON path and removes it from the tree.
 func DeleteElement(content *cms.Content, path string) bool {
-	parentElement, key, index := FindElement(content, path)
+	parentElement, key, index := FindParentElement(content, path)
 
 	if parentElement != nil {
 		parentElement.Content[key] = append(parentElement.Content[key][:index], parentElement.Content[key][index+1:]...)
@@ -63,9 +63,9 @@ func DeleteElement(content *cms.Content, path string) bool {
 	return false
 }
 
-// FindElement finds an element by JSON path.
+// FindParentElement finds an element by JSON path.
 // The path is a dot-separated list of keys and indices.
-func FindElement(content *cms.Content, path string) (*cms.Content, string, int) {
+func FindParentElement(content *cms.Content, path string) (*cms.Content, string, int) {
 	if path == "" {
 		return nil, "", 0
 	}
@@ -95,4 +95,16 @@ func FindElement(content *cms.Content, path string) (*cms.Content, string, int) 
 	}
 
 	return parentElement, key, index
+}
+
+// FindElement finds an element by JSON path.
+// The path is a dot-separated list of keys and indices.
+func FindElement(content *cms.Content, path string) *cms.Content {
+	parentElement, key, index := FindParentElement(content, path)
+
+	if parentElement == nil {
+		return nil
+	}
+
+	return &parentElement.Content[key][index]
 }

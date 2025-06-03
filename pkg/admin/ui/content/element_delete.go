@@ -13,7 +13,7 @@ import (
 // DeleteElement deletes an element from a page.
 func DeleteElement(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
-	element := strings.TrimSpace(r.URL.Query().Get("element"))
+	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
 
 	if r.Method == http.MethodDelete {
 		fullPath := getPagePath(path)
@@ -24,7 +24,7 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if shared.DeleteElement(page, element) {
+		if shared.DeleteElement(page, elementPath) {
 			if err := shared.SavePage(page, fullPath); err != nil {
 				slog.Error("Error while saving page", "error", err)
 				w.WriteHeader(http.StatusInternalServerError)
@@ -57,6 +57,6 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 			ContentTpl: "page-element-delete-window-content",
 		},
 		Path:    path,
-		Element: element,
+		Element: elementPath,
 	})
 }
