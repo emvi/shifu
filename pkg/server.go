@@ -269,6 +269,8 @@ func (server *Server) serveUI(router chi.Router) {
 			r.Route("/element", func(r chi.Router) {
 				r.Get("/add", content.AddElement)
 				r.Post("/add", content.AddElement)
+				r.Get("/edit", content.EditElement)
+				r.Post("/edit", content.EditElement)
 				r.Post("/move", content.MoveElement)
 				r.Get("/delete", content.DeleteElement)
 				r.Delete("/delete", content.DeleteElement)

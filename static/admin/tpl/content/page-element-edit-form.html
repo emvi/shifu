@@ -1,0 +1,13 @@
+<form method="post"
+      hx-post="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.Element }}"
+      hx-swap="none"
+      hx-target-4*="this"
+      hx-on::after-request="shifuCloseWindow('#shifu-page-element-edit')">
+    <!-- TODO -->
+    <div class="shifu-toolbelt">
+        <input type="submit" value="Speichern" />
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            Abbrechen
+        </button>
+    </div>
+</form>
