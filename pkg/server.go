@@ -58,8 +58,8 @@ type Server struct {
 	cancel  context.CancelFunc
 }
 
-// NewServer creates a new Shifu server for given directory.
-// The second argument is an optional template.FuncMap that will be merged with Shifu's funcmap.
+// NewServer creates a new Shifu server for the given directory.
+// The second argument is an optional template.FuncMap that will be merged with Shifu's func map.
 func NewServer(dir string, options ServerOptions) (*Server, error) {
 	options.FuncMap = cms.Merge(options.FuncMap)
 
@@ -182,6 +182,7 @@ func (server *Server) setupRouter(dir string) {
 	}
 
 	if cfg.Get().UI.Path != "" {
+		content.Init()
 		server.serveUI(router)
 	}
 
@@ -266,6 +267,8 @@ func (server *Server) serveUI(router chi.Router) {
 		})
 		r.Route("/content", func(r chi.Router) {
 			r.Route("/element", func(r chi.Router) {
+				r.Get("/add", content.AddElement)
+				r.Post("/add", content.AddElement)
 				r.Post("/move", content.MoveElement)
 				r.Get("/delete", content.DeleteElement)
 				r.Delete("/delete", content.DeleteElement)

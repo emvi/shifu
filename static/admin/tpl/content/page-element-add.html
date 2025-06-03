@@ -1,0 +1,9 @@
+{{ define "page-element-add-window-title" }}
+    <span>Element hinzufügen</span>
+{{ end }}
+
+{{ define "page-element-add-window-content" }}
+    {{ template "page-element-add-form.html" . }}
+{{ end }}
+
+{{ template "window.html" . }}

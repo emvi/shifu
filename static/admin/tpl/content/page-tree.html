@@ -22,6 +22,7 @@
                                 {{ else }}
                                     class="shifu-page-tree-element"
                                 {{ end }}>
+
                                 <span>
                                     {{ $element.Tpl }}
                                     {{ $element.Ref }}
@@ -33,12 +34,16 @@
                                          hx-get="{{ config.UI.Path }}/content/element/edit?path={{ $path }}&element={{ $p }}"
                                          hx-target="body"
                                          hx-swap="beforeend" />
-                                    <img src="{{ config.UI.Path }}/static/icons/add.svg"
-                                         alt=""
-                                         title="Element hinzufügen"
-                                         hx-get="{{ config.UI.Path }}/content/element/add?path={{ $path }}&element={{ $p }}"
-                                         hx-target="body"
-                                         hx-swap="beforeend" />
+
+                                    {{ if len $element.Content }}
+                                        <img src="{{ config.UI.Path }}/static/icons/add.svg"
+                                             alt=""
+                                             title="Element hinzufügen"
+                                             hx-get="{{ config.UI.Path }}/content/element/add?path={{ $path }}&element={{ $p }}"
+                                             hx-target="body"
+                                             hx-swap="beforeend" />
+                                    {{ end }}
+
                                     <img src="{{ config.UI.Path }}/static/icons/chevron.svg"
                                          alt=""
                                          title="Nach oben verschieben"
@@ -76,9 +81,20 @@
     {{ template "page-element-tree" dict "path" .Data.Path "content" .Data.Page.Content "p" "" }}
 </div>
 <button title="Element hinzufügen"
-        hx-get="{{ config.UI.Path }}/content/element/add"
+        hx-get="{{ config.UI.Path }}/content/element/add?path={{ .Data.Path }}"
         hx-target="body"
         hx-swap="beforeend">
     <img src="{{ config.UI.Path }}/static/icons/add.svg" alt="" />
     Element hinzufügen
 </button>
+
+<script>
+    (function(){
+        document.querySelectorAll(".shifu-page-tree img").forEach(e => {
+            e.addEventListener("click", e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+    })();
+</script>
