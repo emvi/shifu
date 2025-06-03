@@ -22,3 +22,19 @@
 {{ if .Data.WindowOptions.Overlay }}
     </div>
 {{ end }}
+
+<script>
+    (function() {
+        let maxIndex = 0;
+
+        document.querySelectorAll(".shifu-window").forEach(e => {
+            if (e.style.zIndex > maxIndex) {
+                maxIndex = e.style.zIndex;
+            }
+        });
+
+        const windows = document.querySelectorAll(".shifu-window");
+        const window = windows[windows.length - 1];
+        window.style.zIndex = maxIndex + 1;
+    })();
+</script>
