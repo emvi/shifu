@@ -1,0 +1,6 @@
+<div class="shifu-pages-tree shifu-tree" hx-swap-oob="outerHTML:.shifu-pages-tree">
+    {{ template "pages-tree.html" . }}
+</div>
+<div hx-swap-oob="innerHTML:.shifu-pages-page">
+    {{ template "pages-page-save-form.html" . }}
+</div>

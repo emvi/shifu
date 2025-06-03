@@ -126,6 +126,8 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 			errs["sitemap"] = "the sitemap must be less than 1"
 		}
 
+		outPath := getPagePath(filepath.Join(path, name+".json"))
+
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "pages-page-save-form.html", SavePageData{
@@ -142,7 +144,6 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		} else {
-			outPath := getPagePath(filepath.Join(path, name+".json"))
 			var page *cms.Content
 
 			if overwrite {
@@ -180,7 +181,9 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 
 			// rename the file if name changed
 			if overwrite && getPageName(filepath.Base(outPath)) != name {
-				if err := os.Rename(outPath, getPagePath(filepath.Join(filepath.Dir(path), name+".json"))); err != nil {
+				path = filepath.Join(filepath.Dir(path), name+".json")
+
+				if err := os.Rename(outPath, getPagePath(path)); err != nil {
 					slog.Error("Error renaming page", "error", err)
 					w.WriteHeader(http.StatusInternalServerError)
 					return
@@ -188,10 +191,29 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		w.Header().Add("HX-Reswap", "innerHTML")
-		tpl.Get().Execute(w, "pages-tree.html", struct {
-			Entries []Entry
+		tpl.Get().Execute(w, "pages-tree-save.html", struct {
+			SavePageData
+			WindowOptions ui.WindowOptions
+			Entries       []Entry
 		}{
+			WindowOptions: ui.WindowOptions{
+				ID:         "shifu-pages-page-save",
+				TitleTpl:   "pages-page-save-window-title",
+				ContentTpl: "pages-page-save-window-content",
+				Overlay:    true,
+				MinWidth:   520,
+			},
+			SavePageData: SavePageData{
+				Name:      name,
+				PagePath:  pagePath,
+				Cache:     cache,
+				Sitemap:   sitemapFloat,
+				Handler:   handler,
+				Path:      path,
+				Header:    header,
+				Saved:     true,
+				Languages: iso6391.Languages,
+			},
 			Entries: listEntries(w),
 		})
 		return
