@@ -1,7 +1,7 @@
 {{ if .Data.Path }}
     {{ $path := .Data.Path }}
 
-    <div class="shifu-toolbelt">
+    <div class="shifu-toolbelt" style="margin-top: 0;">
         <button hx-get="{{ config.UI.Path }}/media/file/upload?path={{ $path }}"
                 hx-target="body"
                 hx-swap="beforeend">

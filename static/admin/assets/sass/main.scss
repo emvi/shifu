@@ -34,6 +34,21 @@ body.shifu {
         box-sizing: border-box;
         -webkit-tap-highlight-color: transparent;
     }
+
+    trix-editor {
+        min-height: 20em;
+        border-color: var(--border-inner);
+        border-radius: 4px;
+
+        &:focus {
+            border-color: var(--border);
+        }
+    }
+
+    .trix-button {
+        background: #fff;
+        font-size: 0.75em !important;
+    }
 }
 
 @import "html";
@@ -42,6 +57,7 @@ body.shifu {
 @import "toolbar";
 @import "toolbelt";
 @import "tree";
+@import "tabs";
 @import "media";
 @import "pages";
 @import "page";

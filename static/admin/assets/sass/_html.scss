@@ -87,4 +87,36 @@
             }
         }
     }
+
+    details.collapsible {
+        summary {
+            position: relative;
+            list-style: none;
+            border-style: solid;
+            border-color: var(--border-inner);
+            border-width: 0 0 1px 0;
+            padding: 4px 0;
+            margin: 8px 0;
+            cursor: pointer;
+            user-select: none;
+
+            &:before {
+                content: "";
+                display: block;
+                width: 12px;
+                height: 12px;
+                background-image: url("/shifu-admin/static/icons/chevron.svg");
+                position: absolute;
+                right: 0;
+                top: 8px;
+                transition: transform 0.1s;
+            }
+        }
+
+        /*&[open] > summary {
+            &:before {
+                transform: rotate(180deg);
+            }
+        }*/
+    }
 }

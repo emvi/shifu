@@ -1,13 +1,29 @@
+{{ $langs := .Data.Languages }}
+
 <form method="post"
       hx-post="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}"
       hx-swap="none"
       hx-target-4*="this"
       hx-on::after-request="shifuCloseWindow('#shifu-page-element-edit')">
-    <!-- TODO -->
+    {{ if len .Data.Config.Copy }}
+        <details class="collapsible" open>
+            <summary>Inhalt</summary>
 
-    {{ .Data.Element }}
+            {{ range $field, $cfg := .Data.Config.Copy }}
+                {{ template "page-element-edit-field.html" dict "field" $field "cfg" $cfg "langs" $langs }}
+            {{ end }}
+        </details>
+    {{ end }}
 
-    {{ .Data.Config }}
+    {{ if len .Data.Config.Data }}
+        <details class="collapsible">
+            <summary>Einstellungen</summary>
+
+            {{ range $field, $cfg := .Data.Config.Data }}
+                {{ template "page-element-edit-field.html" dict "field" $field "cfg" $cfg }}
+            {{ end }}
+        </details>
+    {{ end }}
 
     <div class="shifu-toolbelt">
         <input type="submit" value="Speichern" />

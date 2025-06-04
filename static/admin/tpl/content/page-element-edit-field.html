@@ -1,0 +1,79 @@
+{{ $field := index . "field" }}
+{{ $cfg := index . "cfg" }}
+{{ $langs := index . "langs" }}
+
+{{ if $langs }}
+    <div class="shifu-tabs">
+        <div class="shifu-tabs-header">
+            {{ range $index, $lang := $langs }}
+                <div class="shifu-tabs-header-tab {{ if eq $index 0 }}shifu-tabs-header-tab-active{{ end }}">
+                    {{ $lang }}
+                </div>
+            {{ end }}
+        </div>
+
+        {{ range $lang := $langs }}
+            <div class="shifu-tabs-content">
+                <fieldset>
+                    <label>{{ $cfg.Label }}</label>
+
+                    {{ if eq $cfg.Type "html" }}
+                        <input id="copy_{{ $field }}" type="hidden" name="copy.{{ $lang }}.{{ $field }}" />
+                        <trix-editor input="copy_{{ $field }}"></trix-editor>
+                    {{ else if eq $cfg.Type "img" }}
+                        <!-- TODO -->
+                        <p>TODO</p>
+                    {{ else if eq $cfg.Type "file" }}
+                        <!-- TODO -->
+                        <p>TODO</p>
+                    {{ else }}
+                        <input type="text" name="copy.{{ $lang }}.{{ $field }}" value="" />
+                    {{ end }}
+                </fieldset>
+            </div>
+        {{ end }}
+    </div>
+{{ else }}
+    <fieldset>
+        <label>{{ $cfg.Label }}</label>
+
+        {{ if eq $cfg.Type "html" }}
+            <input id="data_{{ $field }}" type="hidden" name="data.{{ $field }}" />
+            <trix-editor input="data_{{ $field }}"></trix-editor>
+        {{ else if eq $cfg.Type "img" }}
+            <!-- TODO -->
+            <p>TODO</p>
+        {{ else if eq $cfg.Type "file" }}
+            <!-- TODO -->
+            <p>TODO</p>
+        {{ else }}
+            <input type="text" name="data.{{ $field }}" value="" />
+        {{ end }}
+    </fieldset>
+{{ end }}
+
+<script>
+    (function() {
+        document.querySelectorAll(".shifu-tabs").forEach(element => {
+            const tabs = element.querySelectorAll(".shifu-tabs-header-tab");
+            const content = element.querySelectorAll(".shifu-tabs-content");
+            tabs.forEach((e, index) => {
+                e.addEventListener("click", () => {
+                    tabs.forEach(e => e.classList.remove("shifu-tabs-header-tab-active"));
+                    e.classList.add("shifu-tabs-header-tab-active");
+                    content.forEach(e => e.style.display = "none");
+
+                    if (index < content.length) {
+                        content[index].style.display = "block";
+                    }
+                });
+            });
+
+            if (content.length) {
+                for (let i = 1; i < content.length; i++) {
+                    content[i].style.display = "none";
+                }
+            }
+        });
+    })();
+</script>

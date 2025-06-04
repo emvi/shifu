@@ -51,6 +51,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		ElementPath   string
 		Element       *cms.Content
 		Config        TemplateConfig
+		Languages     []string
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-page-element-edit",
@@ -62,5 +63,16 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		ElementPath: elementPath,
 		Element:     element,
 		Config:      config,
+		Languages:   getPageLanguages(page),
 	})
+}
+
+func getPageLanguages(page *cms.Content) []string {
+	keys := make([]string, 0, len(page.Path))
+
+	for k := range page.Path {
+		keys = append(keys, k)
+	}
+
+	return keys
 }

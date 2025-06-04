@@ -4,7 +4,7 @@
 
 {{ define "user-window-content" }}
     {{ if .Data.Admin }}
-        <div class="shifu-toolbelt">
+        <div class="shifu-toolbelt" style="margin-top: 0;">
             <button hx-get="{{ config.UI.Path }}/user/edit"
                     hx-target="body"
                     hx-swap="beforeend">

@@ -130,3 +130,5 @@ import {debounce} from "./debounce";
         window.remove();
     }
 })();
+
+import "./trix";
