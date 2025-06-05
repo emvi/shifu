@@ -1,6 +1,7 @@
 package content
 
 import (
+	"fmt"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
@@ -9,10 +10,6 @@ import (
 	"net/http"
 	"strings"
 )
-
-// TODO
-// - pre-fill fields
-// - save nested elements
 
 // EditElement updates the copy and data for an element.
 func EditElement(w http.ResponseWriter, r *http.Request) {
@@ -49,13 +46,17 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		element = shared.FindElement(page, elementPath)
 		element.Copy = getCopyFromRequest(r)
 		element.Data = getDataFromRequest(r)
 
-		if err := shared.SavePage(page, fullPath); err != nil {
-			slog.Error("Error saving page while updating element", "error", err)
-			w.WriteHeader(http.StatusInternalServerError)
+		if shared.SetElement(page, elementPath, element) {
+			if err := shared.SavePage(page, fullPath); err != nil {
+				slog.Error("Error saving page while updating element", "error", err)
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+		} else {
+			w.WriteHeader(http.StatusBadRequest)
+			return
 		}
 
 		return
@@ -68,6 +69,8 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		Element       *cms.Content
 		Config        TemplateConfig
 		Languages     []string
+		Copy          map[string]any
+		Data          map[string]any
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-page-element-edit",
@@ -80,7 +83,31 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		Element:     element,
 		Config:      config,
 		Languages:   getPageLanguages(page),
+		Copy:        getCopy(element),
+		Data:        getData(element),
 	})
+}
+
+func getCopy(element *cms.Content) map[string]any {
+	c := make(map[string]any)
+
+	for l, t := range element.Copy {
+		for k, v := range t {
+			c[fmt.Sprintf("copy.%s.%s", l, k)] = v
+		}
+	}
+
+	return c
+}
+
+func getData(element *cms.Content) map[string]any {
+	c := make(map[string]any)
+
+	for k, v := range element.Data {
+		c[fmt.Sprintf("data.%s", k)] = v
+	}
+
+	return c
 }
 
 func getPageLanguages(page *cms.Content) []string {

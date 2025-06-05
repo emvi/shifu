@@ -108,3 +108,16 @@ func FindElement(content *cms.Content, path string) *cms.Content {
 
 	return &parentElement.Content[key][index]
 }
+
+// SetElement finds an element by JSON path and updates it.
+// The path is a dot-separated list of keys and indices.
+func SetElement(content *cms.Content, path string, element *cms.Content) bool {
+	parentElement, key, index := FindParentElement(content, path)
+
+	if parentElement == nil {
+		return false
+	}
+
+	parentElement.Content[key][index] = *element
+	return true
+}

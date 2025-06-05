@@ -3,6 +3,8 @@
 {{ $langs := index . "langs" }}
 
 {{ if $langs }}
+    {{ $copy := index . "copy" }}
+
     <div class="shifu-tabs">
         <div class="shifu-tabs-header">
             {{ range $index, $lang := $langs }}
@@ -18,7 +20,7 @@
                     <label>{{ $cfg.Label }}</label>
 
                     {{ if eq $cfg.Type "html" }}
-                        <input id="copy.{{ $lang }}.{{ $field }}" type="hidden" name="copy.{{ $lang }}.{{ $field }}" />
+                        <input id="copy.{{ $lang }}.{{ $field }}" type="hidden" name="copy.{{ $lang }}.{{ $field }}" value="{{ index $copy (fmt "copy.%s.%s" $lang $field) }}" />
                         <trix-editor input="copy.{{ $lang }}.{{ $field }}"></trix-editor>
                     {{ else if eq $cfg.Type "img" }}
                         <!-- TODO -->
@@ -33,18 +35,20 @@
                         <!-- TODO -->
                         <p>TODO</p>
                     {{ else }}
-                        <input type="text" name="copy.{{ $lang }}.{{ $field }}" value="" />
+                        <input type="text" name="copy.{{ $lang }}.{{ $field }}" value="{{ index $copy (fmt "copy.%s.%s" $lang $field) }}" />
                     {{ end }}
                 </fieldset>
             </div>
         {{ end }}
     </div>
 {{ else }}
+    {{ $data := index . "data" }}
+
     <fieldset>
         <label>{{ $cfg.Label }}</label>
 
         {{ if eq $cfg.Type "html" }}
-            <input id="data.{{ $field }}" type="hidden" name="data.{{ $field }}" />
+            <input id="data.{{ $field }}" type="hidden" name="data.{{ $field }}" value="{{ index $data (fmt "data.%s" $field) }}" />
             <trix-editor input="data.{{ $field }}"></trix-editor>
         {{ else if eq $cfg.Type "img" }}
             <!-- TODO -->
@@ -59,7 +63,7 @@
             <!-- TODO -->
             <p>TODO</p>
         {{ else }}
-            <input type="text" name="data.{{ $field }}" value="" />
+            <input type="text" name="data.{{ $field }}" value="{{ index $data (fmt "data.%s" $field) }}" />
         {{ end }}
     </fieldset>
 {{ end }}

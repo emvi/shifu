@@ -1,4 +1,6 @@
 {{ $langs := .Data.Languages }}
+{{ $copy := .Data.Copy }}
+{{ $data := .Data.Data }}
 
 <form method="post"
       hx-post="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}"
@@ -10,7 +12,13 @@
             <summary>Inhalt</summary>
 
             {{ range $field, $cfg := .Data.Config.Copy }}
-                {{ template "page-element-edit-field.html" dict "field" $field "cfg" $cfg "langs" $langs }}
+                {{
+                    template "page-element-edit-field.html"
+                    dict "field" $field
+                        "cfg" $cfg
+                        "langs" $langs
+                        "copy" $copy
+                }}
             {{ end }}
         </details>
     {{ end }}
@@ -20,7 +28,12 @@
             <summary>Einstellungen</summary>
 
             {{ range $field, $cfg := .Data.Config.Data }}
-                {{ template "page-element-edit-field.html" dict "field" $field "cfg" $cfg }}
+                {{
+                    template "page-element-edit-field.html"
+                    dict "field" $field
+                        "cfg" $cfg
+                        "data" $data
+                }}
             {{ end }}
         </details>
     {{ end }}
