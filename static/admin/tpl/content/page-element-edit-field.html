@@ -18,12 +18,18 @@
                     <label>{{ $cfg.Label }}</label>
 
                     {{ if eq $cfg.Type "html" }}
-                        <input id="copy_{{ $field }}" type="hidden" name="copy.{{ $lang }}.{{ $field }}" />
-                        <trix-editor input="copy_{{ $field }}"></trix-editor>
+                        <input id="copy.{{ $lang }}.{{ $field }}" type="hidden" name="copy.{{ $lang }}.{{ $field }}" />
+                        <trix-editor input="copy.{{ $lang }}.{{ $field }}"></trix-editor>
                     {{ else if eq $cfg.Type "img" }}
                         <!-- TODO -->
                         <p>TODO</p>
                     {{ else if eq $cfg.Type "file" }}
+                        <!-- TODO -->
+                        <p>TODO</p>
+                    {{ else if eq $cfg.Type "boolean" }}
+                        <!-- TODO -->
+                        <p>TODO</p>
+                    {{ else if eq $cfg.Type "select" }}
                         <!-- TODO -->
                         <p>TODO</p>
                     {{ else }}
@@ -38,12 +44,18 @@
         <label>{{ $cfg.Label }}</label>
 
         {{ if eq $cfg.Type "html" }}
-            <input id="data_{{ $field }}" type="hidden" name="data.{{ $field }}" />
-            <trix-editor input="data_{{ $field }}"></trix-editor>
+            <input id="data.{{ $field }}" type="hidden" name="data.{{ $field }}" />
+            <trix-editor input="data.{{ $field }}"></trix-editor>
         {{ else if eq $cfg.Type "img" }}
             <!-- TODO -->
             <p>TODO</p>
         {{ else if eq $cfg.Type "file" }}
+            <!-- TODO -->
+            <p>TODO</p>
+        {{ else if eq $cfg.Type "boolean" }}
+            <!-- TODO -->
+            <p>TODO</p>
+        {{ else if eq $cfg.Type "select" }}
             <!-- TODO -->
             <p>TODO</p>
         {{ else }}

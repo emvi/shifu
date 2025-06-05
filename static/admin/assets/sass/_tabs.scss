@@ -6,6 +6,7 @@
         background: var(--border-inner);
         border-radius: 4px;
         font-size: 10px;
+        user-select: none;
 
         &-tab {
             padding: 1px 4px 2px 4px;

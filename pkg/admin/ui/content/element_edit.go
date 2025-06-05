@@ -5,11 +5,14 @@ import (
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
 	"github.com/emvi/shifu/pkg/cms"
-	"log"
 	"log/slog"
 	"net/http"
 	"strings"
 )
+
+// TODO
+// - pre-fill fields
+// - save nested elements
 
 // EditElement updates the copy and data for an element.
 func EditElement(w http.ResponseWriter, r *http.Request) {
@@ -40,8 +43,21 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
-		// TODO
-		log.Println(page)
+		if err := r.ParseForm(); err != nil {
+			slog.Error("Error parsing element form", "error", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		element = shared.FindElement(page, elementPath)
+		element.Copy = getCopyFromRequest(r)
+		element.Data = getDataFromRequest(r)
+
+		if err := shared.SavePage(page, fullPath); err != nil {
+			slog.Error("Error saving page while updating element", "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+
 		return
 	}
 
@@ -75,4 +91,36 @@ func getPageLanguages(page *cms.Content) []string {
 	}
 
 	return keys
+}
+
+func getCopyFromRequest(r *http.Request) cms.Copy {
+	c := make(cms.Copy)
+
+	for k, v := range r.Form {
+		if strings.HasPrefix(k, "copy.") && len(v) > 0 {
+			l, key, found := strings.Cut(strings.TrimPrefix(k, "copy."), ".")
+
+			if found {
+				if c[l] == nil {
+					c[l] = make(map[string]any)
+				}
+
+				c[l][key] = v[0]
+			}
+		}
+	}
+
+	return c
+}
+
+func getDataFromRequest(r *http.Request) map[string]any {
+	data := make(map[string]any)
+
+	for k, v := range r.Form {
+		if strings.HasPrefix(k, "data.") && len(v) > 0 {
+			data[strings.TrimPrefix(k, "data.")] = v[0]
+		}
+	}
+
+	return data
 }
