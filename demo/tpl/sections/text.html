@@ -1,9 +1,16 @@
 {{ $headline := copy .Page .Content "headline" }}
+{{ $size := get .Content "headline_size" }}
 {{ $n := index .Args "n" }}
 
 <section>
     <article>
-        {{ if $headline }}<h1>{{ $headline }}</h1>{{ end }}
+        {{ if $headline }}
+            {{ if $size }}
+                <h{{ $size }}>{{ $headline }}</h{{ $size }}>
+            {{ else }}
+                <h1>{{ $headline }}</h1>
+            {{ end }}
+        {{ end }}
         {{ html (copy .Page .Content "text") }}
     </article>
 </section>

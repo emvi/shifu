@@ -11,5 +11,10 @@
             "label": "Text",
             "type": "html"
         }
+    },
+    "data": {
+        "headline_size": {
+            "label": "Überschrift"
+        }
     }
 }

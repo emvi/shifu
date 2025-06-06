@@ -1,4 +1,3 @@
-{{ $langs := .Data.Languages }}
 {{ $copy := .Data.Copy }}
 {{ $data := .Data.Data }}
 
@@ -8,19 +7,35 @@
       hx-target-4*="this"
       hx-on::after-request="shifuCloseWindow('#shifu-page-element-edit')">
     {{ if len .Data.Config.Copy }}
-        <details class="collapsible" open>
-            <summary>Inhalt</summary>
+        {{ $cfg := .Data.Config.Copy }}
 
-            {{ range $field, $cfg := .Data.Config.Copy }}
-                {{
-                    template "page-element-edit-field.html"
-                    dict "field" $field
-                        "cfg" $cfg
-                        "langs" $langs
-                        "copy" $copy
-                }}
+        <div class="shifu-tabs">
+            <div class="shifu-tabs-header">
+                {{ range $index, $lang := .Data.Languages }}
+                    <div class="shifu-tabs-header-tab {{ if eq $index 0 }}shifu-tabs-header-tab-active{{ end }}">
+                    {{ $lang }}
+                </div>
+                {{ end }}
+            </div>
+
+            {{ range $lang := .Data.Languages }}
+                <div class="shifu-tabs-content">
+                    <details class="collapsible" open>
+                        <summary>Inhalt</summary>
+
+                        {{ range $field, $config := index $cfg }}
+                            {{
+                                template "page-element-edit-fields.html"
+                                dict "field" $field
+                                     "cfg" $config
+                                     "lang" $lang
+                                     "copy" $copy
+                            }}
+                        {{ end }}
+                    </details>
+                </div>
             {{ end }}
-        </details>
+        </div>
     {{ end }}
 
     {{ if len .Data.Config.Data }}
@@ -29,10 +44,10 @@
 
             {{ range $field, $cfg := .Data.Config.Data }}
                 {{
-                    template "page-element-edit-field.html"
+                    template "page-element-edit-fields.html"
                     dict "field" $field
-                        "cfg" $cfg
-                        "data" $data
+                         "cfg" $cfg
+                         "data" $data
                 }}
             {{ end }}
         </details>
@@ -45,3 +60,29 @@
         </button>
     </div>
 </form>
+
+<script>
+    (function() {
+        document.querySelectorAll(".shifu-tabs").forEach(element => {
+            const tabs = element.querySelectorAll(".shifu-tabs-header-tab");
+            const content = element.querySelectorAll(".shifu-tabs-content");
+            tabs.forEach((e, index) => {
+                e.addEventListener("click", () => {
+                    tabs.forEach(e => e.classList.remove("shifu-tabs-header-tab-active"));
+                    e.classList.add("shifu-tabs-header-tab-active");
+                    content.forEach(e => e.style.display = "none");
+
+                    if (index < content.length) {
+                        content[index].style.display = "block";
+                    }
+                });
+            });
+
+            if (content.length) {
+                for (let i = 1; i < content.length; i++) {
+                    content[i].style.display = "none";
+                }
+            }
+        });
+    })();
+</script>
