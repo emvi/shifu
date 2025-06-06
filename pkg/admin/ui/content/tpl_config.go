@@ -22,12 +22,14 @@ func (c *TemplateConfig) Positions() []string {
 
 // TemplateCopy is the configuration for a template copy entry.
 type TemplateCopy struct {
-	Label string `json:"label"`
-	Type  string `json:"type"`
+	Label   string            `json:"label"`
+	Type    string            `json:"type"`
+	Options map[string]string `json:"options"`
 }
 
 // TemplateData is the configuration for a template data entry.
 type TemplateData struct {
-	Label string `json:"label"`
-	Type  string `json:"type"`
+	Label   string            `json:"label"`
+	Type    string            `json:"type"`
+	Options map[string]string `json:"options"`
 }

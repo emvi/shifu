@@ -6,12 +6,18 @@
     <article>
         {{ if $headline }}
             {{ if $size }}
-                <h{{ $size }}>{{ $headline }}</h{{ $size }}>
+                {{ html (fmt "<%s>" $size) }}
+                {{ $headline }}
+                {{ html (fmt "</%s>" $size) }}
             {{ else }}
                 <h1>{{ $headline }}</h1>
             {{ end }}
         {{ end }}
         {{ html (copy .Page .Content "text") }}
+
+        {{ if (get .Content "hr_bottom") }}
+            <hr />
+        {{ end }}
     </article>
 </section>
 

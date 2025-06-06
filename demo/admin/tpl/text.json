@@ -14,7 +14,17 @@
     },
     "data": {
         "headline_size": {
-            "label": "Überschrift"
+            "label": "Überschrift",
+            "type": "select",
+            "options": {
+                "h1": "H1",
+                "h2": "H2",
+                "h3": "H3"
+            }
+        },
+        "hr_bottom": {
+            "label": "Abschlussleiste",
+            "type": "boolean"
         }
     }
 }

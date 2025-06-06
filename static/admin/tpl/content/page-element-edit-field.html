@@ -5,24 +5,30 @@
 {{ $value := index . "value" }}
 
 <fieldset>
-    <label>{{ $cfg.Label }}</label>
-
     {{ if eq $cfg.Type "html" }}
+        <label for="{{ $prefix }}{{ $lang }}.{{ $field }}">{{ $cfg.Label }}</label>
         <input id="{{ $prefix }}{{ $lang }}.{{ $field }}" type="hidden" name="{{ $prefix }}{{ $lang }}.{{ $field }}" value="{{ $value }}" />
         <trix-editor input="{{ $prefix }}{{ $lang }}.{{ $field }}"></trix-editor>
     {{ else if eq $cfg.Type "img" }}
+        <label for="{{ $prefix }}{{ $lang }}.{{ $field }}">{{ $cfg.Label }}</label>
         <!-- TODO -->
         <p>TODO</p>
     {{ else if eq $cfg.Type "file" }}
+        <label for="{{ $prefix }}{{ $lang }}.{{ $field }}">{{ $cfg.Label }}</label>
         <!-- TODO -->
         <p>TODO</p>
     {{ else if eq $cfg.Type "boolean" }}
-        <!-- TODO -->
-        <p>TODO</p>
+        <input id="{{ $prefix }}{{ $lang }}.{{ $field }}" type="checkbox" name="{{ $prefix }}{{ $lang }}.{{ $field }}" {{ if $value }}checked{{ end }} />
+        <label for="{{ $prefix }}{{ $lang }}.{{ $field }}">{{ $cfg.Label }}</label>
     {{ else if eq $cfg.Type "select" }}
-        <!-- TODO -->
-        <p>TODO</p>
+        <label for="{{ $prefix }}{{ $lang }}.{{ $field }}">{{ $cfg.Label }}</label>
+        <select id="{{ $prefix }}{{ $lang }}.{{ $field }}" name="{{ $prefix }}{{ $lang }}.{{ $field }}">
+            {{ range $k, $v := $cfg.Options }}
+                <option value="{{ $k }}">{{ $v }}</option>
+            {{ end }}
+        </select>
     {{ else }}
-        <input type="text" name="{{ $prefix }}{{ $lang }}.{{ $field }}" value="{{ $value }}" />
+        <label for="{{ $prefix }}{{ $lang }}.{{ $field }}">{{ $cfg.Label }}</label>
+        <input id="{{ $prefix }}{{ $lang }}.{{ $field }}" type="text" name="{{ $prefix }}{{ $lang }}.{{ $field }}" value="{{ $value }}" />
     {{ end }}
 </fieldset>
