@@ -23,6 +23,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO refs
 	element := shared.FindElement(page, elementPath)
 
 	if element == nil {

@@ -21,6 +21,7 @@ func Page(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	setTemplateNames(page)
 	tpl.Get().Execute(w, "page.html", struct {
 		WindowOptions ui.WindowOptions
 		Path          string
@@ -39,4 +40,20 @@ func Page(w http.ResponseWriter, r *http.Request) {
 
 func getPagePath(path string) string {
 	return filepath.Join(cfg.Get().BaseDir, path)
+}
+
+func setTemplateNames(content *cms.Content) {
+	for k, v := range content.Content {
+		for i := range v {
+			if content.Content[k][i].Tpl != "" {
+				name, found := tplCache.Get(content.Content[k][i].Tpl)
+
+				if found {
+					content.Content[k][i].Tpl = name.Label
+				}
+			}
+
+			setTemplateNames(&content.Content[k][i])
+		}
+	}
 }
