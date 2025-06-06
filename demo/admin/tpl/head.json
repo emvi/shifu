@@ -1,0 +1,14 @@
+{
+    "label": "Seite Header",
+    "copy": {
+        "copyright": {
+            "label": "Copyright"
+        },
+        "title": {
+            "label": "Titel"
+        },
+        "meta_description": {
+            "label": "Meta Beschreibung"
+        }
+    }
+}

@@ -15,6 +15,7 @@ import (
 func EditElement(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
 	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
+	override := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("override"))) == "on"
 	fullPath := getPagePath(path)
 	page, err := shared.LoadPage(fullPath)
 
@@ -23,7 +24,6 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO refs
 	element := shared.FindElement(page, elementPath)
 
 	if element == nil {
@@ -32,7 +32,14 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config, found := tplCache.Get(element.Tpl)
+	var config TemplateConfig
+	var found bool
+
+	if element.Tpl != "" {
+		config, found = tplCache.Get(element.Tpl)
+	} else {
+		config, found = tplCache.Get(element.Ref)
+	}
 
 	if !found {
 		slog.Error("Template configuration not found", "name", element.Tpl)
@@ -46,6 +53,8 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
+
+		// TODO override ref
 
 		element.Copy = getCopyFromRequest(r)
 		element.Data = getDataFromRequest(r)
@@ -72,6 +81,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		Languages     []string
 		Copy          map[string]any
 		Data          map[string]any
+		Override      bool
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-page-element-edit",
@@ -86,6 +96,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		Languages:   getPageLanguages(page),
 		Copy:        getCopy(element),
 		Data:        getData(element),
+		Override:    override,
 	})
 }
 

@@ -1,11 +1,24 @@
 {{ $copy := .Data.Copy }}
 {{ $data := .Data.Data }}
 
+{{ if .Data.Element.Ref }}
+    <p style="color: var(--highlight);">
+        Dies ist eine Referenz. Änderungen überschreiben die Einstellungen nur auf dieser Seite. Um die Referenz selbst zu bearbeiten, setze den Haken.
+    </p>
+{{ end }}
+
 <form method="post"
       hx-post="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}"
       hx-swap="none"
       hx-target-4*="this"
       hx-on::after-request="shifuCloseWindow('#shifu-page-element-edit')">
+    {{ if .Data.Element.Ref }}
+        <fieldset>
+            <input id="override" type="checkbox" name="override" {{ if .Data.Override }}checked{{ end }} />
+            <label for="override">Originaldaten überschreiben</label>
+        </fieldset>
+    {{ end }}
+
     {{ if len .Data.Config.Copy }}
         {{ $cfg := .Data.Config.Copy }}
 

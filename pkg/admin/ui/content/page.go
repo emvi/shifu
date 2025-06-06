@@ -45,12 +45,17 @@ func getPagePath(path string) string {
 func setTemplateNames(content *cms.Content) {
 	for k, v := range content.Content {
 		for i := range v {
-			if content.Content[k][i].Tpl != "" {
-				name, found := tplCache.Get(content.Content[k][i].Tpl)
+			var name TemplateConfig
+			var found bool
 
-				if found {
-					content.Content[k][i].Tpl = name.Label
-				}
+			if content.Content[k][i].Tpl != "" {
+				name, found = tplCache.Get(content.Content[k][i].Tpl)
+			} else {
+				name, found = tplCache.Get(content.Content[k][i].Ref)
+			}
+
+			if found {
+				content.Content[k][i].Tpl = name.Label
 			}
 
 			setTemplateNames(&content.Content[k][i])

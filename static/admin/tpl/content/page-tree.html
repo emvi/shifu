@@ -24,8 +24,11 @@
                                 {{ end }}>
 
                                 <span>
-                                    {{ $element.Tpl }}
-                                    {{ $element.Ref }}
+                                    {{ if $element.Tpl }}
+                                        {{ $element.Tpl }}
+                                    {{ else }}
+                                        {{ $element.Ref }}
+                                    {{ end }}
                                 </span>
                                 <span>
                                     <img src="{{ config.UI.Path }}/static/icons/edit.svg"
