@@ -2,6 +2,10 @@
     <span>Element bearbeiten</span>
 {{ end }}
 
+{{ define "page-element-edit-window-title-override" }}
+    <span>Referenz bearbeiten</span>
+{{ end }}
+
 {{ define "page-element-edit-window-content" }}
     {{ template "page-element-edit-form.html" . }}
 {{ end }}

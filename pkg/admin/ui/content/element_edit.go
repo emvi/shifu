@@ -15,7 +15,7 @@ import (
 func EditElement(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
 	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
-	override := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("override"))) == "on"
+	override := strings.TrimSpace(r.URL.Query().Get("override")) != ""
 	fullPath := getPagePath(path)
 	page, err := shared.LoadPage(fullPath)
 
@@ -24,7 +24,26 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	element := shared.FindElement(page, elementPath)
+	var element *cms.Content
+
+	if override {
+		element = shared.FindElement(page, elementPath)
+
+		if element == nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		element, err = shared.LoadRef(element.Ref)
+
+		if err != nil {
+			slog.Error("Error loading reference file", "error", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	} else {
+		element = shared.FindElement(page, elementPath)
+	}
 
 	if element == nil {
 		slog.Error("Element not found", "path", elementPath)
@@ -54,22 +73,38 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// TODO override ref
-
 		element.Copy = getCopyFromRequest(r)
 		element.Data = getDataFromRequest(r)
 
-		if shared.SetElement(page, elementPath, element) {
-			if err := shared.SavePage(page, fullPath); err != nil {
-				slog.Error("Error saving page while updating element", "error", err)
-				w.WriteHeader(http.StatusInternalServerError)
+		if override {
+			if err := shared.SaveRef(element, element.File); err != nil {
+				slog.Error("Error saving reference file", "error", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
 			}
 		} else {
-			w.WriteHeader(http.StatusBadRequest)
-			return
+			if shared.SetElement(page, elementPath, element) {
+				if err := shared.SavePage(page, fullPath); err != nil {
+					slog.Error("Error saving page while updating element", "error", err)
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+			} else {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
 		}
 
+		// TODO render element and replace on page
 		return
+	}
+
+	windowID := "shifu-page-element-edit"
+	windowTitleTpl := "page-element-edit-window-title"
+
+	if override {
+		windowID = "shifu-page-element-edit-override"
+		windowTitleTpl = "page-element-edit-window-title-override"
 	}
 
 	tpl.Get().Execute(w, "page-element-edit.html", struct {
@@ -84,10 +119,11 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		Override      bool
 	}{
 		WindowOptions: ui.WindowOptions{
-			ID:         "shifu-page-element-edit",
-			TitleTpl:   "page-element-edit-window-title",
+			ID:         windowID,
+			TitleTpl:   windowTitleTpl,
 			ContentTpl: "page-element-edit-window-content",
 			MinWidth:   680,
+			Overlay:    true,
 		},
 		Path:        path,
 		ElementPath: elementPath,

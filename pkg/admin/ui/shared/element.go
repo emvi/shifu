@@ -1,9 +1,21 @@
 package shared
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/emvi/shifu/pkg/cfg"
 	"github.com/emvi/shifu/pkg/cms"
+	"io/fs"
+	"log/slog"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
+)
+
+const (
+	contentDir = "content"
 )
 
 // AddElement adds a new empty element to the tree.
@@ -120,4 +132,59 @@ func SetElement(content *cms.Content, path string, element *cms.Content) bool {
 
 	parentElement.Content[key][index] = *element
 	return true
+}
+
+// LoadRef loads a reference for the given name and parses it into a cms.Content object.
+func LoadRef(name string) (*cms.Content, error) {
+	name = fmt.Sprintf("%s.json", name)
+	path := ""
+
+	if err := filepath.WalkDir(filepath.Join(cfg.Get().BaseDir, contentDir), func(p string, d fs.DirEntry, err error) error {
+		if filepath.Base(p) == name {
+			path = p
+			return fs.SkipAll
+		}
+
+		return err
+	}); err != nil && !errors.Is(err, fs.SkipAll) {
+		return nil, err
+	}
+
+	if path == "" {
+		return nil, errors.New("file not found")
+	}
+
+	content, err := os.ReadFile(path)
+
+	if err != nil {
+		slog.Error("Error reading reference file", "error", err)
+		return nil, err
+	}
+
+	var element cms.Content
+
+	if err := json.Unmarshal(content, &element); err != nil {
+		slog.Error("Error parsing reference file", "error", err)
+		return nil, err
+	}
+
+	element.File = path
+	return &element, nil
+}
+
+// SaveRef saves a reference to the given path.
+func SaveRef(element *cms.Content, path string) error {
+	elementJson, err := json.Marshal(element)
+
+	if err != nil {
+		slog.Error("Error marshalling reference data", "error", err)
+		return err
+	}
+
+	if err := os.WriteFile(path, elementJson, 0644); err != nil {
+		slog.Error("Error writing reference data", "error", err)
+		return err
+	}
+
+	return nil
 }

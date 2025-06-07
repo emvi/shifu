@@ -1,10 +1,1 @@
-{
-    "tpl": "head",
-    "copy": {
-        "en": {
-            "copyright": "Emvi Software GmbH",
-            "title": "Default Title",
-            "meta_description": "Default meta description."
-        }
-    }
-}
+{"sitemap":{},"analytics":{"experiment":{"name":"","variant":""}},"tpl":"head","copy":{"de":{"copyright":"","meta_description":"","title":""},"en":{"copyright":"Emvi Software GmbH","meta_description":"Default meta description.","title":"Default_Title!"}}}
