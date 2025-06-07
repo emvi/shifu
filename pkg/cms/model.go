@@ -6,7 +6,7 @@ import "net/http"
 type Handler func(*CMS, Content, map[string]string, http.ResponseWriter, *http.Request)
 
 // Copy is the translated copy for Content.
-type Copy map[string]map[string]any
+type Copy map[string]map[string]string
 
 // Sitemap is the sitemap data for the Content.
 type Sitemap struct {
@@ -89,7 +89,7 @@ func (content *Content) copy() Content {
 	contentCopy := make(Copy)
 
 	for k, v := range content.Copy {
-		contentCopy[k] = make(map[string]any)
+		contentCopy[k] = make(map[string]string)
 
 		for i, j := range v {
 			contentCopy[k][i] = j

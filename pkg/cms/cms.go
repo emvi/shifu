@@ -258,11 +258,13 @@ func (cms *CMS) renderContent(args map[string]string, page *Content, content []C
 			// overwrite copy
 			for language, vars := range c.Copy {
 				if _, ok := ref.Copy[language]; !ok {
-					ref.Copy[language] = make(map[string]any)
+					ref.Copy[language] = make(map[string]string)
 				}
 
 				for k, v := range vars {
-					ref.Copy[language][k] = v
+					if v != "" {
+						ref.Copy[language][k] = v
+					}
 				}
 			}
 

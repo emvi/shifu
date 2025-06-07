@@ -1,6 +1,7 @@
 {{- $copyright := copy .Page .Content "copyright" -}}
 {{- $title := copy .Page .Content "title" -}}
 {{- $metaDescription := copy .Page .Content "meta_description" -}}
+
 <!DOCTYPE html>
 <html lang="{{ .Page.Language }}">
 <head>
@@ -20,8 +21,8 @@
     <link rel="stylesheet" type="text/css" href="/static/bundle.css?v={{ .CMS.LastUpdate }}" />
     <script src="/static/bundle.js?v={{ .CMS.LastUpdate }}"></script>
 
-    <title>{{$title }}</title>
+    <title>{{ $title }}</title>
 
-    {{adminHead .Page.Request }}
+    {{ adminHead .Page.Request }}
 </head>
 <body>
