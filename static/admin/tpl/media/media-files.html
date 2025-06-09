@@ -121,7 +121,7 @@
 
         {{ if $selection }}
                 <div class="shifu-toolbelt">
-                    <button hx-trigger="click">Auswählen</button>
+                    <button>Auswählen</button>
                 </div>
                 <input type="hidden" name="file" value="" id="shifu-media-file-selection-path" />
                 <script>
@@ -144,10 +144,6 @@
                                 input.value = target.getAttribute("data-path");
                             }
                         }));
-                        // TODO
-                        /*document.getElementById("shifu-media-selection").addEventListener("htmx:afterRequest", e => {
-                            console.log(e);
-                        });*/
                     })();
                 </script>
             </form>

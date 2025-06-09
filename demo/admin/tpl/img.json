@@ -9,6 +9,10 @@
         "src": {
             "label": "Bild",
             "type": "img"
+        },
+        "file": {
+            "label": "Datei",
+            "type": "file"
         }
     }
 }
