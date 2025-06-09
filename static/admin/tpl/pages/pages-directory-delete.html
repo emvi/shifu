@@ -7,7 +7,7 @@
     <div class="shifu-toolbelt">
         <button hx-delete="{{ config.UI.Path }}/pages/directory/delete?path={{ .Data.Path }}"
                 hx-target=".shifu-pages-tree"
-                hx-on::after-request="shifuCloseWindow('#shifu-pages-directory-delete')">
+                data-window="#shifu-pages-directory-delete">
             Ordner löschen
         </button>
         <button class="secondary shifu-window-close" hx-trigger="click">

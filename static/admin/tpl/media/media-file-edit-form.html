@@ -4,7 +4,7 @@
       hx-swap="outerHTML"
       hx-target=".shifu-media-files"
       hx-target-4*="this"
-      hx-on::after-request="shifuCloseWindow('#shifu-media-file-edit')">
+      data-window="#shifu-media-file-edit">
     <fieldset>
         <label for="name">Name</label>
         <input type="text" name="name" id="name" value="{{ .Data.Name }}" autofocus />

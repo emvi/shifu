@@ -27,13 +27,22 @@
             {{ end }}
         {{ end }}
 
-        <!-- TODO img/file selection -->
         <div class="shifu-toolbelt" style="justify-content: flex-start;">
             {{ if eq $cfg.Type "img" }}
-                <button>Bild auswählen</button>
+                <button hx-get="{{ config.UI.Path }}/content/media"
+                        hx-target="body"
+                        hx-swap="beforeend"
+                        id="select_{{ $prefix }}{{ $lang }}.{{ $field }}">
+                    Bild auswählen
+                </button>
                 <button id="clear_{{ $prefix }}{{ $lang }}.{{ $field }}">Bild entfernen</button>
             {{ else }}
-                <button>Datei auswählen</button>
+                <button hx-get="{{ config.UI.Path }}/content/media"
+                        hx-target="body"
+                        hx-swap="beforeend"
+                        id="select_{{ $prefix }}{{ $lang }}.{{ $field }}">
+                    Datei auswählen
+                </button>
                 <button id="clear_{{ $prefix }}{{ $lang }}.{{ $field }}">Datei entfernen</button>
             {{ end }}
         </div>
@@ -46,8 +55,6 @@
                     e.stopPropagation();
                     field.value = "";
                     const img = document.getElementById("img_{{ $prefix }}{{ $lang }}.{{ $field }}");
-
-                    console.log(img.parentNode);
 
                     if (img) {
                         img.parentNode.remove();

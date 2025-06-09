@@ -19,7 +19,7 @@
     <div class="shifu-toolbelt">
         <button hx-delete="{{ config.UI.Path }}/media/file/delete?path={{ .Data.Path }}{{ range .Data.Name }}&name[]={{ . }}{{ end }}"
                 hx-target=".shifu-media-files"
-                hx-on::after-request="shifuCloseWindow('#shifu-media-file-delete')">
+                data-window="#shifu-media-file-delete">
             Datei löschen
         </button>
         <button class="secondary shifu-window-close" hx-trigger="click">

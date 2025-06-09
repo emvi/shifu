@@ -6,7 +6,7 @@
       hx-swap="outerHTML"
       hx-target=".shifu-pages-tree"
       hx-target-4*="this"
-      hx-on::after-request="shifuCloseWindow('#shifu-pages-page-save')">
+      data-window="#shifu-pages-page-save">
     <fieldset>
         <label for="name">Name</label>
         <input type="text" name="name" id="name" value="{{ .Data.Name }}" autofocus />

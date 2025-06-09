@@ -7,7 +7,7 @@
     <div class="shifu-toolbelt">
         <button hx-delete="{{ config.UI.Path }}/user/delete?id={{ .Data.User.ID }}"
                 hx-target="#shifu-user table"
-                hx-on::after-request="shifuCloseWindow('#shifu-user-delete')">
+                data-window="#shifu-user-delete">
             Nutzer löschen
         </button>
         <button class="secondary shifu-window-close" hx-trigger="click">

@@ -27,14 +27,14 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 	var element *cms.Content
 
 	if override {
-		element = shared.FindElement(page, elementPath)
+		element = findElement(page, elementPath)
 
 		if element == nil {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
 
-		element, err = shared.LoadRef(element.Ref)
+		element, err = loadRef(element.Ref)
 
 		if err != nil {
 			slog.Error("Error loading reference file", "error", err)
@@ -42,7 +42,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		element = shared.FindElement(page, elementPath)
+		element = findElement(page, elementPath)
 	}
 
 	if element == nil {
@@ -77,13 +77,13 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		element.Data = getDataFromRequest(r)
 
 		if override {
-			if err := shared.SaveRef(element, element.File); err != nil {
+			if err := saveRef(element, element.File); err != nil {
 				slog.Error("Error saving reference file", "error", err)
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
 		} else {
-			if shared.SetElement(page, elementPath, element) {
+			if setElement(page, elementPath, element) {
 				if err := shared.SavePage(page, fullPath); err != nil {
 					slog.Error("Error saving page while updating element", "error", err)
 					w.WriteHeader(http.StatusInternalServerError)

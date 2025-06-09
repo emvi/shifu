@@ -3,7 +3,7 @@
       hx-swap="outerHTML"
       hx-target=".shifu-media-files"
       hx-target-4*="this"
-      hx-on::after-request="shifuCloseWindow('#shifu-media-file-move')">
+      data-window="#shifu-media-file-move">
     <div class="shifu-media-tree shifu-tree">
         {{ template "media-tree.html" . }}
     </div>

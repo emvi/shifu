@@ -7,7 +7,7 @@
     <div class="shifu-toolbelt">
         <button hx-delete="{{ config.UI.Path }}/media/directory/delete?path={{ .Data.Path }}"
                 hx-target=".shifu-media-tree"
-                hx-on::after-request="shifuCloseWindow('#shifu-media-directory-delete')">
+                data-window="#shifu-media-directory-delete">
             Ordner löschen
         </button>
         <button class="secondary shifu-window-close" hx-trigger="click">

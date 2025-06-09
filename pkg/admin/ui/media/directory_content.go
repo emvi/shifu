@@ -32,13 +32,16 @@ type File struct {
 
 // DirectoryContent returns all files inside a media directory.
 func DirectoryContent(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Query().Get("path")
+	path := strings.TrimSpace(r.URL.Query().Get("path"))
+	selection := strings.TrimSpace(r.URL.Query().Get("selection")) != ""
 	tpl.Get().Execute(w, "media-files.html", struct {
-		Path  string
-		Files []File
+		Path      string
+		Selection bool
+		Files     []File
 	}{
-		Path:  path,
-		Files: listFiles(path),
+		Path:      path,
+		Selection: selection,
+		Files:     listFiles(path),
 	})
 }
 

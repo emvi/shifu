@@ -109,30 +109,34 @@ import {debounce} from "./debounce";
         }
     }
 
-    window.shifuCloseWindow = (target) => {
-        let window = document.querySelector(target);
+    document.addEventListener("htmx:afterRequest", e => {
+        const target = e.target.getAttribute("data-window");
 
-        if (!window) {
-            return;
+        if (target) {
+            let window = document.querySelector(target);
+
+            if (!window) {
+                return;
+            }
+
+            while (!window.classList.contains("shifu-window")) {
+                window = window.parentNode;
+            }
+
+            const title = window.querySelector(".shifu-window-title");
+
+            if (title) {
+                title.removeEventListener("mousedown", startDrag);
+                title.removeEventListener("mouseup", endDrag);
+            }
+
+            if (window.parentNode && window.parentNode.classList.contains("shifu-window-overlay")) {
+                window.parentNode.remove();
+            }
+
+            window.remove();
         }
-
-        while (!window.classList.contains("shifu-window")) {
-            window = window.parentNode;
-        }
-
-        const title = window.querySelector(".shifu-window-title");
-
-        if (title) {
-            title.removeEventListener("mousedown", startDrag);
-            title.removeEventListener("mouseup", endDrag);
-        }
-
-        if (window.parentNode && window.parentNode.classList.contains("shifu-window-overlay")) {
-            window.parentNode.remove();
-        }
-
-        window.remove();
-    }
+    });
 })();
 
 import "./trix";

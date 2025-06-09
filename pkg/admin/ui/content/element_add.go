@@ -28,7 +28,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 	if elementPath != "" {
 		var key string
 		var index int
-		parent, key, index = shared.FindParentElement(page, elementPath)
+		parent, key, index = findParentElement(page, elementPath)
 
 		if parent == nil {
 			slog.Debug("Parent element not found", "element", elementPath)
@@ -91,7 +91,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if shared.AddElement(parent, position, template, t.Positions()) {
+		if addElement(parent, position, template, t.Positions()) {
 			if err := shared.SavePage(page, fullPath); err != nil {
 				slog.Error("Error while saving page", "error", err)
 				w.WriteHeader(http.StatusInternalServerError)

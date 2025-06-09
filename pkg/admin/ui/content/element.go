@@ -1,4 +1,4 @@
-package shared
+package content
 
 import (
 	"encoding/json"
@@ -18,8 +18,7 @@ const (
 	contentDir = "content"
 )
 
-// AddElement adds a new empty element to the tree.
-func AddElement(content *cms.Content, position, template string, positions []string) bool {
+func addElement(content *cms.Content, position, template string, positions []string) bool {
 	if content.Content == nil {
 		content.Content = make(map[string][]cms.Content)
 	}
@@ -42,9 +41,8 @@ func AddElement(content *cms.Content, position, template string, positions []str
 	return true
 }
 
-// MoveElement finds an element by JSON path and moves it up or down.
-func MoveElement(content *cms.Content, path string, direction int) bool {
-	parentElement, key, index := FindParentElement(content, path)
+func moveElement(content *cms.Content, path string, direction int) bool {
+	parentElement, key, index := findParentElement(content, path)
 
 	if parentElement != nil {
 		if index == 0 && direction == -1 || index == len(parentElement.Content[key])-1 && direction == 1 {
@@ -63,9 +61,8 @@ func MoveElement(content *cms.Content, path string, direction int) bool {
 	return false
 }
 
-// DeleteElement finds an element by JSON path and removes it from the tree.
-func DeleteElement(content *cms.Content, path string) bool {
-	parentElement, key, index := FindParentElement(content, path)
+func deleteElement(content *cms.Content, path string) bool {
+	parentElement, key, index := findParentElement(content, path)
 
 	if parentElement != nil {
 		parentElement.Content[key] = append(parentElement.Content[key][:index], parentElement.Content[key][index+1:]...)
@@ -75,9 +72,7 @@ func DeleteElement(content *cms.Content, path string) bool {
 	return false
 }
 
-// FindParentElement finds an element by JSON path.
-// The path is a dot-separated list of keys and indices.
-func FindParentElement(content *cms.Content, path string) (*cms.Content, string, int) {
+func findParentElement(content *cms.Content, path string) (*cms.Content, string, int) {
 	if path == "" {
 		return nil, "", 0
 	}
@@ -109,10 +104,8 @@ func FindParentElement(content *cms.Content, path string) (*cms.Content, string,
 	return parentElement, key, index
 }
 
-// FindElement finds an element by JSON path.
-// The path is a dot-separated list of keys and indices.
-func FindElement(content *cms.Content, path string) *cms.Content {
-	parentElement, key, index := FindParentElement(content, path)
+func findElement(content *cms.Content, path string) *cms.Content {
+	parentElement, key, index := findParentElement(content, path)
 
 	if parentElement == nil {
 		return nil
@@ -121,10 +114,8 @@ func FindElement(content *cms.Content, path string) *cms.Content {
 	return &parentElement.Content[key][index]
 }
 
-// SetElement finds an element by JSON path and updates it.
-// The path is a dot-separated list of keys and indices.
-func SetElement(content *cms.Content, path string, element *cms.Content) bool {
-	parentElement, key, index := FindParentElement(content, path)
+func setElement(content *cms.Content, path string, element *cms.Content) bool {
+	parentElement, key, index := findParentElement(content, path)
 
 	if parentElement == nil {
 		return false
@@ -134,8 +125,7 @@ func SetElement(content *cms.Content, path string, element *cms.Content) bool {
 	return true
 }
 
-// LoadRef loads a reference for the given name and parses it into a cms.Content object.
-func LoadRef(name string) (*cms.Content, error) {
+func loadRef(name string) (*cms.Content, error) {
 	name = fmt.Sprintf("%s.json", name)
 	path := ""
 
@@ -172,8 +162,7 @@ func LoadRef(name string) (*cms.Content, error) {
 	return &element, nil
 }
 
-// SaveRef saves a reference to the given path.
-func SaveRef(element *cms.Content, path string) error {
+func saveRef(element *cms.Content, path string) error {
 	elementJson, err := json.Marshal(element)
 
 	if err != nil {

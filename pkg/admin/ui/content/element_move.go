@@ -33,7 +33,7 @@ func MoveElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if shared.MoveElement(page, elementPath, d) {
+	if moveElement(page, elementPath, d) {
 		if err := shared.SavePage(page, fullPath); err != nil {
 			slog.Error("Error while saving page", "error", err)
 			w.WriteHeader(http.StatusInternalServerError)

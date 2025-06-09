@@ -4,7 +4,7 @@
       hx-swap="outerHTML"
       hx-target=".shifu-media-files"
       hx-target-4*="this"
-      hx-on::after-request="shifuCloseWindow('#shifu-media-file-upload')">
+      data-window="#shifu-media-file-upload">
     <fieldset>
         <label for="files">Dateien</label>
         <input type="file" name="files" id="files" multiple />

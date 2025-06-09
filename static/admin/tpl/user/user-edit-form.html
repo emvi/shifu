@@ -5,7 +5,7 @@
       hx-swap="outerHTML"
       hx-target="#shifu-user table"
       hx-target-4*="this"
-      hx-on::after-request="shifuCloseWindow('#shifu-user-edit')">
+      data-window="#shifu-user-edit">
     <fieldset>
         <label for="email">Email</label>
         <input type="email" name="email" id="email" value="{{ .Data.Email }}" autofocus {{ if $admin }}disabled{{ end }} />

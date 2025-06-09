@@ -18,7 +18,7 @@
       hx-post="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}{{ if .Data.Override }}&override=true{{end}}"
       hx-swap="none"
       hx-target-4*="this"
-      hx-on::after-request="shifuCloseWindow('#shifu-page-element-edit{{ if .Data.Override }}-override{{end}}')">
+      data-window="#shifu-page-element-edit{{ if .Data.Override }}-override{{end}}">
     {{ if len .Data.Config.Copy }}
         {{ $cfg := .Data.Config.Copy }}
 
