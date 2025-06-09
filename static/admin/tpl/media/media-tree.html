@@ -34,7 +34,7 @@
                                      hx-swap="beforeend" />
                             </span>
                         {{ else if $selection }}
-                            <span class="shifu-media-directory-name"
+                            <span class="shifu-media-directory-name shifu-media-directory-selection"
                                   hx-get="{{ config.UI.Path }}/media/directory?path={{ $dir.Path }}&selection=true"
                                   hx-target=".shifu-media-files">
                                 {{ $dir.Name }}
@@ -79,21 +79,19 @@
 {{ end }}
 
 <script>
-    (function(){
+    (function() {
         const input = document.getElementById("shifu-media-directory-selection-path");
-        document.querySelectorAll({{ $selector }}).forEach(e => {
-            e.addEventListener("click", e => {
-                e.preventDefault();
-                e.stopPropagation();
-                document.querySelectorAll({{ $selector }}).forEach(e => {
-                    e.classList.remove("shifu-media-directory-selected");
-                });
-                e.target.classList.add("shifu-media-directory-selected");
+        const updateInput = {{ not .Data.Selection }};
 
-                if (input) {
-                    input.value = e.target.getAttribute("data-path");
-                }
-            });
-        });
+        document.querySelectorAll({{ $selector }}).forEach(e => e.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+            document.querySelectorAll({{ $selector }}).forEach(e => e.classList.remove("shifu-media-directory-selected"));
+            e.target.classList.add("shifu-media-directory-selected");
+
+            if (input && updateInput) {
+                input.value = e.target.getAttribute("data-path");
+            }
+        }));
     })();
 </script>

@@ -86,8 +86,9 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "media-files.html", struct {
-			Path  string
-			Files []File
+			Path      string
+			Selection bool
+			Files     []File
 		}{
 			Path:  path,
 			Files: listFiles(path),
@@ -99,6 +100,7 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 		WindowOptions ui.WindowOptions
 		Directories   []Directory
 		Interactive   bool
+		Selection     bool
 		Path          string
 		Name          []string
 		Errors        map[string]string

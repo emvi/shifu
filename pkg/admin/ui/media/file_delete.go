@@ -47,8 +47,9 @@ func DeleteFile(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tpl.Get().Execute(w, "media-files.html", struct {
-			Path  string
-			Files []File
+			Path      string
+			Selection bool
+			Files     []File
 		}{
 			Path:  path,
 			Files: listFiles(path),

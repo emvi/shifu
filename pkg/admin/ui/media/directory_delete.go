@@ -34,6 +34,7 @@ func DeleteDirectory(w http.ResponseWriter, r *http.Request) {
 		tpl.Get().Execute(w, "media-tree.html", struct {
 			Directories []Directory
 			Interactive bool
+			Selection   bool
 		}{
 			Directories: listDirectories(w),
 			Interactive: true,

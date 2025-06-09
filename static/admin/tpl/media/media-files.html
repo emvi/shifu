@@ -1,51 +1,70 @@
+{{ $selection := .Data.Selection }}
+
 {{ if .Data.Path }}
     {{ $path := .Data.Path }}
 
-    <div class="shifu-toolbelt" style="margin-top: 0;">
-        <button hx-get="{{ config.UI.Path }}/media/file/upload?path={{ $path }}"
-                hx-target="body"
-                hx-swap="beforeend">
-            <img src="{{ config.UI.Path }}/static/icons/upload.svg" alt="" />
-            Dateien hochladen
-        </button>
+    {{ if not $selection }}
+        <div class="shifu-toolbelt" style="margin-top: 0;">
+            <button hx-get="{{ config.UI.Path }}/media/file/upload?path={{ $path }}"
+                    hx-target="body"
+                    hx-swap="beforeend">
+                <img src="{{ config.UI.Path }}/static/icons/upload.svg" alt="" />
+                Dateien hochladen
+            </button>
 
-        {{ if len .Data.Files }}
-            <button hx-get="{{ config.UI.Path }}/media/file/move?path={{ $path }}"
-                    hx-include=".shifu-multi-file-select"
-                    hx-target="body"
-                    hx-swap="beforeend">
-                <img src="{{ config.UI.Path }}/static/icons/move.svg" alt="" />
-                Dateien verschieben
-            </button>
-            <button hx-get="{{ config.UI.Path }}/media/file/delete?path={{ $path }}"
-                    hx-include=".shifu-multi-file-select"
-                    hx-target="body"
-                    hx-swap="beforeend">
-                <img src="{{ config.UI.Path }}/static/icons/delete.svg" alt="" />
-                Dateien löschen
-            </button>
-        {{ end }}
-    </div>
+            {{ if len .Data.Files }}
+                <button hx-get="{{ config.UI.Path }}/media/file/move?path={{ $path }}"
+                        hx-include=".shifu-multi-file-select"
+                        hx-target="body"
+                        hx-swap="beforeend">
+                    <img src="{{ config.UI.Path }}/static/icons/move.svg" alt="" />
+                    Dateien verschieben
+                </button>
+                <button hx-get="{{ config.UI.Path }}/media/file/delete?path={{ $path }}"
+                        hx-include=".shifu-multi-file-select"
+                        hx-target="body"
+                        hx-swap="beforeend">
+                    <img src="{{ config.UI.Path }}/static/icons/delete.svg" alt="" />
+                    Dateien löschen
+                </button>
+            {{ end }}
+        </div>
+    {{ end }}
 
     {{ if len .Data.Files }}
+        {{ if $selection }}
+            <div class="shifu-toolbelt">
+                <button>Auswählen</button>
+            </div>
+        {{ end }}
+
         <table>
             <thead>
             <tr>
-                <td>
-                    <input type="checkbox" name="name-all" id="shifu-multi-file-select-all" />
-                </td>
+                {{ if not $selection }}
+                    <td>
+                        <input type="checkbox" name="name-all" id="shifu-multi-file-select-all" />
+                    </td>
+                {{ end }}
+
                 <td>Vorschau</td>
                 <td style="width: 100%;">Dateiname</td>
                 <td>Größe</td>
-                <td>Bearbeiten</td>
+
+                {{ if not $selection }}
+                    <td>Bearbeiten</td>
+                {{ end }}
             </tr>
             </thead>
             <tbody>
                 {{ range $file := .Data.Files }}
-                    <tr>
-                        <td>
-                            <input type="checkbox" name="name[]" value="{{ $file.Name }}" class="shifu-multi-file-select" />
-                        </td>
+                    <tr {{ if $selection }}class="shifu-media-file-selection"{{ end }} data-path="{{ $file.Path }}">
+                        {{ if not $selection }}
+                            <td>
+                                <input type="checkbox" name="name[]" value="{{ $file.Name }}" class="shifu-multi-file-select" />
+                            </td>
+                        {{ end }}
+
                         <td style="text-align: center;">
                             {{ if $file.Preview }}
                                 <img src="{{ $file.Preview }}" alt="{{ $file.Name }}" />
@@ -55,42 +74,75 @@
                         </td>
                         <td>{{ $file.Name }}</td>
                         <td>{{ formatFileSize $file.Size }}</td>
-                        <td>
-                            <div class="edit">
-                                <a href="{{ if $file.Preview }}{{ $file.Preview }}{{ else }}{{ $file.Path }}{{ end }}" target="_blank" class="button" title="Datei öffnen">
-                                    <img src="{{ config.UI.Path }}/static/icons/view.svg" alt="" style="width: 12px;height: 12px;" />
-                                </a>
-                                <button title="Datei umbenennen"
-                                        hx-get="{{ config.UI.Path }}/media/file/edit?path={{ $path }}&name={{ $file.Name }}"
-                                        hx-target="body"
-                                        hx-swap="beforeend">
-                                    <img src="{{ config.UI.Path }}/static/icons/edit.svg" alt="" />
-                                </button>
-                                <button title="Dateien verschieben"
-                                        hx-get="{{ config.UI.Path }}/media/file/move?path={{ $path }}&name[]={{ $file.Name }}"
-                                        hx-target="body"
-                                        hx-swap="beforeend">
-                                    <img src="{{ config.UI.Path }}/static/icons/move.svg" alt="" />
-                                </button>
-                                <button title="Dateien löschen"
-                                        hx-get="{{ config.UI.Path }}/media/file/delete?path={{ $path }}&name[]={{ $file.Name }}"
-                                        hx-target="body"
-                                        hx-swap="beforeend">
-                                    <img src="{{ config.UI.Path }}/static/icons/delete.svg" alt="" />
-                                </button>
-                            </div>
-                        </td>
+
+                        {{ if not $selection }}
+                            <td>
+                                <div class="edit">
+                                    <a href="{{ if $file.Preview }}{{ $file.Preview }}{{ else }}{{ $file.Path }}{{ end }}" target="_blank" class="button" title="Datei öffnen">
+                                        <img src="{{ config.UI.Path }}/static/icons/view.svg" alt="" style="width: 12px;height: 12px;" />
+                                    </a>
+                                    <button title="Datei umbenennen"
+                                            hx-get="{{ config.UI.Path }}/media/file/edit?path={{ $path }}&name={{ $file.Name }}"
+                                            hx-target="body"
+                                            hx-swap="beforeend">
+                                        <img src="{{ config.UI.Path }}/static/icons/edit.svg" alt="" />
+                                    </button>
+                                    <button title="Dateien verschieben"
+                                            hx-get="{{ config.UI.Path }}/media/file/move?path={{ $path }}&name[]={{ $file.Name }}"
+                                            hx-target="body"
+                                            hx-swap="beforeend">
+                                        <img src="{{ config.UI.Path }}/static/icons/move.svg" alt="" />
+                                    </button>
+                                    <button title="Dateien löschen"
+                                            hx-get="{{ config.UI.Path }}/media/file/delete?path={{ $path }}&name[]={{ $file.Name }}"
+                                            hx-target="body"
+                                            hx-swap="beforeend">
+                                        <img src="{{ config.UI.Path }}/static/icons/delete.svg" alt="" />
+                                    </button>
+                                </div>
+                            </td>
+                        {{ end }}
                     </tr>
                 {{ end }}
             </tbody>
         </table>
-        <script>
-            document.getElementById("shifu-multi-file-select-all").addEventListener("click", e => {
-                document.querySelectorAll("input[name='name[]']").forEach(input => {
-                    input.checked = e.target.checked;
+
+        {{ if $selection }}
+            <div class="shifu-toolbelt">
+                <button>Auswählen</button>
+            </div>
+            <input type="hidden" name="file" value="" id="shifu-media-file-selection-path" />
+            <script>
+                (function() {
+                    const input = document.getElementById("shifu-media-file-selection-path");
+
+                    document.querySelectorAll(".shifu-media-file-selection").forEach(e => e.addEventListener("click", e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        document.querySelectorAll(".shifu-media-file-selected").forEach(e => e.classList.remove("shifu-media-file-selected"));
+                        let target = e.target;
+
+                        while (!target.classList.contains("shifu-media-file-selection")) {
+                            target = target.parentNode;
+                        }
+
+                        target.classList.add("shifu-media-file-selected");
+
+                        if (input) {
+                            input.value = target.getAttribute("data-path");
+                        }
+                    }));
+                })();
+            </script>
+        {{ else }}
+            <script>
+                document.getElementById("shifu-multi-file-select-all").addEventListener("click", e => {
+                    document.querySelectorAll("input[name='name[]']").forEach(input => {
+                        input.checked = e.target.checked;
+                    });
                 });
-            });
-        </script>
+            </script>
+        {{ end }}
     {{ else }}
         <p>Der Ordner ist leer.</p>
     {{ end }}
