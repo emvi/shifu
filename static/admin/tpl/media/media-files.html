@@ -1,4 +1,5 @@
 {{ $selection := .Data.Selection }}
+{{ $target := .Data.SelectionTarget }}
 
 {{ if .Data.Path }}
     {{ $path := .Data.Path }}
@@ -33,9 +34,16 @@
 
     {{ if len .Data.Files }}
         {{ if $selection }}
-            <div class="shifu-toolbelt">
-                <button>Auswählen</button>
-            </div>
+            <!-- TODO -->
+            <form method="post"
+                  hx-post="{{ config.UI.Path }}/content/media?path={{ $path }}&target={{ $target }}"
+                  hx-swap="outerHTML"
+                  hx-target="#{{ $target }}"
+                  hx-target-4*=".shifu-media-files"
+                  data-window="#shifu-media-selection">
+                <div class="shifu-toolbelt">
+                    <button>Auswählen</button>
+                </div>
         {{ end }}
 
         <table>
@@ -108,32 +116,37 @@
         </table>
 
         {{ if $selection }}
-            <div class="shifu-toolbelt">
-                <button>Auswählen</button>
-            </div>
-            <input type="hidden" name="file" value="" id="shifu-media-file-selection-path" />
-            <script>
-                (function() {
-                    const input = document.getElementById("shifu-media-file-selection-path");
+                <div class="shifu-toolbelt">
+                    <button hx-trigger="click">Auswählen</button>
+                </div>
+                <input type="hidden" name="file" value="" id="shifu-media-file-selection-path" />
+                <script>
+                    (function() {
+                        const input = document.getElementById("shifu-media-file-selection-path");
 
-                    document.querySelectorAll(".shifu-media-file-selection").forEach(e => e.addEventListener("click", e => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        document.querySelectorAll(".shifu-media-file-selected").forEach(e => e.classList.remove("shifu-media-file-selected"));
-                        let target = e.target;
+                        document.querySelectorAll(".shifu-media-file-selection").forEach(e => e.addEventListener("click", e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            document.querySelectorAll(".shifu-media-file-selected").forEach(e => e.classList.remove("shifu-media-file-selected"));
+                            let target = e.target;
 
-                        while (!target.classList.contains("shifu-media-file-selection")) {
-                            target = target.parentNode;
-                        }
+                            while (!target.classList.contains("shifu-media-file-selection")) {
+                                target = target.parentNode;
+                            }
 
-                        target.classList.add("shifu-media-file-selected");
+                            target.classList.add("shifu-media-file-selected");
 
-                        if (input) {
-                            input.value = target.getAttribute("data-path");
-                        }
-                    }));
-                })();
-            </script>
+                            if (input) {
+                                input.value = target.getAttribute("data-path");
+                            }
+                        }));
+                        // TODO
+                        /*document.getElementById("shifu-media-selection").addEventListener("htmx:afterRequest", e => {
+                            console.log(e);
+                        });*/
+                    })();
+                </script>
+            </form>
         {{ else }}
             <script>
                 document.getElementById("shifu-multi-file-select-all").addEventListener("click", e => {

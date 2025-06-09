@@ -279,6 +279,7 @@ func (server *Server) serveUI(router chi.Router) {
 				r.Delete("/delete", content.DeleteElement)
 			})
 			r.Get("/media", media.Selection)
+			r.Post("/media", media.Selection)
 			r.Get("/", content.Page)
 		})
 		r.Get("/logout", user.Logout)

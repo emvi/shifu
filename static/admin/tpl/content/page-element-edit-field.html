@@ -10,58 +10,14 @@
         <input id="{{ $prefix }}{{ $lang }}.{{ $field }}" type="hidden" name="{{ $prefix }}{{ $lang }}.{{ $field }}" value="{{ $value }}" />
         <trix-editor input="{{ $prefix }}{{ $lang }}.{{ $field }}"></trix-editor>
     {{ else if or (eq $cfg.Type "img") (eq $cfg.Type "file") }}
-        <label for="{{ $prefix }}{{ $lang }}.{{ $field }}">{{ $cfg.Label }}</label>
-        <input id="{{ $prefix }}{{ $lang }}.{{ $field }}" type="hidden" name="{{ $prefix }}{{ $lang }}.{{ $field }}" value="{{ $value }}" />
-
-        {{ if $value }}
-            {{ if eq $cfg.Type "img" }}
-                <figure>
-                    <img id="img_{{ $prefix }}{{ $lang }}.{{ $field }}"
-                         src="{{ $value }}"
-                         alt="{{ $cfg.Label }}"
-                         style="max-width: 33%;max-height: 150px;" />
-                    <figcaption>{{ $value }}</figcaption>
-                </figure>
-            {{ else }}
-                <p>{{ $value }}</p>
-            {{ end }}
-        {{ end }}
-
-        <div class="shifu-toolbelt" style="justify-content: flex-start;">
-            {{ if eq $cfg.Type "img" }}
-                <button hx-get="{{ config.UI.Path }}/content/media"
-                        hx-target="body"
-                        hx-swap="beforeend"
-                        id="select_{{ $prefix }}{{ $lang }}.{{ $field }}">
-                    Bild auswählen
-                </button>
-                <button id="clear_{{ $prefix }}{{ $lang }}.{{ $field }}">Bild entfernen</button>
-            {{ else }}
-                <button hx-get="{{ config.UI.Path }}/content/media"
-                        hx-target="body"
-                        hx-swap="beforeend"
-                        id="select_{{ $prefix }}{{ $lang }}.{{ $field }}">
-                    Datei auswählen
-                </button>
-                <button id="clear_{{ $prefix }}{{ $lang }}.{{ $field }}">Datei entfernen</button>
-            {{ end }}
-        </div>
-
-        <script>
-            (function() {
-                const field = document.getElementById("{{ $prefix }}{{ $lang }}.{{ $field }}");
-                document.getElementById("clear_{{ $prefix }}{{ $lang }}.{{ $field }}").addEventListener("click", e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    field.value = "";
-                    const img = document.getElementById("img_{{ $prefix }}{{ $lang }}.{{ $field }}");
-
-                    if (img) {
-                        img.parentNode.remove();
-                    }
-                });
-            })();
-        </script>
+        {{
+            template "page-element-edit-field-file.html"
+            dict "cfg" $cfg
+                "field" $field
+                "lang" $lang
+                "prefix" $prefix
+                "value" $value
+        }}
     {{ else if eq $cfg.Type "boolean" }}
         <input id="{{ $prefix }}{{ $lang }}.{{ $field }}" type="checkbox" name="{{ $prefix }}{{ $lang }}.{{ $field }}" {{ if $value }}checked{{ end }} />
         <label for="{{ $prefix }}{{ $lang }}.{{ $field }}">{{ $cfg.Label }}</label>

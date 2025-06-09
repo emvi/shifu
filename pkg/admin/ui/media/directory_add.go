@@ -49,9 +49,10 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "media-tree.html", struct {
-			Directories []Directory
-			Interactive bool
-			Selection   bool
+			Directories     []Directory
+			Interactive     bool
+			Selection       bool
+			SelectionTarget string
 		}{
 			Directories: listDirectories(w),
 			Interactive: true,

@@ -73,7 +73,7 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if name == "" {
-			errs["name"] = "the name address is required"
+			errs["name"] = "the name is required"
 		}
 
 		if password != passwordConfirm {

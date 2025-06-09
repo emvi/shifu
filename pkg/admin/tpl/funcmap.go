@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/emvi/shifu/pkg/cfg"
 	"html/template"
+	"strings"
 	"time"
 )
 
@@ -14,6 +15,7 @@ var funcMap = template.FuncMap{
 	"formatFileSize": formatFileSize,
 	"dict":           dict,
 	"fmt":            fmt.Sprintf,
+	"replace":        strings.ReplaceAll,
 }
 
 func formatFileSize(size int64) string {

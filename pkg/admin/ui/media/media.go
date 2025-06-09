@@ -26,12 +26,13 @@ type Directory struct {
 // Media renders the media management dialog.
 func Media(w http.ResponseWriter, _ *http.Request) {
 	tpl.Get().Execute(w, "media.html", struct {
-		WindowOptions ui.WindowOptions
-		Path          string
-		Directories   []Directory
-		Files         []File
-		Interactive   bool
-		Selection     bool
+		WindowOptions   ui.WindowOptions
+		Path            string
+		Directories     []Directory
+		Files           []File
+		Interactive     bool
+		Selection       bool
+		SelectionTarget string
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-media",

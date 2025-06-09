@@ -1,6 +1,7 @@
 {{ define "media-tree-directories" }}
     {{ $interactive := index . "interactive" }}
     {{ $selection := index . "selection" }}
+    {{ $target := index . "target" }}
 
     <ul>
         {{ range $dir := index . "dirs" }}
@@ -35,7 +36,7 @@
                             </span>
                         {{ else if $selection }}
                             <span class="shifu-media-directory-name shifu-media-directory-selection"
-                                  hx-get="{{ config.UI.Path }}/media/directory?path={{ $dir.Path }}&selection=true"
+                                  hx-get="{{ config.UI.Path }}/media/directory?path={{ $dir.Path }}&selection=true&target={{ $target }}"
                                   hx-target=".shifu-media-files">
                                 {{ $dir.Name }}
                             </span>
@@ -49,7 +50,13 @@
                     </summary>
 
                     {{ if len $dir.Children }}
-                        {{ template "media-tree-directories" dict "dirs" $dir.Children "interactive" $interactive "selection" $selection }}
+                        {{
+                            template "media-tree-directories"
+                                dict "dirs" $dir.Children
+                                    "interactive" $interactive
+                                    "selection" $selection
+                                    "target" $target
+                        }}
                     {{ end }}
                 </details>
             </li>
@@ -61,7 +68,13 @@
 {{ $selector := ".shifu-media-directory-selection" }}
 
 <div style="margin-bottom: 8px;">
-    {{ template "media-tree-directories" dict "dirs" .Data.Directories "interactive" $interactive "selection" .Data.Selection }}
+    {{
+        template "media-tree-directories"
+            dict "dirs" .Data.Directories
+            "interactive" $interactive
+            "selection" .Data.Selection
+            "target" .Data.SelectionTarget
+    }}
 </div>
 
 {{ if $interactive }}
