@@ -22,6 +22,8 @@ import {debounce} from "./debounce";
                 target = target.children[0];
             }
 
+            document.querySelectorAll(".shifu-window").forEach(e => e.classList.remove("shifu-window-active"));
+            target.classList.add("shifu-window-active");
             const title = target.querySelector(".shifu-window-title");
 
             if (title) {
@@ -66,6 +68,7 @@ import {debounce} from "./debounce";
     let mouseX, mouseY, zIndex = 0;
 
     function startDrag(e) {
+        document.querySelectorAll(".shifu-window").forEach(e => e.classList.remove("shifu-window-active"));
         dragging = e.target.parentNode;
 
         if (dragging.style.zIndex > zIndex) {
@@ -74,6 +77,7 @@ import {debounce} from "./debounce";
 
         zIndex++;
         dragging.style.zIndex = zIndex;
+        dragging.classList.add("shifu-window-active");
         mouseX = e.clientX;
         mouseY = e.clientY;
     }

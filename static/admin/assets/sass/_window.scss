@@ -89,6 +89,7 @@
         left: 5vh;
         opacity: 0;
         animation: fadeIn 500ms forwards;
+        border-color: var(--border70);
 
         &-title {
             cursor: grab;
@@ -100,6 +101,10 @@
                 var(--bg) 4px,
                 var(--bg) 8px
             );
+        }
+
+        &-active {
+            border-color: var(--border);
         }
     }
 
