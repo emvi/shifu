@@ -89,6 +89,7 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 			Path            string
 			Selection       bool
 			SelectionTarget string
+			SelectionField  SelectionField
 			Files           []File
 		}{
 			Path:  path,
@@ -103,6 +104,7 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 		Interactive     bool
 		Selection       bool
 		SelectionTarget string
+		SelectionField  SelectionField
 		Path            string
 		Name            []string
 		Errors          map[string]string

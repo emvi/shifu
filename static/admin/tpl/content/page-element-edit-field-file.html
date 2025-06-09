@@ -1,19 +1,20 @@
-{{ $cfg := index . "cfg" }}
+{{ $type := index . "type" }}
+{{ $label := index . "label" }}
 {{ $field := index . "field" }}
 {{ $lang := index . "lang" }}
 {{ $prefix := index . "prefix" }}
 {{ $value := index . "value" }}
 
 <div id="shifu-field-{{ replace $prefix "." "-" }}{{ $lang }}-{{ $field }}">
-    <label for="{{ $prefix }}{{ $lang }}.{{ $field }}">{{ $cfg.Label }}</label>
+    <label for="{{ $prefix }}{{ $lang }}.{{ $field }}">{{ $label }}</label>
     <input id="{{ $prefix }}{{ $lang }}.{{ $field }}" type="hidden" name="{{ $prefix }}{{ $lang }}.{{ $field }}" value="{{ $value }}" />
 
     {{ if $value }}
-        {{ if eq $cfg.Type "img" }}
+        {{ if eq $type "img" }}
             <figure>
                 <img id="img_{{ $prefix }}{{ $lang }}.{{ $field }}"
                      src="{{ $value }}"
-                     alt="{{ $cfg.Label }}"
+                     alt="{{ $label }}"
                      style="max-width: 33%;max-height: 150px;" />
                 <figcaption>{{ $value }}</figcaption>
             </figure>
@@ -23,8 +24,8 @@
     {{ end }}
 
     <div class="shifu-toolbelt" style="justify-content: flex-start;">
-        {{ if eq $cfg.Type "img" }}
-            <button hx-get="{{ config.UI.Path }}/content/media?target=shifu-field-{{ replace $prefix "." "-" }}{{ $lang }}-{{ $field }}"
+        {{ if eq $type "img" }}
+            <button hx-get="{{ config.UI.Path }}/content/media?target=shifu-field-{{ replace $prefix "." "-" }}{{ $lang }}-{{ $field }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $lang }}&prefix={{ $prefix }}"
                     hx-target="body"
                     hx-swap="beforeend"
                     id="select_{{ $prefix }}{{ $lang }}.{{ $field }}">
@@ -32,7 +33,7 @@
             </button>
             <button id="clear_{{ $prefix }}{{ $lang }}.{{ $field }}">Bild entfernen</button>
         {{ else }}
-            <button hx-get="{{ config.UI.Path }}/content/media?target=shifu-field-{{ replace $prefix "." "-" }}{{ $lang }}-{{ $field }}"
+            <button hx-get="{{ config.UI.Path }}/content/media?target=shifu-field-{{ replace $prefix "." "-" }}{{ $lang }}-{{ $field }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $lang }}&prefix={{ $prefix }}"
                     hx-target="body"
                     hx-swap="beforeend"
                     id="select_{{ $prefix }}{{ $lang }}.{{ $field }}">

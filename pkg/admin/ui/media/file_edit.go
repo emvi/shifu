@@ -62,6 +62,7 @@ func EditFile(w http.ResponseWriter, r *http.Request) {
 			Path            string
 			Selection       bool
 			SelectionTarget string
+			SelectionField  SelectionField
 			Files           []File
 		}{
 			Path:  path,

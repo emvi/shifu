@@ -12,7 +12,8 @@
     {{ else if or (eq $cfg.Type "img") (eq $cfg.Type "file") }}
         {{
             template "page-element-edit-field-file.html"
-            dict "cfg" $cfg
+            dict "type" $cfg.Type
+                "label" $cfg.Label
                 "field" $field
                 "lang" $lang
                 "prefix" $prefix

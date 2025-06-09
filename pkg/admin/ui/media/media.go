@@ -33,6 +33,7 @@ func Media(w http.ResponseWriter, _ *http.Request) {
 		Interactive     bool
 		Selection       bool
 		SelectionTarget string
+		SelectionField  SelectionField
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-media",

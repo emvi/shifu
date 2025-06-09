@@ -1,5 +1,10 @@
 {{ $selection := .Data.Selection }}
 {{ $target := .Data.SelectionTarget }}
+{{ $type := .Data.SelectionField.Type }}
+{{ $label := .Data.SelectionField.Label }}
+{{ $field := .Data.SelectionField.Field }}
+{{ $lang := .Data.SelectionField.Lang }}
+{{ $prefix := .Data.SelectionField.Prefix }}
 
 {{ if .Data.Path }}
     {{ $path := .Data.Path }}
@@ -34,9 +39,8 @@
 
     {{ if len .Data.Files }}
         {{ if $selection }}
-            <!-- TODO -->
             <form method="post"
-                  hx-post="{{ config.UI.Path }}/content/media?path={{ $path }}&target={{ $target }}"
+                  hx-post="{{ config.UI.Path }}/content/media?path={{ $path }}&target={{ $target }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $lang }}&prefix={{ $prefix }}"
                   hx-swap="outerHTML"
                   hx-target="#{{ $target }}"
                   hx-target-4*=".shifu-media-files"

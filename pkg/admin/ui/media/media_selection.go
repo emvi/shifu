@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+type SelectionField struct {
+	Type, Label, Field, Lang, Prefix, Value string
+}
+
 // Selection renders the media selection dialog.
 func Selection(w http.ResponseWriter, r *http.Request) {
 	target := strings.TrimSpace(r.URL.Query().Get("target"))
@@ -22,17 +26,32 @@ func Selection(w http.ResponseWriter, r *http.Request) {
 				Path            string
 				Selection       bool
 				SelectionTarget string
+				SelectionField  SelectionField
 				Files           []File
 			}{
 				Path:            path,
 				Selection:       true,
 				SelectionTarget: target,
-				Files:           listFiles(path),
+				SelectionField: SelectionField{
+					Type:   r.URL.Query().Get("type"),
+					Label:  r.URL.Query().Get("label"),
+					Field:  r.URL.Query().Get("field"),
+					Lang:   r.URL.Query().Get("lang"),
+					Prefix: r.URL.Query().Get("prefix"),
+				},
+				Files: listFiles(path),
 			})
 			return
 		}
 
-		// TODO
+		tpl.Get().Execute(w, "page-element-edit-field-file-data.html", SelectionField{
+			Type:   r.URL.Query().Get("type"),
+			Label:  r.URL.Query().Get("label"),
+			Field:  r.URL.Query().Get("field"),
+			Lang:   r.URL.Query().Get("lang"),
+			Prefix: r.URL.Query().Get("prefix"),
+			Value:  file,
+		})
 		return
 	}
 
@@ -44,6 +63,7 @@ func Selection(w http.ResponseWriter, r *http.Request) {
 		Interactive     bool
 		Selection       bool
 		SelectionTarget string
+		SelectionField  SelectionField
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-media-selection",
@@ -55,5 +75,12 @@ func Selection(w http.ResponseWriter, r *http.Request) {
 		Directories:     listDirectories(w),
 		Selection:       true,
 		SelectionTarget: target,
+		SelectionField: SelectionField{
+			Type:   r.URL.Query().Get("type"),
+			Label:  r.URL.Query().Get("label"),
+			Field:  r.URL.Query().Get("field"),
+			Lang:   r.URL.Query().Get("lang"),
+			Prefix: r.URL.Query().Get("prefix"),
+		},
 	})
 }

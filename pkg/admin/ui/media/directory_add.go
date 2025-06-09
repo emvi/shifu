@@ -53,6 +53,7 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 			Interactive     bool
 			Selection       bool
 			SelectionTarget string
+			SelectionField  SelectionField
 		}{
 			Directories: listDirectories(w),
 			Interactive: true,

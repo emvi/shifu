@@ -2,6 +2,11 @@
     {{ $interactive := index . "interactive" }}
     {{ $selection := index . "selection" }}
     {{ $target := index . "target" }}
+    {{ $type := index . "type" }}
+    {{ $label := index . "label" }}
+    {{ $field := index . "field" }}
+    {{ $lang := index . "lang" }}
+    {{ $prefix := index . "prefix" }}
 
     <ul>
         {{ range $dir := index . "dirs" }}
@@ -36,7 +41,7 @@
                             </span>
                         {{ else if $selection }}
                             <span class="shifu-media-directory-name shifu-media-directory-selection"
-                                  hx-get="{{ config.UI.Path }}/media/directory?path={{ $dir.Path }}&selection=true&target={{ $target }}"
+                                  hx-get="{{ config.UI.Path }}/media/directory?path={{ $dir.Path }}&selection=true&target={{ $target }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $lang }}&prefix={{ $prefix }}"
                                   hx-target=".shifu-media-files">
                                 {{ $dir.Name }}
                             </span>
@@ -56,6 +61,11 @@
                                     "interactive" $interactive
                                     "selection" $selection
                                     "target" $target
+                                    "type" $type
+                                    "label" $label
+                                    "field" $field
+                                    "lang" $lang
+                                    "prefix" $prefix
                         }}
                     {{ end }}
                 </details>
@@ -74,6 +84,11 @@
             "interactive" $interactive
             "selection" .Data.Selection
             "target" .Data.SelectionTarget
+            "type" .Data.SelectionField.Type
+            "label" .Data.SelectionField.Label
+            "field" .Data.SelectionField.Field
+            "lang" .Data.SelectionField.Lang
+            "prefix" .Data.SelectionField.Prefix
     }}
 </div>
 

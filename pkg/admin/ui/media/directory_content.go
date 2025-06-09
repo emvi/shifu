@@ -37,12 +37,20 @@ func DirectoryContent(w http.ResponseWriter, r *http.Request) {
 		Path            string
 		Selection       bool
 		SelectionTarget string
+		SelectionField  SelectionField
 		Files           []File
 	}{
 		Path:            path,
 		Selection:       strings.TrimSpace(r.URL.Query().Get("selection")) != "",
 		SelectionTarget: strings.TrimSpace(r.URL.Query().Get("target")),
-		Files:           listFiles(path),
+		SelectionField: SelectionField{
+			Type:   r.URL.Query().Get("type"),
+			Label:  r.URL.Query().Get("label"),
+			Field:  r.URL.Query().Get("field"),
+			Lang:   r.URL.Query().Get("lang"),
+			Prefix: r.URL.Query().Get("prefix"),
+		},
+		Files: listFiles(path),
 	})
 }
 
