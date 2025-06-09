@@ -112,11 +112,14 @@
                 transition: transform 0.1s;
             }
         }
+    }
 
-        /*&[open] > summary {
-            &:before {
-                transform: rotate(180deg);
-            }
-        }*/
+    figure {
+        margin: 4px 0;
+        padding: 0;
+
+        figcaption {
+            font-size: 10px;
+        }
     }
 }
