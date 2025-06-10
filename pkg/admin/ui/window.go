@@ -7,4 +7,5 @@ type WindowOptions struct {
 	ContentTpl string
 	MinWidth   int
 	Overlay    bool
+	Lang       string
 }

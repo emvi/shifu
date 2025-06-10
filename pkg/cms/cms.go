@@ -85,7 +85,7 @@ func NewCMS(options Options) *CMS {
 }
 
 // Serve matches the path and renders the page for the given request.
-// If no page is found, it will redirect to the 404 page.
+// If no page is found, it will redirect to the 404-page.
 func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 	if cms.hotReload {
 		cms.updateContent()
@@ -631,7 +631,7 @@ func (cms *CMS) getHandler(name string) (Handler, bool) {
 }
 
 func (cms *CMS) getNotFoundPath(r *http.Request) string {
-	languages := cms.getAcceptedLanguages(r)
+	languages := GetAcceptedLanguages(r)
 
 	for _, l := range languages {
 		p, found := cms.notFound[l]
@@ -646,24 +646,4 @@ func (cms *CMS) getNotFoundPath(r *http.Request) string {
 	}
 
 	return ""
-}
-
-func (cms *CMS) getAcceptedLanguages(r *http.Request) []string {
-	header := r.Header.Get("Accept-Language")
-	parts := strings.Split(header, ",")
-	languages := make([]string, 0)
-
-	for _, part := range parts {
-		left, _, _ := strings.Cut(strings.TrimSpace(part), ";")
-
-		if strings.Contains(left, "-") {
-			left, _, _ = strings.Cut(left, "-")
-		}
-
-		if left != "" && len(left) == 2 && !slices.Contains(languages, left) {
-			languages = append(languages, left)
-		}
-	}
-
-	return languages
 }

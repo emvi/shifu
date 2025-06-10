@@ -16,6 +16,7 @@ var funcMap = template.FuncMap{
 	"dict":           dict,
 	"fmt":            fmt.Sprintf,
 	"replace":        strings.ReplaceAll,
+	"i18n":           getTranslation,
 }
 
 func formatFileSize(size int64) string {

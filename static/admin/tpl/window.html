@@ -10,8 +10,10 @@
         <div class="shifu-window-title-label">
             {{ .Tpl.Render .Data.WindowOptions.TitleTpl . }}
         </div>
-        <div class="shifu-window-close shifu-window-title-close" hx-trigger="click">
-            <img src="{{ config.UI.Path }}/static/icons/close.svg" alt="Close" />
+        <div class="shifu-window-close shifu-window-title-close"
+             title="{{ i18n .Data.WindowOptions.Lang "close_window" }}"
+             hx-trigger="click">
+            <img src="{{ config.UI.Path }}/static/icons/close.svg" alt="{{ i18n .Data.WindowOptions.Lang "close_window" }}" />
         </div>
     </div>
     <div class="shifu-window-content">

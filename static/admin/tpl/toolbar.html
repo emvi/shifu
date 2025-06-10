@@ -2,42 +2,42 @@
     <div class="shifu-window-title">CMS</div>
     <div class="shifu-window-content shifu-toolbar-icons">
         <a hx-get="{{ config.UI.Path }}/content?path={{ .Data.Path }}"
-           title="Seite bearbeiten"
+           title="{{ i18n .Data.Lang "edit_page" }}"
            hx-target="body"
            hx-swap="beforeend"
            data-window="shifu-page">
-            <img src="{{ config.UI.Path }}/static/icons/cube.svg" alt="Seite bearbeiten" />
+            <img src="{{ config.UI.Path }}/static/icons/cube.svg" alt="{{ i18n .Data.Lang "edit_page" }}" />
         </a>
         <a hx-get="{{ config.UI.Path }}/pages"
-           title="Seiten"
+           title="{{ i18n .Data.Lang "pages" }}"
            hx-target="body"
            hx-swap="beforeend"
            data-window="shifu-pages">
-            <img src="{{ config.UI.Path }}/static/icons/page.svg" alt="Seiten" />
+            <img src="{{ config.UI.Path }}/static/icons/page.svg" alt="{{ i18n .Data.Lang "pages" }}" />
         </a>
         <a hx-get="{{ config.UI.Path }}/media"
-           title="Medien"
+           title="{{ i18n .Data.Lang "media" }}"
            hx-target="body"
            hx-swap="beforeend"
            data-window="shifu-media">
-            <img src="{{ config.UI.Path }}/static/icons/media.svg" alt="Medien" />
+            <img src="{{ config.UI.Path }}/static/icons/media.svg" alt="{{ i18n .Data.Lang "media" }}" />
         </a>
         <a hx-get="{{ config.UI.Path }}/database"
-           title="Datenbank"
+           title="{{ i18n .Data.Lang "database" }}"
            hx-target="body"
            hx-swap="beforeend"
            data-window="shifu-database">
-            <img src="{{ config.UI.Path }}/static/icons/db.svg" alt="Datenbank" />
+            <img src="{{ config.UI.Path }}/static/icons/db.svg" alt="{{ i18n .Data.Lang "database" }}" />
         </a>
         <a hx-get="{{ config.UI.Path }}/user"
-           title="Nutzerverwaltung"
+           title="{{ i18n .Data.Lang "user" }}"
            hx-target="body"
            hx-swap="beforeend"
            data-window="shifu-user">
-            <img src="{{ config.UI.Path }}/static/icons/user.svg" alt="Nutzer" />
+            <img src="{{ config.UI.Path }}/static/icons/user.svg" alt="{{ i18n .Data.Lang "user" }}" />
         </a>
-        <a href="{{ config.UI.Path }}/logout" title="Abmelden">
-            <img src="{{ config.UI.Path }}/static/icons/signout.svg" alt="Abmelden" />
+        <a href="{{ config.UI.Path }}/logout" title="{{ i18n .Data.Lang "sign_out" }}">
+            <img src="{{ config.UI.Path }}/static/icons/signout.svg" alt="{{ i18n .Data.Lang "sign_out" }}" />
         </a>
     </div>
 </div>
