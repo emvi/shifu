@@ -44,6 +44,7 @@ func MoveElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	setTemplateNames(page)
 	tpl.Get().Execute(w, "page-tree.html", struct {
 		Path string
 		Page *cms.Content

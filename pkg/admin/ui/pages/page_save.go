@@ -255,11 +255,15 @@ func pageExists(name string) bool {
 	files := make([]string, 0)
 
 	if err := filepath.WalkDir(filepath.Join(cfg.Get().BaseDir, "content"), func(_ string, entry fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
 		if !entry.IsDir() && strings.ToLower(filepath.Ext(entry.Name())) == ".json" {
 			files = append(files, entry.Name())
 		}
 
-		return err
+		return nil
 	}); err != nil {
 		slog.Error("Error reading content directory", "error", err)
 		return false

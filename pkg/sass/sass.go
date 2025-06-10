@@ -62,7 +62,7 @@ func getDirs(root string) ([]string, error) {
 			dirs = append(dirs, path)
 		}
 
-		return err
+		return nil
 	}); err != nil {
 		return nil, err
 	}

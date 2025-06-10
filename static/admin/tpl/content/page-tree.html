@@ -83,13 +83,22 @@
 <div style="margin-bottom: 8px;">
     {{ template "page-element-tree" dict "path" .Data.Path "content" .Data.Page.Content "p" "" }}
 </div>
-<button title="Element hinzufügen"
-        hx-get="{{ config.UI.Path }}/content/element/add?path={{ .Data.Path }}"
-        hx-target="body"
-        hx-swap="beforeend">
-    <img src="{{ config.UI.Path }}/static/icons/add.svg" alt="" />
-    Element hinzufügen
-</button>
+<div class="shifu-toolbelt" style="flex-direction: column;align-items: flex-start;">
+    <button title="Element hinzufügen"
+            hx-get="{{ config.UI.Path }}/content/element/add?path={{ .Data.Path }}"
+            hx-target="body"
+            hx-swap="beforeend">
+        <img src="{{ config.UI.Path }}/static/icons/cube.svg" alt="" />
+        Element hinzufügen
+    </button>
+    <button title="Referenz hinzufügen"
+            hx-get="{{ config.UI.Path }}/content/reference/add?path={{ .Data.Path }}"
+            hx-target="body"
+            hx-swap="beforeend">
+        <img src="{{ config.UI.Path }}/static/icons/frame.svg" alt="" />
+        Referenz hinzufügen
+    </button>
+</div>
 
 <script>
     (function(){

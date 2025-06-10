@@ -56,13 +56,17 @@ func (cache *Cache) loadTemplate() error {
 	t := template.New("").Funcs(funcMap)
 
 	if err := fs.WalkDir(static.AdminTpl, "admin/tpl", func(path string, info fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
 		if !info.IsDir() && strings.Contains(path, ".html") {
 			if _, err = t.ParseFS(static.AdminTpl, path); err != nil {
 				return err
 			}
 		}
 
-		return err
+		return nil
 	}); err != nil {
 		return err
 	}

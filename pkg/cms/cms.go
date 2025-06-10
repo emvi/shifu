@@ -456,6 +456,10 @@ func (cms *CMS) updateContent() {
 
 	// extract refs
 	if err := filepath.WalkDir(contentDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
 		if !d.IsDir() {
 			content, err := cms.getContent(path)
 
@@ -470,13 +474,17 @@ func (cms *CMS) updateContent() {
 			}
 		}
 
-		return err
+		return nil
 	}); err != nil {
 		slog.Error("Error reading website content directory", "error", err)
 	}
 
 	// extract pages and experiments
 	if err := filepath.WalkDir(contentDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
 		if !d.IsDir() {
 			content, err := cms.getContent(path)
 
@@ -513,7 +521,7 @@ func (cms *CMS) updateContent() {
 			}
 		}
 
-		return err
+		return nil
 	}); err != nil {
 		slog.Error("Error reading website content directory", "error", err)
 	}

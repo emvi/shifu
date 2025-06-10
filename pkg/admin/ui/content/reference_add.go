@@ -1,6 +1,7 @@
 package content
 
 import (
+	"github.com/emvi/shifu/pkg/admin/db"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
@@ -10,8 +11,8 @@ import (
 	"strings"
 )
 
-// AddElement adds a new element to the page or to a parent element.
-func AddElement(w http.ResponseWriter, r *http.Request) {
+// AddReference adds an existing reference to the parent element.
+func AddReference(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
 	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
 	fullPath := getPagePath(path)
@@ -52,13 +53,19 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
-		template := strings.TrimSpace(r.FormValue("template"))
+		reference := strings.TrimSpace(r.FormValue("reference"))
 		position := strings.TrimSpace(r.FormValue("position"))
 		errors := make(map[string]string)
-		t, found := tplCache.Get(template)
+		found := false
+
+		if err := db.Get().Get(&found, `SELECT EXISTS (SELECT 1 FROM "reference" WHERE name = ?)`, reference); err != nil {
+			slog.Error("Error checking existence of reference", "name", reference)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
 		if !found {
-			errors["template"] = "the template does not exist"
+			errors["reference"] = "the reference does not exist"
 		}
 
 		if position != "" {
@@ -71,27 +78,27 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 
 		if len(errors) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			tpl.Get().Execute(w, "page-element-add-form.html", struct {
-				Path      string
-				Element   string
-				Templates []TemplateConfig
-				Positions map[string]string
-				Template  string
-				Position  string
-				Errors    map[string]string
+			tpl.Get().Execute(w, "page-reference-add-form.html", struct {
+				Path       string
+				Element    string
+				References []string
+				Positions  map[string]string
+				Reference  string
+				Position   string
+				Errors     map[string]string
 			}{
-				Path:      path,
-				Element:   elementPath,
-				Templates: tplCache.List(),
-				Positions: positions,
-				Template:  template,
-				Position:  position,
-				Errors:    errors,
+				Path:       path,
+				Element:    elementPath,
+				References: getReferences(),
+				Positions:  positions,
+				Reference:  reference,
+				Position:   position,
+				Errors:     errors,
 			})
 			return
 		}
 
-		if addElement(parent, position, template, t.Positions()) {
+		if addReference(parent, position, reference) {
 			if err := shared.SavePage(page, fullPath); err != nil {
 				slog.Error("Error while saving page", "error", err)
 				w.WriteHeader(http.StatusInternalServerError)
@@ -118,21 +125,43 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 		WindowOptions ui.WindowOptions
 		Path          string
 		Element       string
-		Templates     []TemplateConfig
+		References    []string
 		Positions     map[string]string
-		Template      string
+		Reference     string
 		Position      string
 		Errors        map[string]string
 	}{
 		WindowOptions: ui.WindowOptions{
-			ID:         "shifu-page-element-add",
-			TitleTpl:   "page-element-add-window-title",
-			ContentTpl: "page-element-add-window-content",
+			ID:         "shifu-page-reference-add",
+			TitleTpl:   "page-reference-add-window-title",
+			ContentTpl: "page-reference-add-window-content",
 			MinWidth:   300,
 		},
-		Path:      path,
-		Element:   elementPath,
-		Templates: tplCache.List(),
-		Positions: positions,
+		Path:       path,
+		Element:    elementPath,
+		References: getReferences(),
+		Positions:  positions,
 	})
+}
+
+func getReferences() []string {
+	rows, err := db.Get().Query(`SELECT "name" FROM "reference" ORDER BY "name"`)
+
+	if err != nil {
+		slog.Error("Error reading references", "error", err)
+	}
+
+	references := make([]string, 0)
+
+	for rows.Next() {
+		var name string
+
+		if err := rows.Scan(&name); err != nil {
+			slog.Error("Error reading reference", "error", err)
+		}
+
+		references = append(references, name)
+	}
+
+	return references
 }

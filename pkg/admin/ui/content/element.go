@@ -34,9 +34,23 @@ func addElement(content *cms.Content, position, template string, positions []str
 	}
 
 	content.Content[position] = append(content.Content[position], cms.Content{
-		Tpl: template,
-		// TODO ref
+		Tpl:     template,
 		Content: children,
+	})
+	return true
+}
+
+func addReference(content *cms.Content, position, reference string) bool {
+	if content.Content == nil {
+		content.Content = make(map[string][]cms.Content)
+	}
+
+	if _, found := content.Content[position]; !found {
+		content.Content[position] = make([]cms.Content, 0)
+	}
+
+	content.Content[position] = append(content.Content[position], cms.Content{
+		Ref: reference,
 	})
 	return true
 }
@@ -130,12 +144,16 @@ func loadRef(name string) (*cms.Content, error) {
 	path := ""
 
 	if err := filepath.WalkDir(filepath.Join(cfg.Get().BaseDir, contentDir), func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
 		if filepath.Base(p) == name {
 			path = p
 			return fs.SkipAll
 		}
 
-		return err
+		return nil
 	}); err != nil && !errors.Is(err, fs.SkipAll) {
 		return nil, err
 	}

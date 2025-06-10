@@ -1,0 +1,44 @@
+{{ $reference := .Data.Reference }}
+{{ $position := .Data.Position }}
+
+<form method="post"
+      hx-post="{{ config.UI.Path }}/content/reference/add?path={{ .Data.Path }}&element={{ .Data.Element }}"
+      hx-swap="outerHTML"
+      hx-target=".shifu-page-tree"
+      hx-target-4*="this"
+      data-window="#shifu-page-reference-add">
+    <fieldset>
+        <label for="reference">Referenz</label>
+        <select name="reference" id="reference">
+            {{ range .Data.References }}
+                <option value="{{ . }}" {{ if eq . $reference }}selected{{ end }}>{{ . }}</option>
+            {{ end }}
+        </select>
+
+        {{ if index .Data.Errors "reference" }}
+            <span class="error">{{ index .Data.Errors "reference" }}</span>
+        {{ end }}
+    </fieldset>
+
+    {{  if len .Data.Positions }}
+        <fieldset>
+            <label for="position">Position</label>
+            <select name="position" id="position">
+                {{ range $key, $value := .Data.Positions }}
+                    <option value="{{ $key }}" {{ if eq $key $position }}selected{{ end }}>{{ $value }}</option>
+                {{ end }}
+            </select>
+
+            {{ if index .Data.Errors "position" }}
+                <span class="error">{{ index .Data.Errors "position" }}</span>
+            {{ end }}
+        </fieldset>
+    {{ end }}
+
+    <div class="shifu-toolbelt">
+        <input type="submit" value="Hinzufügen" />
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            Abbrechen
+        </button>
+    </div>
+</form>

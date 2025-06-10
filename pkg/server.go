@@ -278,6 +278,10 @@ func (server *Server) serveUI(router chi.Router) {
 				r.Get("/delete", content.DeleteElement)
 				r.Delete("/delete", content.DeleteElement)
 			})
+			r.Route("/reference", func(r chi.Router) {
+				r.Get("/add", content.AddReference)
+				r.Post("/add", content.AddReference)
+			})
 			r.Get("/media", media.Selection)
 			r.Post("/media", media.Selection)
 			r.Get("/", content.Page)

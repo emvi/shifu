@@ -22,6 +22,11 @@ CREATE TABLE "session" (
     user_id int NOT NULL REFERENCES "user" (id),
 	session VARCHAR(40) NOT NULL UNIQUE,
 	expires timestamp NOT NULL
+);
+
+CREATE TABLE "reference" (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+	name VARCHAR(500) NOT NULL UNIQUE
 );`,
 }
 
