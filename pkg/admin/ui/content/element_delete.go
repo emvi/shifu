@@ -38,17 +38,21 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 		setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "page-tree.html", struct {
+			Lang string
 			Path string
 			Page *cms.Content
 		}{
+			Lang: tpl.GetLanguage(r),
 			Path: path,
 			Page: page,
 		})
 		return
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "page-element-delete.html", struct {
 		WindowOptions ui.WindowOptions
+		Lang          string
 		Path          string
 		Element       string
 	}{
@@ -56,7 +60,9 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 			ID:         "shifu-page-element-delete",
 			TitleTpl:   "page-element-delete-window-title",
 			ContentTpl: "page-element-delete-window-content",
+			Lang:       lang,
 		},
+		Lang:    lang,
 		Path:    path,
 		Element: elementPath,
 	})

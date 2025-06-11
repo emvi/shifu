@@ -46,9 +46,11 @@ func MoveElement(w http.ResponseWriter, r *http.Request) {
 
 	setTemplateNames(page)
 	tpl.Get().Execute(w, "page-tree.html", struct {
+		Lang string
 		Path string
 		Page *cms.Content
 	}{
+		Lang: tpl.GetLanguage(r),
 		Path: path,
 		Page: page,
 	})

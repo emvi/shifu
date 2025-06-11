@@ -22,8 +22,10 @@ func Page(w http.ResponseWriter, r *http.Request) {
 	}
 
 	setTemplateNames(page)
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "page.html", struct {
 		WindowOptions ui.WindowOptions
+		Lang          string
 		Path          string
 		Page          *cms.Content
 	}{
@@ -32,7 +34,9 @@ func Page(w http.ResponseWriter, r *http.Request) {
 			TitleTpl:   "page-window-title",
 			ContentTpl: "page-window-content",
 			MinWidth:   300,
+			Lang:       lang,
 		},
+		Lang: lang,
 		Path: path,
 		Page: page,
 	})

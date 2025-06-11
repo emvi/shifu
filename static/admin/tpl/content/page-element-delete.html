@@ -1,17 +1,17 @@
 {{ define "page-element-delete-window-title" }}
-    <span>Element löschen</span>
+    <span>{{ i18n .Data.Lang "content_element_delete_window_title" }}</span>
 {{ end }}
 
 {{ define "page-element-delete-window-content" }}
-    <p>Bist du sicher, dass du das Element löschen möchtest?</p>
+    <p>{{ i18n .Data.Lang "content_element_delete_confirm" }}</p>
     <div class="shifu-toolbelt">
         <button hx-delete="{{ config.UI.Path }}/content/element/delete?path={{ .Data.Path }}&element={{ .Data.Element }}"
                 hx-target=".shifu-page-tree"
                 data-window="#shifu-page-element-delete">
-            Element löschen
+            {{ i18n .Data.Lang "content_element_delete_submit" }}
         </button>
         <button class="secondary shifu-window-close" hx-trigger="click">
-            Abbrechen
+            {{ i18n .Data.Lang "cancel" }}
         </button>
     </div>
 {{ end }}

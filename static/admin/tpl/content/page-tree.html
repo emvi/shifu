@@ -2,6 +2,7 @@
     {{ $path := index . "path" }}
     {{ $content := index . "content" }}
     {{ $parentPath := index . "p" }}
+    {{ $lang := index . "lang" }}
 
     {{ range $content, $elements := $content }}
         <div>
@@ -33,7 +34,7 @@
                                 <span>
                                     <img src="{{ config.UI.Path }}/static/icons/edit.svg"
                                          alt=""
-                                         title="Bearbeiten"
+                                         title="{{ i18n $lang "content_page_element_edit" }}"
                                          hx-get="{{ config.UI.Path }}/content/element/edit?path={{ $path }}&element={{ $p }}"
                                          hx-target="body"
                                          hx-swap="beforeend" />
@@ -41,7 +42,7 @@
                                     {{ if len $element.Content }}
                                         <img src="{{ config.UI.Path }}/static/icons/add.svg"
                                              alt=""
-                                             title="Element hinzufügen"
+                                             title="{{ i18n $lang "content_page_element_add" }}"
                                              hx-get="{{ config.UI.Path }}/content/element/add?path={{ $path }}&element={{ $p }}"
                                              hx-target="body"
                                              hx-swap="beforeend" />
@@ -49,20 +50,20 @@
 
                                     <img src="{{ config.UI.Path }}/static/icons/chevron.svg"
                                          alt=""
-                                         title="Nach oben verschieben"
+                                         title="{{ i18n $lang "content_page_element_move_up" }}"
                                          hx-post="{{ config.UI.Path }}/content/element/move?path={{ $path }}&element={{ $p }}&direction=up"
                                          hx-target=".shifu-page-tree"
                                          hx-swap="innerHTML" />
                                     <img src="{{ config.UI.Path }}/static/icons/chevron.svg"
                                          alt=""
-                                         title="Nach unten verschieben"
+                                         title="{{ i18n $lang "content_page_element_move_down" }}"
                                          style="transform: rotate(180deg);"
                                          hx-post="{{ config.UI.Path }}/content/element/move?path={{ $path }}&element={{ $p }}&direction=down"
                                          hx-target=".shifu-page-tree"
                                          hx-swap="innerHTML" />
                                     <img src="{{ config.UI.Path }}/static/icons/delete.svg"
                                          alt=""
-                                         title="Löschen"
+                                         title="{{ i18n $lang "content_page_element_delete" }}"
                                          hx-get="{{ config.UI.Path }}/content/element/delete?path={{ $path }}&element={{ $p }}"
                                          hx-target="body"
                                          hx-swap="beforeend" />
@@ -70,7 +71,7 @@
                             </summary>
 
                             {{ if len $element.Content }}
-                                {{ template "page-element-tree" dict "path" $path "content" $element.Content "p" (fmt "%s." $p) }}
+                                {{ template "page-element-tree" dict "path" $path "content" $element.Content "p" (fmt "%s." $p) "lang" $lang }}
                             {{ end }}
                         </details>
                     </li>
@@ -81,22 +82,22 @@
 {{ end }}
 
 <div style="margin-bottom: 8px;">
-    {{ template "page-element-tree" dict "path" .Data.Path "content" .Data.Page.Content "p" "" }}
+    {{ template "page-element-tree" dict "path" .Data.Path "content" .Data.Page.Content "p" "" "lang" .Data.Lang }}
 </div>
 <div class="shifu-toolbelt" style="flex-direction: column;align-items: flex-start;">
-    <button title="Element hinzufügen"
+    <button title="{{ i18n .Data.Lang "content_page_element_add" }}"
             hx-get="{{ config.UI.Path }}/content/element/add?path={{ .Data.Path }}"
             hx-target="body"
             hx-swap="beforeend">
         <img src="{{ config.UI.Path }}/static/icons/cube.svg" alt="" />
-        Element hinzufügen
+        {{ i18n .Data.Lang "content_page_element_add" }}
     </button>
-    <button title="Referenz hinzufügen"
+    <button title="{{ i18n .Data.Lang "content_page_reference_add" }}"
             hx-get="{{ config.UI.Path }}/content/reference/add?path={{ .Data.Path }}"
             hx-target="body"
             hx-swap="beforeend">
         <img src="{{ config.UI.Path }}/static/icons/frame.svg" alt="" />
-        Referenz hinzufügen
+        {{ i18n .Data.Lang "content_page_reference_add" }}
     </button>
 </div>
 

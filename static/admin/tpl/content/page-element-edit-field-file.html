@@ -30,17 +30,21 @@
                     hx-target="body"
                     hx-swap="beforeend"
                     id="select_{{ $prefix }}{{ $language }}.{{ $field }}">
-                Bild auswählen
+                {{ i18n .Data.Lang "content_element_edit_select_img" }}
             </button>
-            <button id="clear_{{ $prefix }}{{ $language }}.{{ $field }}">Bild entfernen</button>
+            <button id="clear_{{ $prefix }}{{ $language }}.{{ $field }}">
+                {{ i18n .Data.Lang "content_element_edit_remove_img" }}
+            </button>
         {{ else }}
             <button hx-get="{{ config.UI.Path }}/content/media?target=shifu-field-{{ replace $prefix "." "-" }}{{ $language }}-{{ $field }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $language }}&prefix={{ $prefix }}"
                     hx-target="body"
                     hx-swap="beforeend"
                     id="select_{{ $prefix }}{{ $language }}.{{ $field }}">
-                Datei auswählen
+                {{ i18n .Data.Lang "content_element_edit_select_file" }}
             </button>
-            <button id="clear_{{ $prefix }}{{ $language }}.{{ $field }}">Datei entfernen</button>
+            <button id="clear_{{ $prefix }}{{ $language }}.{{ $field }}">
+                {{ i18n .Data.Lang "content_element_edit_remove_file" }}
+            </button>
         {{ end }}
     </div>
 

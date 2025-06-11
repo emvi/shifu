@@ -79,6 +79,7 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 		if len(errors) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "page-reference-add-form.html", struct {
+				Lang       string
 				Path       string
 				Element    string
 				References []string
@@ -87,6 +88,7 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 				Position   string
 				Errors     map[string]string
 			}{
+				Lang:       tpl.GetLanguage(r),
 				Path:       path,
 				Element:    elementPath,
 				References: getReferences(),
@@ -112,17 +114,21 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 		setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "page-tree.html", struct {
+			Lang string
 			Path string
 			Page *cms.Content
 		}{
+			Lang: tpl.GetLanguage(r),
 			Path: path,
 			Page: page,
 		})
 		return
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "page-element-add.html", struct {
 		WindowOptions ui.WindowOptions
+		Lang          string
 		Path          string
 		Element       string
 		References    []string
@@ -136,7 +142,9 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 			TitleTpl:   "page-reference-add-window-title",
 			ContentTpl: "page-reference-add-window-content",
 			MinWidth:   300,
+			Lang:       lang,
 		},
+		Lang:       lang,
 		Path:       path,
 		Element:    elementPath,
 		References: getReferences(),

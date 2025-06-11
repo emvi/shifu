@@ -1,15 +1,16 @@
 {{ $copy := .Data.Copy }}
 {{ $data := .Data.Data }}
+{{ $lang := .Data.Lang }}
 
 {{ if and (not .Data.Override) .Data.Element.Ref }}
     <p style="color: var(--highlight);">
-        Dies ist eine Referenz. Änderungen überschreiben die Einstellungen nur auf dieser Seite.
+        {{ i18n .Data.Lang "content_element_reference_warn" }}
     </p>
     <p>
         <button hx-get="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}&override=true"
                 hx-target="body"
                 hx-swap="beforeend">
-            Original bearbeiten
+            {{ i18n .Data.Lang "content_element_reference_original" }}
         </button>
     </p>
 {{ end }}
@@ -34,7 +35,7 @@
             {{ range $lang := .Data.Languages }}
                 <div class="shifu-tabs-content">
                     <details class="collapsible" open>
-                        <summary>Inhalt</summary>
+                        <summary>{{ i18n $lang "content_element_reference_content" }}</summary>
 
                         {{ range $field, $config := index $cfg }}
                             {{
@@ -53,7 +54,7 @@
 
     {{ if len .Data.Config.Data }}
         <details class="collapsible">
-            <summary>Einstellungen</summary>
+            <summary>{{ i18n .Data.Lang "content_element_reference_data" }}</summary>
 
             {{ range $field, $cfg := .Data.Config.Data }}
                 {{
@@ -67,9 +68,9 @@
     {{ end }}
 
     <div class="shifu-toolbelt">
-        <input type="submit" value="Speichern" />
+        <input type="submit" value="{{ i18n .Data.Lang "content_element_reference_submit" }}" />
         <button class="secondary shifu-window-close" hx-trigger="click">
-            Abbrechen
+            {{ i18n .Data.Lang "cancel" }}
         </button>
     </div>
 </form>

@@ -107,8 +107,10 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		windowTitleTpl = "page-element-edit-window-title-override"
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "page-element-edit.html", struct {
 		WindowOptions ui.WindowOptions
+		Lang          string
 		Path          string
 		ElementPath   string
 		Element       *cms.Content
@@ -124,7 +126,9 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 			ContentTpl: "page-element-edit-window-content",
 			MinWidth:   680,
 			Overlay:    true,
+			Lang:       lang,
 		},
+		Lang:        lang,
 		Path:        path,
 		ElementPath: elementPath,
 		Element:     element,

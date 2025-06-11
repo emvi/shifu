@@ -8,7 +8,7 @@
       hx-target-4*="this"
       data-window="#shifu-page-element-add">
     <fieldset>
-        <label for="template">Template</label>
+        <label for="template">{{ i18n .Data.Lang "content_element_add_template" }}</label>
         <select name="template" id="template">
             {{ range .Data.Templates }}
                 <option value="{{ .Name }}" {{ if eq .Name $template }}selected{{ end }}>{{ .Label }}</option>
@@ -22,7 +22,7 @@
 
     {{  if len .Data.Positions }}
         <fieldset>
-            <label for="position">Position</label>
+            <label for="position">{{ i18n .Data.Lang "content_element_add_position" }}</label>
             <select name="position" id="position">
                 {{ range $key, $value := .Data.Positions }}
                     <option value="{{ $key }}" {{ if eq $key $position }}selected{{ end }}>{{ $value }}</option>
@@ -36,9 +36,9 @@
     {{ end }}
 
     <div class="shifu-toolbelt">
-        <input type="submit" value="Hinzufügen" />
+        <input type="submit" value="{{ i18n .Data.Lang "content_element_add_submit" }}" />
         <button class="secondary shifu-window-close" hx-trigger="click">
-            Abbrechen
+            {{ i18n .Data.Lang "cancel" }}
         </button>
     </div>
 </form>
