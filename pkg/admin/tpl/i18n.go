@@ -50,6 +50,10 @@ var (
 			"user_table_edit":                "Edit",
 			"user_table_tooltip_edit":        "Edit User",
 			"user_table_tooltip_delete":      "Delete User",
+
+			// database
+			"db_window_title": "Database",
+			"db_wip":          "Work in progress.",
 		},
 		"de": {
 			// window
@@ -94,6 +98,10 @@ var (
 			"user_table_edit":                "Bearbeiten",
 			"user_table_tooltip_edit":        "Nutzer bearbeiten",
 			"user_table_tooltip_delete":      "Nutzer löschen",
+
+			// database
+			"db_window_title": "Datenbank",
+			"db_wip":          "Nicht verfügbar.",
 		},
 	}
 )
