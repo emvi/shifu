@@ -1,14 +1,14 @@
 {{ define "media-file-delete-window-title" }}
-    <span>Dateien löschen</span>
+    <span>{{ i18n .Data.Lang "media_delete_file_window_title" }}</span>
 {{ end }}
 
 {{ define "media-file-delete-window-content" }}
     {{ if eq (len .Data.Name) 1 }}
-        <p>Bist du sicher, dass du die Datei "{{ index .Data.Name 0 }}" löschen möchtest?</p>
-        <p>Achtung! Beim Löschen können Links kaputtgehen!</p>
+        <p>{{ fmt (i18n .Data.Lang "media_delete_file_confirm") (index .Data.Name 0) }}</p>
+        <p>{{ i18n .Data.Lang "media_delete_file_warn" }}</p>
     {{ else }}
-        <p>Bist du dir sicher, dass du die folgenden Dateien löschen möchtest?</p>
-        <p>Achtung! Beim Löschen können Links kaputtgehen!</p>
+        <p>{{ i18n .Data.Lang "media_delete_file_confirm_all" }}</p>
+        <p>{{ i18n .Data.Lang "media_delete_file_warn" }}</p>
         <ul>
             {{ range .Data.Name }}
                 <li>{{ . }}</li>
@@ -20,10 +20,10 @@
         <button hx-delete="{{ config.UI.Path }}/media/file/delete?path={{ .Data.Path }}{{ range .Data.Name }}&name[]={{ . }}{{ end }}"
                 hx-target=".shifu-media-files"
                 data-window="#shifu-media-file-delete">
-            Datei löschen
+            {{ i18n .Data.Lang "media_delete_file_submit" }}
         </button>
         <button class="secondary shifu-window-close" hx-trigger="click">
-            Abbrechen
+            {{ i18n .Data.Lang "cancel" }}
         </button>
     </div>
 {{ end }}

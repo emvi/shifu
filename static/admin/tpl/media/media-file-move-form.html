@@ -13,9 +13,9 @@
     {{ end }}
 
     <div class="shifu-toolbelt">
-        <input type="submit" value="Verschieben" />
+        <input type="submit" value="{{ i18n .Data.Lang "media_move_file_submit" }}" />
         <button class="secondary shifu-window-close" hx-trigger="click">
-            Abbrechen
+            {{ i18n .Data.Lang "cancel" }}
         </button>
     </div>
 </form>

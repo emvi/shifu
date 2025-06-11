@@ -1,4 +1,4 @@
-<p>Achtung! Beim Bearbeiten können Links kaputtgehen!</p>
+<p>{{ i18n .Data.Lang "media_edit_file_warn" }}</p>
 <form method="post"
       hx-post="{{ config.UI.Path }}/media/file/edit?path={{ .Data.Path }}&name={{ .Data.Name }}"
       hx-swap="outerHTML"
@@ -6,7 +6,7 @@
       hx-target-4*="this"
       data-window="#shifu-media-file-edit">
     <fieldset>
-        <label for="name">Name</label>
+        <label for="name">{{ i18n .Data.Lang "media_edit_file_name" }}</label>
         <input type="text" name="name" id="name" value="{{ .Data.Name }}" autofocus />
 
         {{ if index .Data.Errors "name" }}
@@ -14,9 +14,9 @@
         {{ end }}
     </fieldset>
     <div class="shifu-toolbelt">
-        <input type="submit" value="Speichern" />
+        <input type="submit" value="{{ i18n .Data.Lang "media_edit_file_submit" }}" />
         <button class="secondary shifu-window-close" hx-trigger="click">
-            Abbrechen
+            {{ i18n .Data.Lang "cancel" }}
         </button>
     </div>
 </form>

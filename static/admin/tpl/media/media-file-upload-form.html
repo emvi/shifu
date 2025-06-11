@@ -6,7 +6,7 @@
       hx-target-4*="this"
       data-window="#shifu-media-file-upload">
     <fieldset>
-        <label for="files">Dateien</label>
+        <label for="files">{{ i18n .Data.Lang "media_upload_file_files" }}</label>
         <input type="file" name="files" id="files" multiple />
 
         {{ if index .Data.Errors "files" }}
@@ -14,7 +14,7 @@
         {{ end }}
 
         {{ if len .Data.ExistingFiles }}
-            <p>Die folgenden Dateien existieren bereits. Bitte ändere den Namen bevor du sie hochlädst oder wähle die Checkbox zum Überschreiben aus.</p>
+            <p>{{ i18n .Data.Lang "media_upload_file_existing_files" }}</p>
             <ul>
                 {{ range $filename := .Data.ExistingFiles }}
                     <li>{{ $filename }}</li>
@@ -23,13 +23,13 @@
         {{ end }}
     </fieldset>
     <fieldset>
-        <label for="overwrite">Dateien überschreiben</label>
+        <label for="overwrite">{{ i18n .Data.Lang "media_upload_file_overwrite" }}</label>
         <input type="checkbox" name="overwrite" id="overwrite" {{ if .Data.Overwrite }}checked{{ end }} />
     </fieldset>
     <div class="shifu-toolbelt">
-        <input type="submit" value="Hochladen" />
+        <input type="submit" value="{{ i18n .Data.Lang "media_upload_file_submit" }}" />
         <button class="secondary shifu-window-close" hx-trigger="click">
-            Abbrechen
+            {{ i18n .Data.Lang "cancel" }}
         </button>
     </div>
 </form>
