@@ -10,7 +10,7 @@
         <input type="text" name="name" id="name" value="{{ .Data.Name }}" autofocus />
 
         {{ if index .Data.Errors "name" }}
-            <span class="error">{{ index .Data.Errors "name" }}</span>
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "name") }}</span>
         {{ end }}
     </fieldset>
     <div class="shifu-toolbelt">

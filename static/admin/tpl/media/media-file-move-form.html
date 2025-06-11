@@ -9,7 +9,7 @@
     </div>
 
     {{ if index .Data.Errors "path" }}
-        <span class="error">{{ index .Data.Errors "path" }}</span>
+        <span class="error">{{ i18n .Data.Lang (index .Data.Errors "path") }}</span>
     {{ end }}
 
     <div class="shifu-toolbelt">

@@ -10,7 +10,7 @@
         <input type="file" name="files" id="files" multiple />
 
         {{ if index .Data.Errors "files" }}
-            <span class="error">{{ index .Data.Errors "files" }}</span>
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "files") }}</span>
         {{ end }}
 
         {{ if len .Data.ExistingFiles }}

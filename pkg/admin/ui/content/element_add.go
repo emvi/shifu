@@ -54,22 +54,22 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		template := strings.TrimSpace(r.FormValue("template"))
 		position := strings.TrimSpace(r.FormValue("position"))
-		errors := make(map[string]string)
+		errs := make(map[string]string)
 		t, found := tplCache.Get(template)
 
 		if !found {
-			errors["template"] = "the template does not exist"
+			errs["template"] = "the template does not exist"
 		}
 
 		if position != "" {
 			if _, found := positions[position]; !found {
-				errors["position"] = "the position does not exist"
+				errs["position"] = "the position does not exist"
 			}
 		} else {
 			position = "content"
 		}
 
-		if len(errors) > 0 {
+		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "page-element-add-form.html", struct {
 				Lang      string
@@ -88,7 +88,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 				Positions: positions,
 				Template:  template,
 				Position:  position,
-				Errors:    errors,
+				Errors:    errs,
 			})
 			return
 		}

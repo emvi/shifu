@@ -13,7 +13,7 @@
         <input type="text" name="name" id="name" value="{{ .Data.Name }}" autofocus />
 
         {{ if index .Data.Errors "name" }}
-            <span class="error">{{ index .Data.Errors "name" }}</span>
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "name") }}</span>
         {{ end }}
     </fieldset>
     <div class="shifu-form-group">
@@ -42,7 +42,7 @@
         </div>
 
         {{ if index .Data.Errors "path" }}
-            <span class="error">{{ index .Data.Errors "path" }}</span>
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "path") }}</span>
         {{ end }}
 
         <button id="shifu-pages-page-add-path">{{ i18n .Data.Lang "pages_create_page_add_path" }}</button>
@@ -56,7 +56,7 @@
         <input type="number" name="sitemap" id="sitemap" value="{{ .Data.Sitemap }}" step="0.01" />
 
         {{ if index .Data.Errors "sitemap" }}
-            <span class="error">{{ index .Data.Errors "sitemap" }}</span>
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "sitemap") }}</span>
         {{ end }}
     </fieldset>
     <fieldset>
@@ -85,7 +85,7 @@
         </div>
 
         {{ if index .Data.Errors "header" }}
-            <span class="error">{{ index .Data.Errors "header" }}</span>
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "header") }}</span>
         {{ end }}
 
         <button id="shifu-pages-page-add-header">{{ i18n .Data.Lang "pages_create_page_add_header" }}</button>

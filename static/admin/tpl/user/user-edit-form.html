@@ -11,7 +11,7 @@
         <input type="email" name="email" id="email" value="{{ .Data.Email }}" autofocus {{ if $admin }}disabled{{ end }} />
 
         {{ if index .Data.Errors "email" }}
-            <span class="error">{{ index .Data.Errors "email" }}</span>
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "email") }}</span>
         {{ end }}
     </fieldset>
     <fieldset>
@@ -19,7 +19,7 @@
         <input type="text" name="name" id="name" value="{{ .Data.Name }}" {{ if $admin }}disabled{{ end }} />
 
         {{ if index .Data.Errors "name" }}
-            <span class="error">{{ index .Data.Errors "name" }}</span>
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "name") }}</span>
         {{ end }}
     </fieldset>
     <fieldset>
@@ -27,7 +27,7 @@
         <input type="password" name="password" id="password" />
 
         {{ if index .Data.Errors "password" }}
-            <span class="error">{{ index .Data.Errors "password" }}</span>
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "password") }}</span>
         {{ end }}
     </fieldset>
     <fieldset>
@@ -35,7 +35,7 @@
         <input type="password" name="password_confirm" id="password_confirm" />
 
         {{ if index .Data.Errors "password_confirm" }}
-            <span class="error">{{ index .Data.Errors "password_confirm" }}</span>
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "password_confirm") }}</span>
         {{ end }}
     </fieldset>
     <div class="shifu-toolbelt">

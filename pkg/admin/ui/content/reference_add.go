@@ -55,7 +55,7 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		reference := strings.TrimSpace(r.FormValue("reference"))
 		position := strings.TrimSpace(r.FormValue("position"))
-		errors := make(map[string]string)
+		errs := make(map[string]string)
 		found := false
 
 		if err := db.Get().Get(&found, `SELECT EXISTS (SELECT 1 FROM "reference" WHERE name = ?)`, reference); err != nil {
@@ -65,18 +65,18 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if !found {
-			errors["reference"] = "the reference does not exist"
+			errs["reference"] = "the reference does not exist"
 		}
 
 		if position != "" {
 			if _, found := positions[position]; !found {
-				errors["position"] = "the position does not exist"
+				errs["position"] = "the position does not exist"
 			}
 		} else {
 			position = "content"
 		}
 
-		if len(errors) > 0 {
+		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "page-reference-add-form.html", struct {
 				Lang       string
@@ -95,7 +95,7 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 				Positions:  positions,
 				Reference:  reference,
 				Position:   position,
-				Errors:     errors,
+				Errors:     errs,
 			})
 			return
 		}

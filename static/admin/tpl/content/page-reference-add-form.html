@@ -16,7 +16,7 @@
         </select>
 
         {{ if index .Data.Errors "reference" }}
-            <span class="error">{{ index .Data.Errors "reference" }}</span>
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "reference") }}</span>
         {{ end }}
     </fieldset>
 
@@ -30,7 +30,7 @@
             </select>
 
             {{ if index .Data.Errors "position" }}
-                <span class="error">{{ index .Data.Errors "position" }}</span>
+                <span class="error">{{ i18n .Data.Lang (index .Data.Errors "position") }}</span>
             {{ end }}
         </fieldset>
     {{ end }}
