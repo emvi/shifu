@@ -85,11 +85,13 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "user-edit-form.html", struct {
+				Lang   string
 				User   *model.User
 				Email  string
 				Name   string
 				Errors map[string]string
 			}{
+				Lang:   tpl.GetLanguage(r),
 				User:   user,
 				Email:  email,
 				Name:   name,
@@ -131,10 +133,12 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tpl.Get().Execute(w, "user-list.html", struct {
+			Lang  string
 			Admin bool
 			Self  *model.User
 			User  []model.User
 		}{
+			Lang:  tpl.GetLanguage(r),
 			Admin: isAdmin,
 			Self:  middleware.GetUser(r),
 			User:  listUser(),
@@ -142,8 +146,10 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "user-edit.html", struct {
 		WindowOptions ui.WindowOptions
+		Lang          string
 		User          *model.User
 		Email         string
 		Name          string
@@ -155,7 +161,9 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 			ContentTpl: "user-edit-window-content",
 			MinWidth:   350,
 			Overlay:    true,
+			Lang:       lang,
 		},
+		Lang:  lang,
 		User:  user,
 		Email: email,
 		Name:  name,

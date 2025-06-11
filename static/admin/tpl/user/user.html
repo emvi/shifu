@@ -1,5 +1,5 @@
 {{ define "user-window-title" }}
-    <span>Nutzerverwaltung</span>
+    <span>{{ i18n .Data.Lang "user_window_title" }}</span>
 {{ end }}
 
 {{ define "user-window-content" }}
@@ -9,7 +9,7 @@
                     hx-target="body"
                     hx-swap="beforeend">
                 <img src="{{ config.UI.Path }}/static/icons/add.svg" alt="" />
-                Benutzer anlegen
+                {{ i18n .Data.Lang "user_add" }}
             </button>
         </div>
     {{ end }}

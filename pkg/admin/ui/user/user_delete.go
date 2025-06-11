@@ -46,10 +46,12 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tpl.Get().Execute(w, "user-list.html", struct {
+			Lang  string
 			Admin bool
 			Self  *model.User
 			User  []model.User
 		}{
+			Lang:  tpl.GetLanguage(r),
 			Admin: isAdmin,
 			Self:  middleware.GetUser(r),
 			User:  listUser(),
@@ -57,8 +59,10 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "user-delete.html", struct {
 		WindowOptions ui.WindowOptions
+		Lang          string
 		User          *model.User
 	}{
 		WindowOptions: ui.WindowOptions{
@@ -66,7 +70,9 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 			TitleTpl:   "user-delete-window-title",
 			ContentTpl: "user-delete-window-content",
 			Overlay:    true,
+			Lang:       lang,
 		},
+		Lang: lang,
 		User: user,
 	})
 }

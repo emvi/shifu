@@ -1,8 +1,8 @@
 {{ define "user-edit-window-title" }}
     {{ if .Data.User.ID }}
-        <span>Nutzer bearbeiten</span>
+        <span>{{ i18n .Data.Lang "user_edit_window_title" }}</span>
     {{ else }}
-        <span>Nutzer erstellen</span>
+        <span>{{ i18n .Data.Lang "user_create_window_title" }}</span>
     {{ end }}
 {{ end }}
 

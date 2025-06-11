@@ -10,6 +10,7 @@ var (
 		"en": {
 			// window
 			"close_window": "Close window",
+			"cancel":       "Cancel",
 
 			// login
 			"login_meta_title":       "Shifu Login",
@@ -29,10 +30,31 @@ var (
 			"database":  "Database",
 			"user":      "User",
 			"sign_out":  "Sign out",
+
+			// user management
+			"user_window_title":              "User",
+			"user_add":                       "Create User",
+			"user_delete_window_title":       "Delete User",
+			"user_delete_confirm":            "Are you sure you want to delete the user \"%s\"?",
+			"user_delete_submit":             "Delete User",
+			"user_edit_window_title":         "Edit User",
+			"user_create_window_title":       "Create User",
+			"user_edit_form_email":           "Email",
+			"user_edit_form_name":            "Name",
+			"user_edit_form_password":        "Password",
+			"user_edit_form_repeat_password": "Repeat Password",
+			"user_edit_form_submit":          "Save",
+			"user_table_id":                  "ID",
+			"user_table_email":               "Email",
+			"user_table_name":                "Name",
+			"user_table_edit":                "Edit",
+			"user_table_tooltip_edit":        "Edit User",
+			"user_table_tooltip_delete":      "Delete User",
 		},
 		"de": {
 			// window
 			"close_window": "Fenster schließen",
+			"cancel":       "Abbrechen",
 
 			// login
 			"login_meta_title":       "Shifu Anmeldung",
@@ -52,6 +74,26 @@ var (
 			"database":  "Datenbank",
 			"user":      "Nutzer",
 			"sign_out":  "Abmelden",
+
+			// user management
+			"user_window_title":              "Nutzerverwaltung",
+			"user_add":                       "Benutzer hinzufügen",
+			"user_delete_window_title":       "Nutzer löschen",
+			"user_delete_confirm":            "Bist du sicher, dass du den Benutzer \"%s\" löschen möchtest?",
+			"user_delete_submit":             "Nutzer löschen",
+			"user_edit_window_title":         "Nutzer bearbeiten",
+			"user_create_window_title":       "Nutzer erstellen",
+			"user_edit_form_email":           "Email",
+			"user_edit_form_name":            "Name",
+			"user_edit_form_password":        "Passwort",
+			"user_edit_form_repeat_password": "Passwort wiederholen",
+			"user_edit_form_submit":          "Speichern",
+			"user_table_id":                  "ID",
+			"user_table_email":               "Email",
+			"user_table_name":                "Name",
+			"user_table_edit":                "Bearbeiten",
+			"user_table_tooltip_edit":        "Nutzer bearbeiten",
+			"user_table_tooltip_delete":      "Nutzer löschen",
 		},
 	}
 )
