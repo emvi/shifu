@@ -20,6 +20,7 @@ import (
 
 // SavePageData is the data for the page form.
 type SavePageData struct {
+	Lang      string
 	Name      string
 	PagePath  map[string]string
 	Cache     bool
@@ -131,6 +132,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "pages-page-save-form.html", SavePageData{
+				Lang:      tpl.GetLanguage(r),
 				Name:      name,
 				PagePath:  pagePath,
 				Cache:     cache,
@@ -191,6 +193,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		lang := tpl.GetLanguage(r)
 		tpl.Get().Execute(w, "pages-tree-save.html", struct {
 			SavePageData
 			WindowOptions ui.WindowOptions
@@ -202,8 +205,10 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 				ContentTpl: "pages-page-save-window-content",
 				Overlay:    true,
 				MinWidth:   520,
+				Lang:       lang,
 			},
 			SavePageData: SavePageData{
+				Lang:      lang,
 				Name:      name,
 				PagePath:  pagePath,
 				Cache:     cache,
@@ -219,6 +224,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "pages-page-save.html", struct {
 		SavePageData
 		WindowOptions ui.WindowOptions
@@ -229,8 +235,10 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 			ContentTpl: "pages-page-save-window-content",
 			Overlay:    true,
 			MinWidth:   520,
+			Lang:       lang,
 		},
 		SavePageData: SavePageData{
+			Lang:      lang,
 			PagePath:  map[string]string{"de": "/"},
 			Path:      path,
 			Sitemap:   1,

@@ -31,15 +31,19 @@ func DeletePage(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tpl.Get().Execute(w, "pages-tree.html", struct {
+			Lang    string
 			Entries []Entry
 		}{
+			Lang:    tpl.GetLanguage(r),
 			Entries: listEntries(w),
 		})
 		return
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "pages-page-delete.html", struct {
 		WindowOptions ui.WindowOptions
+		Lang          string
 		Page          string
 		Path          string
 	}{
@@ -48,7 +52,9 @@ func DeletePage(w http.ResponseWriter, r *http.Request) {
 			TitleTpl:   "pages-page-delete-window-title",
 			ContentTpl: "pages-page-delete-window-content",
 			Overlay:    true,
+			Lang:       lang,
 		},
+		Lang: lang,
 		Page: getPageName(filepath.Base(path)),
 		Path: path,
 	})

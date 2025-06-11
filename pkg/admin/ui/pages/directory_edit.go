@@ -36,10 +36,12 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "pages-directory-edit-form.html", struct {
+				Lang   string
 				Name   string
 				Path   string
 				Errors map[string]string
 			}{
+				Lang:   tpl.GetLanguage(r),
 				Name:   name,
 				Path:   path,
 				Errors: errs,
@@ -49,15 +51,19 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "pages-tree.html", struct {
+			Lang    string
 			Entries []Entry
 		}{
+			Lang:    tpl.GetLanguage(r),
 			Entries: listEntries(w),
 		})
 		return
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "pages-directory-edit.html", struct {
 		WindowOptions ui.WindowOptions
+		Lang          string
 		Name          string
 		Path          string
 		Errors        map[string]string
@@ -67,7 +73,9 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 			TitleTpl:   "pages-directory-edit-window-title",
 			ContentTpl: "pages-directory-edit-window-content",
 			Overlay:    true,
+			Lang:       lang,
 		},
+		Lang: lang,
 		Name: filepath.Base(path),
 		Path: path,
 	})

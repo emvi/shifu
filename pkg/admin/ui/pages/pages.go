@@ -25,9 +25,11 @@ type Entry struct {
 }
 
 // Pages renders the pages management dialog.
-func Pages(w http.ResponseWriter, _ *http.Request) {
+func Pages(w http.ResponseWriter, r *http.Request) {
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "pages.html", struct {
 		WindowOptions ui.WindowOptions
+		Lang          string
 		Path          string
 		Entries       []Entry
 	}{
@@ -36,7 +38,9 @@ func Pages(w http.ResponseWriter, _ *http.Request) {
 			TitleTpl:   "pages-window-title",
 			ContentTpl: "pages-window-content",
 			MinWidth:   680,
+			Lang:       lang,
 		},
+		Lang:    lang,
 		Entries: listEntries(w),
 	})
 }

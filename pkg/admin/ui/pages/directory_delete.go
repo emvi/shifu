@@ -32,15 +32,19 @@ func DeleteDirectory(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tpl.Get().Execute(w, "pages-tree.html", struct {
+			Lang    string
 			Entries []Entry
 		}{
+			Lang:    tpl.GetLanguage(r),
 			Entries: listEntries(w),
 		})
 		return
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "pages-directory-delete.html", struct {
 		WindowOptions ui.WindowOptions
+		Lang          string
 		Directory     string
 		Path          string
 	}{
@@ -49,7 +53,9 @@ func DeleteDirectory(w http.ResponseWriter, r *http.Request) {
 			TitleTpl:   "pages-directory-delete-window-title",
 			ContentTpl: "pages-directory-delete-window-content",
 			Overlay:    true,
+			Lang:       lang,
 		},
+		Lang:      lang,
 		Directory: filepath.Base(path),
 		Path:      path,
 	})
