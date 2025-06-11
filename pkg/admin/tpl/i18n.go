@@ -11,6 +11,17 @@ var (
 			// window
 			"close_window": "Close window",
 
+			// login
+			"login_meta_title":       "Shifu Login",
+			"login_meta_description": "Sign in to Shifu CMS.",
+			"login_headline":         "Login",
+			"login_copyright":        "All rights reserved.",
+			"login_website_link":     "Visit Website",
+			"login_form_email":       "Email",
+			"login_form_password":    "Password",
+			"login_form_stay":        "Keep me logged in",
+			"login_form_submit":      "Sign in",
+
 			// toolbar
 			"edit_page": "Edit page",
 			"pages":     "Pages",
@@ -22,6 +33,17 @@ var (
 		"de": {
 			// window
 			"close_window": "Fenster schließen",
+
+			// login
+			"login_meta_title":       "Shifu Anmeldung",
+			"login_meta_description": "Bei Shifu CMS anmelden.",
+			"login_headline":         "Anmeldung",
+			"login_copyright":        "Alle Rechte vorbehalten.",
+			"login_website_link":     "Website besuchen",
+			"login_form_email":       "Email",
+			"login_form_password":    "Passwort",
+			"login_form_stay":        "Angemeldet bleiben",
+			"login_form_submit":      "Anmelden",
 
 			// toolbar
 			"edit_page": "Seite bearbeiten",

@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="copyright" content="Emvi Software GmbH" />
     <meta name="author" content="Emvi Software GmbH" />
-    <meta name="title" content="Shifu Login" />
-    <meta name="description" content="Shifu CMS Admin Login." />
+    <meta name="title" content="{{ i18n .Data.Lang "login_meta_title" }}" />
+    <meta name="description" content="{{ i18n .Data.Lang "login_meta_description" }}" />
     <link rel="icon" type="image/png" href="{{ config.UI.Path }}/static/favicon/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="{{ config.UI.Path }}/static/favicon/favicon.svg" />
     <link rel="shortcut icon" href="{{ config.UI.Path }}/static/favicon/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="{{ config.UI.Path }}/static/favicon/apple-touch-icon.png" />
     <link rel="manifest" href="{{ config.UI.Path }}/static/favicon/site.webmanifest" />
-    <title>Shifu Login</title>
+    <title>{{ i18n .Data.Lang "login_meta_title" }}</title>
     <link rel="prefetch" href="{{ config.UI.Path }}/static/fonts/Inter-Medium.woff2" as="font" type="font/woff2" />
     <link rel="prefetch" href="{{ config.UI.Path }}/static/fonts/Inter-Regular.woff2" as="font" type="font/woff2" />
     <link rel="prefetch" href="{{ config.UI.Path }}/static/fonts/InterDisplay-Medium.woff2" as="font" type="font/woff2" />
@@ -24,11 +24,11 @@
 </head>
 <body class="shifu" hx-ext="response-targets">
     <div class="shifu-box" style="width: 460px;">
-        <div class="shifu-box-title">Login</div>
+        <div class="shifu-box-title">{{ i18n .Data.Lang "login_headline" }}</div>
         <div class="shifu-box-content">
             {{ template "login-form.html" . }}
             <hr />
-            <small>&copy; {{ year }} Emvi Software GmbH / Alle Rechte vorbehalten. / <a href="https://emvi.com" target="_blank">Visit Website</a></small>
+            <small>&copy; {{ year }} Emvi Software GmbH / {{ i18n .Data.Lang "login_copyright" }} / <a href="https://emvi.com" target="_blank">{{ i18n .Data.Lang "login_website_link" }}</a></small>
         </div>
     </div>
 </body>
