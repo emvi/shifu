@@ -69,12 +69,14 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "media-file-move-form.html", struct {
+				Lang        string
 				Directories []Directory
 				Interactive bool
 				Path        string
 				Name        []string
 				Errors      map[string]string
 			}{
+				Lang:        tpl.GetLanguage(r),
 				Directories: listDirectories(w),
 				Interactive: false,
 				Path:        path,
@@ -86,20 +88,24 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "media-files.html", struct {
+			Lang            string
 			Path            string
 			Selection       bool
 			SelectionTarget string
 			SelectionField  SelectionField
 			Files           []File
 		}{
+			Lang:  tpl.GetLanguage(r),
 			Path:  path,
 			Files: listFiles(path),
 		})
 		return
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "media-file-move.html", struct {
 		WindowOptions   ui.WindowOptions
+		Lang            string
 		Directories     []Directory
 		Interactive     bool
 		Selection       bool
@@ -115,7 +121,9 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 			ContentTpl: "media-file-move-window-content",
 			Overlay:    true,
 			MinWidth:   400,
+			Lang:       lang,
 		},
+		Lang:        lang,
 		Directories: listDirectories(w),
 		Interactive: false,
 		Path:        path,

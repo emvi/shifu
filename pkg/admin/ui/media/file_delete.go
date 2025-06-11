@@ -47,20 +47,24 @@ func DeleteFile(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tpl.Get().Execute(w, "media-files.html", struct {
+			Lang            string
 			Path            string
 			Selection       bool
 			SelectionTarget string
 			SelectionField  SelectionField
 			Files           []File
 		}{
+			Lang:  tpl.GetLanguage(r),
 			Path:  path,
 			Files: listFiles(path),
 		})
 		return
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "media-file-delete.html", struct {
 		WindowOptions ui.WindowOptions
+		Lang          string
 		Path          string
 		Name          []string
 	}{
@@ -69,7 +73,9 @@ func DeleteFile(w http.ResponseWriter, r *http.Request) {
 			TitleTpl:   "media-file-delete-window-title",
 			ContentTpl: "media-file-delete-window-content",
 			Overlay:    true,
+			Lang:       lang,
 		},
+		Lang: lang,
 		Path: path,
 		Name: names,
 	})

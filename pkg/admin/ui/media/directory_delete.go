@@ -32,20 +32,24 @@ func DeleteDirectory(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tpl.Get().Execute(w, "media-tree.html", struct {
+			Lang            string
 			Directories     []Directory
 			Interactive     bool
 			Selection       bool
 			SelectionTarget string
 			SelectionField  SelectionField
 		}{
+			Lang:        tpl.GetLanguage(r),
 			Directories: listDirectories(w),
 			Interactive: true,
 		})
 		return
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "media-directory-delete.html", struct {
 		WindowOptions ui.WindowOptions
+		Lang          string
 		Directory     string
 		Path          string
 	}{
@@ -54,7 +58,9 @@ func DeleteDirectory(w http.ResponseWriter, r *http.Request) {
 			TitleTpl:   "media-directory-delete-window-title",
 			ContentTpl: "media-directory-delete-window-content",
 			Overlay:    true,
+			Lang:       lang,
 		},
+		Lang:      lang,
 		Directory: filepath.Base(path),
 		Path:      path,
 	})

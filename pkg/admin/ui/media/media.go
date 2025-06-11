@@ -24,9 +24,11 @@ type Directory struct {
 }
 
 // Media renders the media management dialog.
-func Media(w http.ResponseWriter, _ *http.Request) {
+func Media(w http.ResponseWriter, r *http.Request) {
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "media.html", struct {
 		WindowOptions   ui.WindowOptions
+		Lang            string
 		Path            string
 		Directories     []Directory
 		Files           []File
@@ -40,7 +42,9 @@ func Media(w http.ResponseWriter, _ *http.Request) {
 			TitleTpl:   "media-window-title",
 			ContentTpl: "media-window-content",
 			MinWidth:   800,
+			Lang:       lang,
 		},
+		Lang:        lang,
 		Directories: listDirectories(w),
 		Interactive: true,
 	})

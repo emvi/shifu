@@ -1,9 +1,10 @@
+{{ $lang := .Data.Lang }}
 {{ $selection := .Data.Selection }}
 {{ $target := .Data.SelectionTarget }}
 {{ $type := .Data.SelectionField.Type }}
 {{ $label := .Data.SelectionField.Label }}
 {{ $field := .Data.SelectionField.Field }}
-{{ $lang := .Data.SelectionField.Lang }}
+{{ $language := .Data.SelectionField.Language }}
 {{ $prefix := .Data.SelectionField.Prefix }}
 
 {{ if .Data.Path }}
@@ -15,7 +16,7 @@
                     hx-target="body"
                     hx-swap="beforeend">
                 <img src="{{ config.UI.Path }}/static/icons/upload.svg" alt="" />
-                Dateien hochladen
+                {{ i18n .Data.Lang "media_files_upload_files" }}
             </button>
 
             {{ if len .Data.Files }}
@@ -24,14 +25,14 @@
                         hx-target="body"
                         hx-swap="beforeend">
                     <img src="{{ config.UI.Path }}/static/icons/move.svg" alt="" />
-                    Dateien verschieben
+                    {{ i18n .Data.Lang "media_files_move_files" }}
                 </button>
                 <button hx-get="{{ config.UI.Path }}/media/file/delete?path={{ $path }}"
                         hx-include=".shifu-multi-file-select"
                         hx-target="body"
                         hx-swap="beforeend">
                     <img src="{{ config.UI.Path }}/static/icons/delete.svg" alt="" />
-                    Dateien löschen
+                    {{ i18n .Data.Lang "media_files_delete_files" }}
                 </button>
             {{ end }}
         </div>
@@ -40,13 +41,13 @@
     {{ if len .Data.Files }}
         {{ if $selection }}
             <form method="post"
-                  hx-post="{{ config.UI.Path }}/content/media?path={{ $path }}&target={{ $target }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $lang }}&prefix={{ $prefix }}"
+                  hx-post="{{ config.UI.Path }}/content/media?path={{ $path }}&target={{ $target }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $language }}&prefix={{ $prefix }}"
                   hx-swap="outerHTML"
                   hx-target="#{{ $target }}"
                   hx-target-4*=".shifu-media-files"
                   data-window="#shifu-media-selection">
                 <div class="shifu-toolbelt">
-                    <button>Auswählen</button>
+                    <button>{{ i18n .Data.Lang "media_files_select" }}</button>
                 </div>
         {{ end }}
 
@@ -59,12 +60,12 @@
                     </td>
                 {{ end }}
 
-                <td>Vorschau</td>
-                <td style="width: 100%;">Dateiname</td>
-                <td>Größe</td>
+                <td>{{ i18n .Data.Lang "media_files_preview" }}</td>
+                <td style="width: 100%;">{{ i18n .Data.Lang "media_files_filename" }}</td>
+                <td>{{ i18n .Data.Lang "media_files_size" }}</td>
 
                 {{ if not $selection }}
-                    <td>Bearbeiten</td>
+                    <td>{{ i18n .Data.Lang "media_files_edit" }}</td>
                 {{ end }}
             </tr>
             </thead>
@@ -93,19 +94,19 @@
                                     <a href="{{ if $file.Preview }}{{ $file.Preview }}{{ else }}{{ $file.Path }}{{ end }}" target="_blank" class="button" title="Datei öffnen">
                                         <img src="{{ config.UI.Path }}/static/icons/view.svg" alt="" style="width: 12px;height: 12px;" />
                                     </a>
-                                    <button title="Datei umbenennen"
+                                    <button title="{{ i18n $lang "media_files_rename_file" }}"
                                             hx-get="{{ config.UI.Path }}/media/file/edit?path={{ $path }}&name={{ $file.Name }}"
                                             hx-target="body"
                                             hx-swap="beforeend">
                                         <img src="{{ config.UI.Path }}/static/icons/edit.svg" alt="" />
                                     </button>
-                                    <button title="Dateien verschieben"
+                                    <button title="{{ i18n $lang "media_files_move_file" }}"
                                             hx-get="{{ config.UI.Path }}/media/file/move?path={{ $path }}&name[]={{ $file.Name }}"
                                             hx-target="body"
                                             hx-swap="beforeend">
                                         <img src="{{ config.UI.Path }}/static/icons/move.svg" alt="" />
                                     </button>
-                                    <button title="Dateien löschen"
+                                    <button title="{{ i18n $lang "media_files_delete_file" }}"
                                             hx-get="{{ config.UI.Path }}/media/file/delete?path={{ $path }}&name[]={{ $file.Name }}"
                                             hx-target="body"
                                             hx-swap="beforeend">
@@ -121,7 +122,7 @@
 
         {{ if $selection }}
                 <div class="shifu-toolbelt">
-                    <button>Auswählen</button>
+                    <button>{{ i18n .Data.Lang "media_files_select" }}</button>
                 </div>
                 <input type="hidden" name="file" value="" id="shifu-media-file-selection-path" />
                 <script>
@@ -157,8 +158,8 @@
             </script>
         {{ end }}
     {{ else }}
-        <p>Der Ordner ist leer.</p>
+        <p>{{ i18n .Data.Lang "media_files_empty" }}</p>
     {{ end }}
 {{ else }}
-    <p>Kein Ordner ausgewählt.</p>
+    <p>{{ i18n .Data.Lang "media_files_no_directory" }}</p>
 {{ end }}

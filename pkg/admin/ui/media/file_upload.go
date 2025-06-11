@@ -86,11 +86,13 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "media-file-upload-form.html", struct {
+				Lang          string
 				Path          string
 				Overwrite     bool
 				Errors        map[string]string
 				ExistingFiles []string
 			}{
+				Lang:          tpl.GetLanguage(r),
 				Path:          path,
 				Overwrite:     overwrite,
 				Errors:        errs,
@@ -101,20 +103,24 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "media-files.html", struct {
+			Lang            string
 			Path            string
 			Selection       bool
 			SelectionTarget string
 			SelectionField  SelectionField
 			Files           []File
 		}{
+			Lang:  tpl.GetLanguage(r),
 			Path:  path,
 			Files: listFiles(path),
 		})
 		return
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "media-file-upload.html", struct {
 		WindowOptions ui.WindowOptions
+		Lang          string
 		Path          string
 		Overwrite     bool
 		Errors        map[string]string
@@ -126,7 +132,9 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 			ContentTpl: "media-file-upload-window-content",
 			Overlay:    true,
 			MinWidth:   460,
+			Lang:       lang,
 		},
+		Lang: lang,
 		Path: path,
 	})
 }

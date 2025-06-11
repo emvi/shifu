@@ -46,10 +46,12 @@ func EditFile(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "media-file-edit-form.html", struct {
+				Lang   string
 				Path   string
 				Name   string
 				Errors map[string]string
 			}{
+				Lang:   tpl.GetLanguage(r),
 				Path:   path,
 				Name:   newName,
 				Errors: errs,
@@ -59,20 +61,24 @@ func EditFile(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "media-files.html", struct {
+			Lang            string
 			Path            string
 			Selection       bool
 			SelectionTarget string
 			SelectionField  SelectionField
 			Files           []File
 		}{
+			Lang:  tpl.GetLanguage(r),
 			Path:  path,
 			Files: listFiles(path),
 		})
 		return
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "media-file-edit.html", struct {
 		WindowOptions ui.WindowOptions
+		Lang          string
 		Path          string
 		Name          string
 		Errors        map[string]string
@@ -83,7 +89,9 @@ func EditFile(w http.ResponseWriter, r *http.Request) {
 			ContentTpl: "media-file-edit-window-content",
 			Overlay:    true,
 			MinWidth:   400,
+			Lang:       lang,
 		},
+		Lang: lang,
 		Path: path,
 		Name: name,
 	})

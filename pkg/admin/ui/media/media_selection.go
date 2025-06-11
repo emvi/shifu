@@ -8,7 +8,7 @@ import (
 )
 
 type SelectionField struct {
-	Type, Label, Field, Lang, Prefix, Value string
+	Lang, Type, Label, Field, Language, Prefix, Value string
 }
 
 // Selection renders the media selection dialog.
@@ -23,21 +23,24 @@ func Selection(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Header().Add("HX-Reswap", "innerHTML")
 			tpl.Get().Execute(w, "media-files.html", struct {
+				Lang            string
 				Path            string
 				Selection       bool
 				SelectionTarget string
 				SelectionField  SelectionField
 				Files           []File
 			}{
+				Lang:            tpl.GetLanguage(r),
 				Path:            path,
 				Selection:       true,
 				SelectionTarget: target,
 				SelectionField: SelectionField{
-					Type:   r.URL.Query().Get("type"),
-					Label:  r.URL.Query().Get("label"),
-					Field:  r.URL.Query().Get("field"),
-					Lang:   r.URL.Query().Get("lang"),
-					Prefix: r.URL.Query().Get("prefix"),
+					Lang:     tpl.GetLanguage(r),
+					Type:     r.URL.Query().Get("type"),
+					Label:    r.URL.Query().Get("label"),
+					Field:    r.URL.Query().Get("field"),
+					Language: r.URL.Query().Get("lang"),
+					Prefix:   r.URL.Query().Get("prefix"),
 				},
 				Files: listFiles(path),
 			})
@@ -45,18 +48,21 @@ func Selection(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tpl.Get().Execute(w, "page-element-edit-field-file-data.html", SelectionField{
-			Type:   r.URL.Query().Get("type"),
-			Label:  r.URL.Query().Get("label"),
-			Field:  r.URL.Query().Get("field"),
-			Lang:   r.URL.Query().Get("lang"),
-			Prefix: r.URL.Query().Get("prefix"),
-			Value:  file,
+			Lang:     tpl.GetLanguage(r),
+			Type:     r.URL.Query().Get("type"),
+			Label:    r.URL.Query().Get("label"),
+			Field:    r.URL.Query().Get("field"),
+			Language: r.URL.Query().Get("lang"),
+			Prefix:   r.URL.Query().Get("prefix"),
+			Value:    file,
 		})
 		return
 	}
 
+	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "media.html", struct {
 		WindowOptions   ui.WindowOptions
+		Lang            string
 		Path            string
 		Directories     []Directory
 		Files           []File
@@ -71,7 +77,9 @@ func Selection(w http.ResponseWriter, r *http.Request) {
 			ContentTpl: "media-window-content",
 			MinWidth:   800,
 			Overlay:    true,
+			Lang:       lang,
 		},
+		Lang:            lang,
 		Directories:     listDirectories(w),
 		Selection:       true,
 		SelectionTarget: target,
