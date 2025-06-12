@@ -61,6 +61,16 @@
                                          hx-post="{{ config.UI.Path }}/content/element/move?path={{ $path }}&element={{ $p }}&direction=down"
                                          hx-target=".shifu-page-tree"
                                          hx-swap="innerHTML" />
+
+                                    {{ if not $element.Ref }}
+                                        <img src="{{ config.UI.Path }}/static/icons/frame.svg"
+                                             alt=""
+                                             title="{{ i18n $lang "content_page_element_reference" }}"
+                                             hx-get="{{ config.UI.Path }}/content/element/reference?path={{ $path }}&element={{ $p }}"
+                                             hx-target="body"
+                                             hx-swap="beforeend" />
+                                    {{ end }}
+
                                     <img src="{{ config.UI.Path }}/static/icons/delete.svg"
                                          alt=""
                                          title="{{ i18n $lang "content_page_element_delete" }}"

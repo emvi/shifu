@@ -57,11 +57,12 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 	if element.Tpl != "" {
 		config, found = tplCache.Get(element.Tpl)
 	} else {
+		// FIXME
 		config, found = tplCache.Get(element.Ref)
 	}
 
 	if !found {
-		slog.Error("Template configuration not found", "name", element.Tpl)
+		slog.Error("Template configuration not found", "name", element.Tpl, "ref", element.Ref)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}

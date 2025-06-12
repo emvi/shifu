@@ -143,6 +143,7 @@ var i18n = map[string]map[string]string{
 		"content_page_element_add":                    "Add Element",
 		"content_page_element_move_up":                "Move Up",
 		"content_page_element_move_down":              "Move Down",
+		"content_page_element_reference":              "Create Reference",
 		"content_page_element_delete":                 "Delete Element",
 		"content_page_reference_add":                  "Add Reference",
 		"content_reference_window_title":              "Add Reference",
@@ -167,6 +168,9 @@ var i18n = map[string]map[string]string{
 		"content_element_reference_content":           "Content",
 		"content_element_reference_data":              "Settings",
 		"content_element_reference_submit":            "Save",
+		"content_reference_create_window_title":       "Create Reference",
+		"content_reference_create_name":               "Name",
+		"content_reference_create_submit":             "Create Reference",
 
 		// errors
 		"the reference does not exist":                            "The referenced element does not exist.",
@@ -196,6 +200,7 @@ var i18n = map[string]map[string]string{
 		"error parsing form":                                      "Error parsing form.",
 		"user not found":                                          "The user for the given email address and password was not found.",
 		"error creating session":                                  "Error creating session.",
+		"a template or reference with this name already exists":   "A template or reference with this name already exists.",
 	},
 	"de": {
 		// window
@@ -334,6 +339,7 @@ var i18n = map[string]map[string]string{
 		"content_page_element_add":                    "Element hinzufügen",
 		"content_page_element_move_up":                "Nach oben verschieben",
 		"content_page_element_move_down":              "Nach unten verschieben",
+		"content_page_element_reference":              "Referenz erstellen",
 		"content_page_element_delete":                 "Element löschen",
 		"content_page_reference_add":                  "Referenz hinzufügen",
 		"content_reference_window_title":              "Referenz hinzufügen",
@@ -358,6 +364,9 @@ var i18n = map[string]map[string]string{
 		"content_element_reference_content":           "Inhalt",
 		"content_element_reference_data":              "Einstellungen",
 		"content_element_reference_submit":            "Speichern",
+		"content_reference_create_window_title":       "Referenz erstellen",
+		"content_reference_create_name":               "Name",
+		"content_reference_create_submit":             "Referenz erstellen",
 
 		// errors
 		"the reference does not exist":                            "Das referenzierte Element existiert nicht.",
@@ -387,6 +396,7 @@ var i18n = map[string]map[string]string{
 		"error parsing form":                                      "Fehler beim Parsen des Formulars.",
 		"user not found":                                          "Der Benutzer für die angegebene E-Mail-Adresse und das Passwort wurde nicht gefunden.",
 		"error creating session":                                  "Fehler beim Erstellen der Sitzung.",
+		"a template or reference with this name already exists":   "Es existiert bereits ein Template oder eine Referenz mit diesem Namen.",
 	},
 }
 

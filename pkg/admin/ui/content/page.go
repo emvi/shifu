@@ -55,6 +55,7 @@ func setTemplateNames(content *cms.Content) {
 			if content.Content[k][i].Tpl != "" {
 				name, found = tplCache.Get(content.Content[k][i].Tpl)
 			} else {
+				// FIXME
 				name, found = tplCache.Get(content.Content[k][i].Ref)
 			}
 
