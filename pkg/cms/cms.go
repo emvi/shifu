@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"reflect"
 	"slices"
 	"strings"
 	"sync"
@@ -248,7 +249,9 @@ func (cms *CMS) renderContent(args map[string]string, page *Content, content []C
 			}
 
 			for k, v := range c.Data {
-				ref.Data[k] = v
+				if !cms.isZeroValue(v) {
+					ref.Data[k] = v
+				}
 			}
 
 			if ref.Copy == nil {
@@ -646,4 +649,12 @@ func (cms *CMS) getNotFoundPath(r *http.Request) string {
 	}
 
 	return ""
+}
+
+func (cms *CMS) isZeroValue(v any) bool {
+	if v == nil {
+		return true
+	}
+
+	return reflect.ValueOf(v).IsZero()
 }
