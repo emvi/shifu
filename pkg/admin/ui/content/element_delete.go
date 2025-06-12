@@ -60,6 +60,7 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 			ID:         "shifu-page-element-delete",
 			TitleTpl:   "page-element-delete-window-title",
 			ContentTpl: "page-element-delete-window-content",
+			Overlay:    true,
 			Lang:       lang,
 		},
 		Lang:    lang,

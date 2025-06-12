@@ -11,6 +11,12 @@ import (
 	"strings"
 )
 
+// Ref is a referenced element to be displayed in the selection.
+type Ref struct {
+	Name  string
+	Label string
+}
+
 // AddReference adds an existing reference to the parent element.
 func AddReference(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
@@ -82,7 +88,7 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 				Lang       string
 				Path       string
 				Element    string
-				References []string
+				References []Ref
 				Positions  map[string]string
 				Reference  string
 				Position   string
@@ -131,7 +137,7 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 		Lang          string
 		Path          string
 		Element       string
-		References    []string
+		References    []Ref
 		Positions     map[string]string
 		Reference     string
 		Position      string
@@ -142,6 +148,7 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 			TitleTpl:   "page-reference-add-window-title",
 			ContentTpl: "page-reference-add-window-content",
 			MinWidth:   300,
+			Overlay:    true,
 			Lang:       lang,
 		},
 		Lang:       lang,
@@ -152,23 +159,37 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func getReferences() []string {
+func getReferences() []Ref {
 	rows, err := db.Get().Query(`SELECT "name" FROM "reference" ORDER BY "name"`)
 
 	if err != nil {
 		slog.Error("Error reading references", "error", err)
 	}
 
-	references := make([]string, 0)
+	references := make([]Ref, 0)
 
 	for rows.Next() {
-		var name string
+		var entity Ref
 
-		if err := rows.Scan(&name); err != nil {
+		if err := rows.Scan(&entity.Name); err != nil {
 			slog.Error("Error reading reference", "error", err)
 		}
 
-		references = append(references, name)
+		// FIXME optimize
+		ref, err := loadRef(entity.Name)
+
+		if err != nil {
+			slog.Error("Error loading reference file", "error", err)
+			continue
+		}
+
+		name, found := tplCache.Get(ref.Tpl)
+
+		if found {
+			entity.Label = name.Label
+		}
+
+		references = append(references, entity)
 	}
 
 	return references

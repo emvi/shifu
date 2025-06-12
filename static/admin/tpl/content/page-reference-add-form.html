@@ -11,7 +11,7 @@
         <label for="reference">{{ i18n .Data.Lang "content_reference_reference" }}</label>
         <select name="reference" id="reference">
             {{ range .Data.References }}
-                <option value="{{ . }}" {{ if eq . $reference }}selected{{ end }}>{{ . }}</option>
+                <option value="{{ .Name }}" {{ if eq .Name $reference }}selected{{ end }}>{{ .Label }} ({{ .Name }})</option>
             {{ end }}
         </select>
 

@@ -1,6 +1,7 @@
 package content
 
 import (
+	"fmt"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
@@ -55,6 +56,10 @@ func setTemplateNames(content *cms.Content) {
 
 			if content.Content[k][i].Tpl != "" {
 				name, found = tplCache.Get(content.Content[k][i].Tpl)
+
+				if found {
+					content.Content[k][i].Tpl = name.Label
+				}
 			} else {
 				// FIXME optimize
 				ref, err := loadRef(content.Content[k][i].Ref)
@@ -65,10 +70,10 @@ func setTemplateNames(content *cms.Content) {
 				}
 
 				name, found = tplCache.Get(ref.Tpl)
-			}
 
-			if found {
-				content.Content[k][i].Tpl = name.Label
+				if found {
+					content.Content[k][i].Tpl = fmt.Sprintf("%s (%s)", name.Label, name.Name)
+				}
 			}
 
 			setTemplateNames(&content.Content[k][i])

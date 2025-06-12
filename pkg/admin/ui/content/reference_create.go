@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/emvi/shifu/pkg/admin/db"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
@@ -116,6 +117,7 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 			TitleTpl:   "page-element-reference-window-title",
 			ContentTpl: "page-element-reference-window-content",
 			MinWidth:   300,
+			Overlay:    true,
 			Lang:       lang,
 		},
 		Lang:    lang,
@@ -171,6 +173,10 @@ func createReference(element *cms.Content, name string) error {
 	}
 
 	if err := os.WriteFile(filepath.Join(cfg.Get().BaseDir, refsDir, fmt.Sprintf("%s.json", name)), out, 0644); err != nil {
+		return err
+	}
+
+	if _, err := db.Get().Exec(`INSERT INTO "reference" ("name") VALUES (?)`, name); err != nil {
 		return err
 	}
 

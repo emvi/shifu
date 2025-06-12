@@ -135,6 +135,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 			TitleTpl:   "page-element-add-window-title",
 			ContentTpl: "page-element-add-window-content",
 			MinWidth:   300,
+			Overlay:    true,
 			Lang:       lang,
 		},
 		Lang:      lang,
