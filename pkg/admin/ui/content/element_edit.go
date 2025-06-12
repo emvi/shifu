@@ -57,8 +57,15 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 	if element.Tpl != "" {
 		config, found = tplCache.Get(element.Tpl)
 	} else {
-		// FIXME
-		config, found = tplCache.Get(element.Ref)
+		ref, err := loadRef(element.Ref)
+
+		if err != nil {
+			slog.Error("Error loading reference file", "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		config, found = tplCache.Get(ref.Tpl)
 	}
 
 	if !found {

@@ -32,7 +32,7 @@
                 {{ end }}
             </div>
 
-            {{ range $lang := .Data.Languages }}
+            {{ range $language := .Data.Languages }}
                 <div class="shifu-tabs-content">
                     <details class="collapsible" open>
                         <summary>{{ i18n $lang "content_element_reference_content" }}</summary>
@@ -40,9 +40,10 @@
                         {{ range $field, $config := index $cfg }}
                             {{
                                 template "page-element-edit-fields.html"
-                                dict "field" $field
+                                dict "lang" $lang
+                                     "field" $field
                                      "cfg" $config
-                                     "lang" $lang
+                                     "language" $language
                                      "copy" $copy
                             }}
                         {{ end }}
@@ -59,7 +60,8 @@
             {{ range $field, $cfg := .Data.Config.Data }}
                 {{
                     template "page-element-edit-fields.html"
-                    dict "field" $field
+                    dict "lang" $lang
+                         "field" $field
                          "cfg" $cfg
                          "data" $data
                 }}

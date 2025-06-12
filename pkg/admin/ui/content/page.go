@@ -6,6 +6,7 @@ import (
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
 	"github.com/emvi/shifu/pkg/cfg"
 	"github.com/emvi/shifu/pkg/cms"
+	"log/slog"
 	"net/http"
 	"path/filepath"
 )
@@ -55,8 +56,15 @@ func setTemplateNames(content *cms.Content) {
 			if content.Content[k][i].Tpl != "" {
 				name, found = tplCache.Get(content.Content[k][i].Tpl)
 			} else {
-				// FIXME
-				name, found = tplCache.Get(content.Content[k][i].Ref)
+				// FIXME optimize
+				ref, err := loadRef(content.Content[k][i].Ref)
+
+				if err != nil {
+					slog.Error("Error loading reference file", "error", err)
+					continue
+				}
+
+				name, found = tplCache.Get(ref.Tpl)
 			}
 
 			if found {

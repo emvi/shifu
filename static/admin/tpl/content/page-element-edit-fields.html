@@ -1,22 +1,25 @@
 {{ $field := index . "field" }}
 {{ $cfg := index . "cfg" }}
 {{ $lang := index . "lang" }}
+{{ $language := index . "language" }}
 
-{{ if $lang }}
+{{ if $language }}
     {{ $copy := index . "copy" }}
     {{
         template "page-element-edit-field.html"
-        dict "cfg" $cfg
+        dict "lang" $lang
+             "cfg" $cfg
              "field" $field
-             "lang" $lang
+             "language" $language
              "prefix" "copy."
-             "value" (index $copy (fmt "copy.%s.%s" $lang $field))
+             "value" (index $copy (fmt "copy.%s.%s" $language $field))
     }}
 {{ else }}
     {{ $data := index . "data" }}
     {{
         template "page-element-edit-field.html"
-        dict "cfg" $cfg
+        dict "lang" $lang
+             "cfg" $cfg
              "field" $field
              "prefix" "data"
              "value" (index $data (fmt "data.%s" $field))
