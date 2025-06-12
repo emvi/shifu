@@ -4,16 +4,17 @@
 {{ $field := index . "field" }}
 {{ $language := index . "language" }}
 {{ $prefix := index . "prefix" }}
+{{ $idPrefix := index . "idPrefix" }}
 {{ $value := index . "value" }}
 
-<div id="shifu-field-{{ replace $prefix "." "-" }}{{ $language }}-{{ $field }}">
-    <label for="{{ $prefix }}{{ $language }}.{{ $field }}">{{ $label }}</label>
-    <input id="{{ $prefix }}{{ $language }}.{{ $field }}" type="hidden" name="{{ $prefix }}{{ $language }}.{{ $field }}" value="{{ $value }}" />
+<div id="shifu-field-{{ $idPrefix }}{{ replace $prefix "." "-" }}{{ $language }}-{{ $field }}">
+    <label for="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">{{ $label }}</label>
+    <input id="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}" type="hidden" name="{{ $prefix }}{{ $language }}.{{ $field }}" value="{{ $value }}" />
 
     {{ if $value }}
         {{ if eq $type "img" }}
             <figure>
-                <img id="img_{{ $prefix }}{{ $language }}.{{ $field }}"
+                <img id="img_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}"
                      src="{{ $value }}"
                      alt="{{ $label }}"
                      style="max-width: 33%;max-height: 150px;" />
@@ -26,23 +27,23 @@
 
     <div class="shifu-toolbelt" style="justify-content: flex-start;">
         {{ if eq $type "img" }}
-            <button hx-get="{{ config.UI.Path }}/content/media?target=shifu-field-{{ replace $prefix "." "-" }}{{ $language }}-{{ $field }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $language }}&prefix={{ $prefix }}"
+            <button hx-get="{{ config.UI.Path }}/content/media?target=shifu-field-{{ $idPrefix }}{{ replace $prefix "." "-" }}{{ $language }}-{{ $field }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $language }}&prefix={{ $prefix }}"
                     hx-target="body"
                     hx-swap="beforeend"
-                    id="select_{{ $prefix }}{{ $language }}.{{ $field }}">
+                    id="select_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">
                 {{ i18n $lang "content_element_edit_select_img" }}
             </button>
-            <button id="clear_{{ $prefix }}{{ $language }}.{{ $field }}">
+            <button id="clear_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">
                 {{ i18n $lang "content_element_edit_remove_img" }}
             </button>
         {{ else }}
-            <button hx-get="{{ config.UI.Path }}/content/media?target=shifu-field-{{ replace $prefix "." "-" }}{{ $language }}-{{ $field }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $language }}&prefix={{ $prefix }}"
+            <button hx-get="{{ config.UI.Path }}/content/media?target=shifu-field-{{ $idPrefix }}{{ replace $prefix "." "-" }}{{ $language }}-{{ $field }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $language }}&prefix={{ $prefix }}"
                     hx-target="body"
                     hx-swap="beforeend"
-                    id="select_{{ $prefix }}{{ $language }}.{{ $field }}">
+                    id="select_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">
                 {{ i18n $lang "content_element_edit_select_file" }}
             </button>
-            <button id="clear_{{ $prefix }}{{ $language }}.{{ $field }}">
+            <button id="clear_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">
                 {{ i18n $lang "content_element_edit_remove_file" }}
             </button>
         {{ end }}

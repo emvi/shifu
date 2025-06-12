@@ -1,8 +1,9 @@
 {{ $copy := .Data.Copy }}
 {{ $data := .Data.Data }}
 {{ $lang := .Data.Lang }}
+{{ $override := .Data.Override }}
 
-{{ if and (not .Data.Override) .Data.Element.Ref }}
+{{ if and (not $override) .Data.Element.Ref }}
     <p style="color: var(--highlight);">
         {{ i18n .Data.Lang "content_element_reference_warn" }}
     </p>
@@ -16,10 +17,10 @@
 {{ end }}
 
 <form method="post"
-      hx-post="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}{{ if .Data.Override }}&override=true{{end}}"
+      hx-post="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}{{ if $override }}&override=true{{end}}"
       hx-swap="none"
       hx-target-4*="this"
-      data-window="#shifu-page-element-edit{{ if .Data.Override }}-override{{end}}">
+      data-window="#shifu-page-element-edit{{ if $override }}-override{{end}}">
     {{ if len .Data.Config.Copy }}
         {{ $cfg := .Data.Config.Copy }}
 
@@ -45,6 +46,7 @@
                                      "cfg" $config
                                      "language" $language
                                      "copy" $copy
+                                     "override" $override
                             }}
                         {{ end }}
                     </details>
@@ -64,6 +66,7 @@
                          "field" $field
                          "cfg" $cfg
                          "data" $data
+                         "override" $override
                 }}
             {{ end }}
         </details>

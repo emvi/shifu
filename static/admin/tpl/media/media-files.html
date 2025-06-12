@@ -47,6 +47,9 @@
                   hx-target-4*=".shifu-media-files"
                   data-window="#shifu-media-selection">
                 <div class="shifu-toolbelt">
+                    <button class="secondary shifu-window-close" hx-trigger="click">
+                        {{ i18n .Data.Lang "cancel" }}
+                    </button>
                     <button>{{ i18n .Data.Lang "media_files_select" }}</button>
                 </div>
         {{ end }}
@@ -122,6 +125,9 @@
 
         {{ if $selection }}
                 <div class="shifu-toolbelt">
+                    <button class="secondary shifu-window-close" hx-trigger="click">
+                        {{ i18n .Data.Lang "cancel" }}
+                    </button>
                     <button>{{ i18n .Data.Lang "media_files_select" }}</button>
                 </div>
                 <input type="hidden" name="file" value="" id="shifu-media-file-selection-path" />
