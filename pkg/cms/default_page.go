@@ -20,9 +20,7 @@ const (
 			<script defer src="/shifu-admin/static/admin.js"></script>
 		</head>
 		<body>
-			<div hx-get="/admin/toolbar?path=/content/home.json"
-				 hx-swap="outerHTML"
-				 hx-trigger="load"></div>
+			%s
 		</body>
 		</html>`
 )
