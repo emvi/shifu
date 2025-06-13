@@ -26,3 +26,5 @@
         <p>Arg: {{ $n }}</p>
     </section>
 {{ end }}
+
+{{.CMS.Render .Args .Page (index .Content.Content "content")}}
