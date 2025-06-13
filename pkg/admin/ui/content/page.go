@@ -23,13 +23,14 @@ func Page(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setTemplateNames(page)
+	pos := setTemplateNames(page)
 	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "page.html", struct {
 		WindowOptions ui.WindowOptions
 		Lang          string
 		Path          string
 		Page          *cms.Content
+		Positions     map[string]string
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-page",
@@ -38,9 +39,10 @@ func Page(w http.ResponseWriter, r *http.Request) {
 			MinWidth:   300,
 			Lang:       lang,
 		},
-		Lang: lang,
-		Path: path,
-		Page: page,
+		Lang:      lang,
+		Path:      path,
+		Page:      page,
+		Positions: pos,
 	})
 }
 
@@ -48,14 +50,20 @@ func getPagePath(path string) string {
 	return filepath.Join(cfg.Get().BaseDir, path)
 }
 
-func setTemplateNames(content *cms.Content) {
+func setTemplateNames(content *cms.Content) map[string]string {
+	positions := make(map[string]string)
+
 	for k, v := range content.Content {
+		if _, found := positions[k]; !found {
+			positions[k] = tplCache.GetPosition(k)
+		}
+
 		for i := range v {
 			var name TemplateConfig
 			var found bool
 
 			if content.Content[k][i].Tpl != "" {
-				name, found = tplCache.Get(content.Content[k][i].Tpl)
+				name, found = tplCache.GetTemplate(content.Content[k][i].Tpl)
 
 				if found {
 					content.Content[k][i].Tpl = name.Label
@@ -69,7 +77,7 @@ func setTemplateNames(content *cms.Content) {
 					continue
 				}
 
-				name, found = tplCache.Get(ref.Tpl)
+				name, found = tplCache.GetTemplate(ref.Tpl)
 
 				if found {
 					content.Content[k][i].Tpl = fmt.Sprintf("%s (%s)", name.Label, name.Name)
@@ -79,4 +87,6 @@ func setTemplateNames(content *cms.Content) {
 			setTemplateNames(&content.Content[k][i])
 		}
 	}
+
+	return positions
 }

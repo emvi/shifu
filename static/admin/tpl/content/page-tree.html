@@ -3,11 +3,12 @@
     {{ $content := index . "content" }}
     {{ $parentPath := index . "p" }}
     {{ $lang := index . "lang" }}
+    {{ $pos := index . "pos" }}
 
     {{ range $content, $elements := $content }}
         <div>
             <small>
-                {{ $content }}
+                {{ index $pos $content }}
             </small>
             <ul>
                 {{ range $index, $element := $elements }}
@@ -87,7 +88,14 @@
                             </summary>
 
                             {{ if len $element.Content }}
-                                {{ template "page-element-tree" dict "path" $path "content" $element.Content "p" (fmt "%s." $p) "lang" $lang }}
+                                {{
+                                    template "page-element-tree"
+                                        dict "path" $path
+                                            "content" $element.Content
+                                            "p" (fmt "%s." $p)
+                                            "lang" $lang
+                                            "pos" $pos
+                                }}
                             {{ end }}
                         </details>
                     </li>
@@ -98,7 +106,14 @@
 {{ end }}
 
 <div style="margin-bottom: 8px;">
-    {{ template "page-element-tree" dict "path" .Data.Path "content" .Data.Page.Content "p" "" "lang" .Data.Lang }}
+    {{
+        template "page-element-tree"
+            dict "path" .Data.Path
+                "content" .Data.Page.Content
+                "p" ""
+                "lang" .Data.Lang
+                "pos" .Data.Positions
+    }}
 </div>
 <div class="shifu-toolbelt" style="flex-direction: column;align-items: flex-start;">
     <button title="{{ i18n .Data.Lang "content_page_element_add" }}"

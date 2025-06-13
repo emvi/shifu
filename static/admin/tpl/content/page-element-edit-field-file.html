@@ -21,7 +21,7 @@
                 <figcaption>{{ $value }}</figcaption>
             </figure>
         {{ else }}
-            <p>{{ $value }}</p>
+            <p id="path_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">{{ $value }}</p>
         {{ end }}
     {{ end }}
 
@@ -51,15 +51,20 @@
 
     <script>
         (function() {
-            const field = document.getElementById("{{ $prefix }}{{ $language }}.{{ $field }}");
-            document.getElementById("clear_{{ $prefix }}{{ $language }}.{{ $field }}").addEventListener("click", e => {
+            const field = document.getElementById("{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}");
+            document.getElementById("clear_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}").addEventListener("click", e => {
                 e.preventDefault();
                 e.stopPropagation();
                 field.value = "";
-                const img = document.getElementById("img_{{ $prefix }}{{ $language }}.{{ $field }}");
+                const img = document.getElementById("img_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}");
+                const path = document.getElementById("path_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}");
 
                 if (img) {
                     img.parentNode.remove();
+                }
+
+                if (path) {
+                    path.remove();
                 }
             });
         })();

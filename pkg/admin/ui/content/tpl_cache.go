@@ -17,6 +17,7 @@ const (
 // TemplateCache is a cache for template configurations.
 type TemplateCache struct {
 	templates map[string]TemplateConfig
+	positions map[string]string
 	list      []TemplateConfig
 	m         sync.RWMutex
 }
@@ -25,6 +26,7 @@ type TemplateCache struct {
 func NewTemplateCache() *TemplateCache {
 	cache := &TemplateCache{
 		templates: make(map[string]TemplateConfig),
+		positions: make(map[string]string),
 	}
 	cache.Load()
 	return cache
@@ -35,6 +37,7 @@ func (c *TemplateCache) Load() {
 	c.m.Lock()
 	defer c.m.Unlock()
 	templates := make(map[string]TemplateConfig)
+	positions := make(map[string]string)
 	list := make([]TemplateConfig, 0)
 
 	if err := filepath.Walk(filepath.Join(cfg.Get().BaseDir, templateConfigDir), func(path string, info os.FileInfo, err error) error {
@@ -44,6 +47,10 @@ func (c *TemplateCache) Load() {
 			tpl.Name = name
 			templates[name] = *tpl
 			list = append(list, *tpl)
+
+			for k, v := range tpl.Content {
+				positions[k] = v
+			}
 		}
 
 		return err
@@ -53,6 +60,7 @@ func (c *TemplateCache) Load() {
 	}
 
 	c.templates = templates
+	c.positions = positions
 	c.list = list
 }
 
@@ -63,12 +71,25 @@ func (c *TemplateCache) List() []TemplateConfig {
 	return c.list
 }
 
-// Get returns a template configuration by name.
-func (c *TemplateCache) Get(name string) (TemplateConfig, bool) {
+// GetTemplate returns a template configuration by name.
+func (c *TemplateCache) GetTemplate(name string) (TemplateConfig, bool) {
 	c.m.RLock()
 	defer c.m.RUnlock()
 	tpl, found := c.templates[name]
 	return tpl, found
+}
+
+// GetPosition returns a template position by name or the name if not found.
+func (c *TemplateCache) GetPosition(name string) string {
+	c.m.RLock()
+	defer c.m.RUnlock()
+	label, found := c.positions[name]
+
+	if !found {
+		return name
+	}
+
+	return label
 }
 
 func (c *TemplateCache) loadTemplate(path string) *TemplateConfig {

@@ -38,7 +38,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 
 		parent = &parent.Content[key][index]
 		parentName := parent.Tpl
-		parentTpl, found := tplCache.Get(parentName)
+		parentTpl, found := tplCache.GetTemplate(parentName)
 
 		if !found {
 			slog.Debug("Parent template not found", "name", parentName)
@@ -55,7 +55,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 		template := strings.TrimSpace(r.FormValue("template"))
 		position := strings.TrimSpace(r.FormValue("position"))
 		errs := make(map[string]string)
-		t, found := tplCache.Get(template)
+		t, found := tplCache.GetTemplate(template)
 
 		if !found {
 			errs["template"] = "the template does not exist"
@@ -104,16 +104,18 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		setTemplateNames(page)
+		pos := setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "page-tree.html", struct {
-			Lang string
-			Path string
-			Page *cms.Content
+			Lang      string
+			Path      string
+			Page      *cms.Content
+			Positions map[string]string
 		}{
-			Lang: tpl.GetLanguage(r),
-			Path: path,
-			Page: page,
+			Lang:      tpl.GetLanguage(r),
+			Path:      path,
+			Page:      page,
+			Positions: pos,
 		})
 		return
 	}

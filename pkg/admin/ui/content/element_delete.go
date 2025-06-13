@@ -35,16 +35,18 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		setTemplateNames(page)
+		pos := setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "page-tree.html", struct {
-			Lang string
-			Path string
-			Page *cms.Content
+			Lang      string
+			Path      string
+			Page      *cms.Content
+			Positions map[string]string
 		}{
-			Lang: tpl.GetLanguage(r),
-			Path: path,
-			Page: page,
+			Lang:      tpl.GetLanguage(r),
+			Path:      path,
+			Page:      page,
+			Positions: pos,
 		})
 		return
 	}
