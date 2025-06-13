@@ -325,7 +325,7 @@ For more template functions, see the [Sprig documentation](https://github.com/Ma
 
 ## Admin UI
 
-Shifu has a build-in admin UI. To enable it, add the `ui` section to the `config.json`.
+Shifu has a build-in admin UI. To enable it, add the `ui` section to the `config.json`. Static files are provided under the configured path and always under `/shifu-admin`.
 
 Elements and references on the page can only be edited if you add a template configuration file for them. They need to be created inside `admin/tpl/` and look like this:
 

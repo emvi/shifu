@@ -2,7 +2,7 @@
 @import "fonts";
 
 html.shifu {
-    font-family: "Inter", "Roboto", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: "Inter", "Roboto", sans-serif;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -24,6 +24,8 @@ body.shifu {
 }
 
 .shifu {
+    @extend html, .shifu;
+
     font-size: 12px;
     color: var(--text);
 

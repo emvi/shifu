@@ -125,6 +125,7 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 }
 
 // RenderPage renders the given page and returns it to the client.
+// If no content is present, a default head and body section are served.
 func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, args map[string]string, page *Content) {
 	page.Request = r
 	cms.selectExperiments(w, r, page)
@@ -153,20 +154,26 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 		}
 	}
 
-	var buffer bytes.Buffer
+	var data []byte
 
-	for _, content := range page.Content {
-		out, err := cms.renderContent(args, page, content)
+	if len(page.Content) > 0 {
+		var buffer bytes.Buffer
 
-		if err != nil {
-			slog.Error("Error rendering template", "path", path, "error", err)
-			return
+		for _, content := range page.Content {
+			out, err := cms.renderContent(args, page, content)
+
+			if err != nil {
+				slog.Error("Error rendering template", "path", path, "error", err)
+				return
+			}
+
+			buffer.Write(out)
 		}
 
-		buffer.Write(out)
+		data = buffer.Bytes()
+	} else {
+		data = []byte(defaultPageContent)
 	}
-
-	data := buffer.Bytes()
 
 	if _, err := w.Write(data); err != nil {
 		slog.Debug("Error sending response", "path", path, "error", err)
