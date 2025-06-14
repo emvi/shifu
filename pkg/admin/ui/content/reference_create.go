@@ -96,6 +96,7 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 			Path      string
 			Page      *cms.Content
 			Positions map[string]string
+			Delete    string
 		}{
 			Lang:      tpl.GetLanguage(r),
 			Path:      path,

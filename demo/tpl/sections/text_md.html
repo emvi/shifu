@@ -1,9 +1,11 @@
 {{ $headline := copy .Page .Content "headline" }}
 
-<section>
+<section data-pirsch-element="{{ .Content.Position }}">
     <article>
         {{ if $headline }}<h1>{{ $headline }}</h1>{{ end }}
         {{ html (copy .Page .Content "text") }}
         {{ markdown "static/articles/test.md" . }}
     </article>
+
+    {{.CMS.Render .Args .Page (fmt "%s.content" .Content.Position) (index .Content.Content "content")}}
 </section>

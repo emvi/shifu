@@ -42,11 +42,13 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 			Path      string
 			Page      *cms.Content
 			Positions map[string]string
+			Delete    string
 		}{
 			Lang:      tpl.GetLanguage(r),
 			Path:      path,
 			Page:      page,
 			Positions: pos,
+			Delete:    elementPath,
 		})
 		return
 	}

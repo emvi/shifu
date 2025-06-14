@@ -59,6 +59,9 @@ type Content struct {
 
 	// SelectedPageExperiment is an experiment from the page experiments list, redirecting if the visitor is on the wrong page.
 	SelectedPageExperiment string `json:"-"`
+
+	// Position is the element position path in JSON.
+	Position string `json:"-"`
 }
 
 func (content *Content) copy() Content {

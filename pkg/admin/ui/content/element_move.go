@@ -44,12 +44,15 @@ func MoveElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO update elements on page
+
 	pos := setTemplateNames(page)
 	tpl.Get().Execute(w, "page-tree.html", struct {
 		Lang      string
 		Path      string
 		Page      *cms.Content
 		Positions map[string]string
+		Delete    string
 	}{
 		Lang:      tpl.GetLanguage(r),
 		Path:      path,

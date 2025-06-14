@@ -1,4 +1,4 @@
-<section class="img">
+<section class="img" data-pirsch-element="{{ .Content.Position }}">
     <img src="{{ get .Content "src" }}" alt="{{ copy .Page .Content "alt" }}" />
 
     {{ $file := get .Content "file" }}

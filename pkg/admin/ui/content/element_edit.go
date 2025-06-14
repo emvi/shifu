@@ -103,7 +103,20 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		// TODO render element and replace on page
+		body, err := content.RenderElement(w, r, page, elementPath, element)
+
+		if err != nil {
+			slog.Error("Error rendering updated element", "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("HX-Retarget", fmt.Sprintf("[data-pirsch-element='%s']", elementPath))
+
+		if _, err := w.Write(body); err != nil {
+			slog.Error("Error sending updated element", "error", err)
+		}
+
 		return
 	}
 

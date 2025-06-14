@@ -159,8 +159,8 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 	if len(page.Content) > 0 {
 		var buffer bytes.Buffer
 
-		for _, content := range page.Content {
-			out, err := cms.renderContent(args, page, content)
+		for position, content := range page.Content {
+			out, err := cms.renderContent(args, page, position, content)
 
 			if err != nil {
 				slog.Error("Error rendering template", "path", path, "error", err)
@@ -200,8 +200,8 @@ func (cms *CMS) Render404(w http.ResponseWriter, r *http.Request, path string) {
 }
 
 // Render renders and returns the content for the given page.
-func (cms *CMS) Render(args map[string]string, page *Content, content []Content) template.HTML {
-	out, err := cms.renderContent(args, page, content)
+func (cms *CMS) Render(args map[string]string, page *Content, position string, content []Content) template.HTML {
+	out, err := cms.renderContent(args, page, position, content)
 
 	if err != nil {
 		slog.Error("Error rendering template", "error", err)
@@ -209,6 +209,18 @@ func (cms *CMS) Render(args map[string]string, page *Content, content []Content)
 	}
 
 	return template.HTML(out)
+}
+
+// RenderElement renders the given element and returns the content.
+func (cms *CMS) RenderElement(w http.ResponseWriter, r *http.Request, page *Content, position string, element *Content) ([]byte, error) {
+	cms.selectExperiments(w, r, page)
+	var buffer bytes.Buffer
+
+	if err := cms.renderElement(&buffer, nil, page, position, -1, element); err != nil {
+		return nil, err
+	}
+
+	return buffer.Bytes(), nil
 }
 
 // SetHandler sets the handler function for the given name.
@@ -235,86 +247,104 @@ func (cms *CMS) LastUpdate() string {
 	return cms.source.LastUpdate().Format(time.RFC3339)
 }
 
-func (cms *CMS) renderContent(args map[string]string, page *Content, content []Content) ([]byte, error) {
+func (cms *CMS) renderContent(args map[string]string, page *Content, position string, content []Content) ([]byte, error) {
 	var buffer bytes.Buffer
 
-	for _, c := range content {
-		if c.Ref != "" {
-			cms.m.RLock()
-			ref, ok := cms.refs[c.Ref]
-			cms.m.RUnlock()
-
-			if !ok {
-				return nil, errors.New("reference not found")
-			}
-
-			ref = ref.copy()
-
-			// overwrite data
-			if ref.Data == nil {
-				ref.Data = make(map[string]any)
-			}
-
-			for k, v := range c.Data {
-				if !cms.isZeroValue(v) {
-					ref.Data[k] = v
-				}
-			}
-
-			if ref.Copy == nil {
-				ref.Copy = make(Copy)
-			}
-
-			// overwrite copy
-			for language, vars := range c.Copy {
-				if _, ok := ref.Copy[language]; !ok {
-					ref.Copy[language] = make(map[string]string)
-				}
-
-				for k, v := range vars {
-					if v != "" {
-						ref.Copy[language][k] = v
-					}
-				}
-			}
-
-			// overwrite analytics
-			if ref.Analytics.Tags == nil {
-				ref.Analytics.Tags = make(map[string]string)
-			}
-
-			for k, v := range c.Analytics.Tags {
-				ref.Analytics.Tags[k] = v
-			}
-
-			if c.Analytics.Experiment.Name != "" {
-				ref.Analytics.Experiment.Name = c.Analytics.Experiment.Name
-			}
-
-			if c.Analytics.Experiment.Variant != "" {
-				ref.Analytics.Experiment.Variant = c.Analytics.Experiment.Variant
-			}
-
-			// render reference
-			out, err := cms.render(ref.Tpl, args, page, &ref)
-
-			if err != nil {
-				return nil, err
-			}
-
-			buffer.Write(out)
-		} else {
-			out, err := cms.render(c.Tpl, args, page, &c)
-
-			if err != nil {
-				return nil, err
-			}
-
-			buffer.Write(out)
+	for i, c := range content {
+		if err := cms.renderElement(&buffer, args, page, position, i, &c); err != nil {
+			return nil, err
 		}
 	}
 
 	return buffer.Bytes(), nil
+}
+
+func (cms *CMS) renderElement(buffer *bytes.Buffer, args map[string]string, page *Content, position string, index int, c *Content) error {
+	elementPosition := ""
+
+	if index > -1 {
+		elementPosition = fmt.Sprintf("%s.%d", position, index)
+	} else {
+		elementPosition = position
+	}
+
+	if c.Ref != "" {
+		cms.m.RLock()
+		ref, ok := cms.refs[c.Ref]
+		cms.m.RUnlock()
+
+		if !ok {
+			return errors.New("reference not found")
+		}
+
+		ref = ref.copy()
+
+		// overwrite data
+		if ref.Data == nil {
+			ref.Data = make(map[string]any)
+		}
+
+		for k, v := range c.Data {
+			if !cms.isZeroValue(v) {
+				ref.Data[k] = v
+			}
+		}
+
+		if ref.Copy == nil {
+			ref.Copy = make(Copy)
+		}
+
+		// overwrite copy
+		for language, vars := range c.Copy {
+			if _, ok := ref.Copy[language]; !ok {
+				ref.Copy[language] = make(map[string]string)
+			}
+
+			for k, v := range vars {
+				if v != "" {
+					ref.Copy[language][k] = v
+				}
+			}
+		}
+
+		// overwrite analytics
+		if ref.Analytics.Tags == nil {
+			ref.Analytics.Tags = make(map[string]string)
+		}
+
+		for k, v := range c.Analytics.Tags {
+			ref.Analytics.Tags[k] = v
+		}
+
+		if c.Analytics.Experiment.Name != "" {
+			ref.Analytics.Experiment.Name = c.Analytics.Experiment.Name
+		}
+
+		if c.Analytics.Experiment.Variant != "" {
+			ref.Analytics.Experiment.Variant = c.Analytics.Experiment.Variant
+		}
+
+		// render reference
+		ref.Position = elementPosition
+		out, err := cms.render(ref.Tpl, args, page, &ref)
+
+		if err != nil {
+			return err
+		}
+
+		buffer.Write(out)
+	} else {
+		c.Position = elementPosition
+		out, err := cms.render(c.Tpl, args, page, c)
+
+		if err != nil {
+			return err
+		}
+
+		buffer.Write(out)
+	}
+
+	return nil
 }
 
 func (cms *CMS) render(tpl string, args map[string]string, page *Content, content *Content) ([]byte, error) {

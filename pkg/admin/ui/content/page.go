@@ -31,6 +31,7 @@ func Page(w http.ResponseWriter, r *http.Request) {
 		Path          string
 		Page          *cms.Content
 		Positions     map[string]string
+		Delete        string
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-page",

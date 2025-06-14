@@ -3,6 +3,7 @@ package content
 import (
 	"context"
 	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/emvi/shifu/pkg/cms"
 	"github.com/fsnotify/fsnotify"
 	"log/slog"
 	"path/filepath"
@@ -10,11 +11,13 @@ import (
 )
 
 var (
+	content  *cms.CMS
 	tplCache *TemplateCache
 )
 
 // Init initializes the template cache and watches for configuration changes.
-func Init(ctx context.Context) error {
+func Init(ctx context.Context, cms *cms.CMS) error {
+	content = cms
 	tplCache = NewTemplateCache()
 	watcher, err := fsnotify.NewWatcher()
 

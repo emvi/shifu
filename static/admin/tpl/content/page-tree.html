@@ -140,5 +140,13 @@
                 e.stopPropagation();
             });
         });
+
+        {{ if .Data.Delete }}
+            const element = document.querySelector("[data-pirsch-element='{{ .Data.Delete }}']");
+
+            if (element) {
+                element.remove();
+            }
+        {{ end }}
     })();
 </script>

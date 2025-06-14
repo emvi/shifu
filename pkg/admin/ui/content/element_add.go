@@ -104,6 +104,8 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// TODO add element to page
+
 		pos := setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "page-tree.html", struct {
@@ -111,6 +113,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 			Path      string
 			Page      *cms.Content
 			Positions map[string]string
+			Delete    string
 		}{
 			Lang:      tpl.GetLanguage(r),
 			Path:      path,

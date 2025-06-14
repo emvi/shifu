@@ -2,7 +2,7 @@
 {{ $size := get .Content "headline_size" }}
 {{ $n := index .Args "n" }}
 
-<section>
+<section data-pirsch-element="{{ .Content.Position }}">
     <article>
         {{ if $headline }}
             {{ if $size }}
@@ -19,12 +19,12 @@
             <hr />
         {{ end }}
     </article>
+
+    {{ if $n }}
+        <section>
+            <p>Arg: {{ $n }}</p>
+        </section>
+    {{ end }}
+
+    {{.CMS.Render .Args .Page (fmt "%s.content" .Content.Position) (index .Content.Content "content")}}
 </section>
-
-{{ if $n }}
-    <section>
-        <p>Arg: {{ $n }}</p>
-    </section>
-{{ end }}
-
-{{.CMS.Render .Args .Page (index .Content.Content "content")}}
