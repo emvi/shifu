@@ -20,10 +20,12 @@ type PageTree struct {
 	Page      *cms.Content
 	Positions map[string]string
 
-	ParentElement   string
-	ElementPosition string
-	AddElement      template.HTML
-	DeleteElement   string
+	ParentElement    string
+	ElementPosition  string
+	ElementDirection string
+	AddElement       template.HTML
+	MoveElement      string
+	DeleteElement    string
 }
 
 // Page renders the page editing dialog.

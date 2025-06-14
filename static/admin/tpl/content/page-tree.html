@@ -162,9 +162,25 @@
                 const slot = document.querySelector("slot[name='{{ .Data.ParentElement }}/{{ .Data.ElementPosition }}']");
 
                 if (slot) {
-                    slot.parentElement.appendChild(tpl.content);
+                    const parent = slot.parentElement;
+                    parent.appendChild(tpl.content);
+                    slot.remove();
+                    parent.appendChild(slot);
                 } else {
                     document.body.appendChild(tpl.content);
+                }
+            }
+        {{ end }}
+
+        {{ if .Data.MoveElement }}
+            const move = document.querySelector("[data-shifu-element='{{ .Data.MoveElement }}']");
+            const direction = "{{ .Data.ElementDirection }}";
+
+            if (move) {
+                if (direction === "up" && move.previousElementSibling) {
+                    move.parentNode.insertBefore(move, move.previousElementSibling);
+                } else if (move.nextElementSibling) {
+                    move.parentNode.insertBefore(move.nextElementSibling, move);
                 }
             }
         {{ end }}
