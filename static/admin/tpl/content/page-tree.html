@@ -178,9 +178,17 @@
 
             if (move) {
                 if (direction === "up" && move.previousElementSibling) {
-                    move.parentNode.insertBefore(move, move.previousElementSibling);
+                    const previous = move.previousElementSibling;
+                    const id = previous.getAttribute("data-shifu-element");
+                    previous.setAttribute("data-shifu-element", move.getAttribute("data-shifu-element"));
+                    move.setAttribute("data-shifu-element", id);
+                    move.parentNode.insertBefore(move, previous);
                 } else if (move.nextElementSibling) {
-                    move.parentNode.insertBefore(move.nextElementSibling, move);
+                    const next = move.nextElementSibling;
+                    const id = next.getAttribute("data-shifu-element");
+                    next.setAttribute("data-shifu-element", move.getAttribute("data-shifu-element"));
+                    move.setAttribute("data-shifu-element", id);
+                    move.parentNode.insertBefore(next, move);
                 }
             }
         {{ end }}
