@@ -363,6 +363,19 @@ Elements and references on the page can only be edited if you add a template con
 }
 ```
 
+In order for the on-page editor to work, the HTML for the elements need to be structured like this:
+
+```html
+<section data-shifu-element="{{ .Content.Position }}">
+    <p>An element...</p>
+
+    {{.CMS.Render .Args .Page (fmt "%s.content" .Content.Position) (index .Content.Content "content")}}
+    <slot name="{{ .Content.Position }}/content"></slot>
+</section>
+```
+
+Where `data-shifu-element="{{ .Content.Position }}"` must be added to the top-level element, so that it can be modified. `<slot name="{{ .Content.Position }}/content"></slot>` can be used to allow nesting, where the part after the slash is the name of the position in the template.
+
 ## Using Shifu as a Library
 
 Shifu is designed to be used as a standalone server, but also as a library for Go (Golang).

@@ -2,7 +2,7 @@
 {{ $size := get .Content "headline_size" }}
 {{ $n := index .Args "n" }}
 
-<section data-pirsch-element="{{ .Content.Position }}">
+<section data-shifu-element="{{ .Content.Position }}">
     <article>
         {{ if $headline }}
             {{ if $size }}
@@ -12,6 +12,8 @@
             {{ else }}
                 <h1>{{ $headline }}</h1>
             {{ end }}
+        {{ else }}
+            <strong>Headline not set!</strong>
         {{ end }}
         {{ html (copy .Page .Content "text") }}
 
@@ -27,4 +29,5 @@
     {{ end }}
 
     {{.CMS.Render .Args .Page (fmt "%s.content" .Content.Position) (index .Content.Content "content")}}
+    <slot name="{{ .Content.Position }}/content"></slot>
 </section>

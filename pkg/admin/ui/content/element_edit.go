@@ -111,7 +111,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		w.Header().Set("HX-Retarget", fmt.Sprintf("[data-pirsch-element='%s']", elementPath))
+		w.Header().Set("HX-Retarget", fmt.Sprintf("[data-shifu-element='%s']", elementPath))
 
 		if _, err := w.Write(body); err != nil {
 			slog.Error("Error sending updated element", "error", err)

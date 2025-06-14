@@ -132,6 +132,12 @@
     </button>
 </div>
 
+{{ if .Data.AddElement }}
+    <template id="shifu-new-element">
+        {{ .Data.AddElement }}
+    </template>
+{{ end }}
+
 <script>
     (function(){
         document.querySelectorAll(".shifu-page-tree img").forEach(e => {
@@ -141,11 +147,25 @@
             });
         });
 
-        {{ if .Data.Delete }}
-            const element = document.querySelector("[data-pirsch-element='{{ .Data.Delete }}']");
+        {{ if .Data.DeleteElement }}
+            const element = document.querySelector("[data-shifu-element='{{ .Data.DeleteElement }}']");
 
             if (element) {
                 element.remove();
+            }
+        {{ end }}
+
+        {{ if .Data.AddElement }}
+            const tpl = document.getElementById("shifu-new-element");
+
+            if (tpl) {
+                const slot = document.querySelector("slot[name='{{ .Data.ParentElement }}/{{ .Data.ElementPosition }}']");
+
+                if (slot) {
+                    slot.parentElement.appendChild(tpl.content);
+                } else {
+                    document.body.appendChild(tpl.content);
+                }
             }
         {{ end }}
     })();

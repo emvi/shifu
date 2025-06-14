@@ -3,7 +3,6 @@ package content
 import (
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
-	"github.com/emvi/shifu/pkg/cms"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -47,13 +46,7 @@ func MoveElement(w http.ResponseWriter, r *http.Request) {
 	// TODO update elements on page
 
 	pos := setTemplateNames(page)
-	tpl.Get().Execute(w, "page-tree.html", struct {
-		Lang      string
-		Path      string
-		Page      *cms.Content
-		Positions map[string]string
-		Delete    string
-	}{
+	tpl.Get().Execute(w, "page-tree.html", PageTree{
 		Lang:      tpl.GetLanguage(r),
 		Path:      path,
 		Page:      page,

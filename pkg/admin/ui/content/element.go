@@ -18,7 +18,7 @@ const (
 	contentDir = "content"
 )
 
-func addElement(content *cms.Content, position, template string, positions []string) bool {
+func addElement(content *cms.Content, parentPath, position, template string, positions []string) *cms.Content {
 	if content.Content == nil {
 		content.Content = make(map[string][]cms.Content)
 	}
@@ -29,18 +29,28 @@ func addElement(content *cms.Content, position, template string, positions []str
 
 	children := make(map[string][]cms.Content)
 
-	for _, position := range positions {
-		children[position] = make([]cms.Content, 0)
+	for _, p := range positions {
+		children[p] = make([]cms.Content, 0)
 	}
 
-	content.Content[position] = append(content.Content[position], cms.Content{
-		Tpl:     template,
-		Content: children,
-	})
-	return true
+	pos := ""
+
+	if parentPath != "" {
+		pos = fmt.Sprintf("%s.%s.%d", parentPath, position, len(content.Content[position]))
+	} else {
+		pos = fmt.Sprintf("%s.%d", position, len(content.Content[position]))
+	}
+
+	element := cms.Content{
+		Tpl:      template,
+		Content:  children,
+		Position: pos,
+	}
+	content.Content[position] = append(content.Content[position], element)
+	return &element
 }
 
-func addReference(content *cms.Content, position, reference string) bool {
+func addReference(content *cms.Content, parentPath, position, reference string) *cms.Content {
 	if content.Content == nil {
 		content.Content = make(map[string][]cms.Content)
 	}
@@ -49,14 +59,24 @@ func addReference(content *cms.Content, position, reference string) bool {
 		content.Content[position] = make([]cms.Content, 0)
 	}
 
-	content.Content[position] = append(content.Content[position], cms.Content{
-		Ref: reference,
-	})
-	return true
+	pos := ""
+
+	if parentPath != "" {
+		pos = fmt.Sprintf("%s.%s.%d", parentPath, position, len(content.Content[position]))
+	} else {
+		pos = fmt.Sprintf("%s.%d", position, len(content.Content[position]))
+	}
+
+	element := cms.Content{
+		Ref:      reference,
+		Position: pos,
+	}
+	content.Content[position] = append(content.Content[position], element)
+	return &element
 }
 
 func moveElement(content *cms.Content, path string, direction int) bool {
-	parentElement, key, index := findParentElement(content, path)
+	parentElement, _, key, index := findParentElement(content, path)
 
 	if parentElement != nil {
 		if index == 0 && direction == -1 || index == len(parentElement.Content[key])-1 && direction == 1 {
@@ -76,7 +96,7 @@ func moveElement(content *cms.Content, path string, direction int) bool {
 }
 
 func deleteElement(content *cms.Content, path string) bool {
-	parentElement, key, index := findParentElement(content, path)
+	parentElement, _, key, index := findParentElement(content, path)
 
 	if parentElement != nil {
 		parentElement.Content[key] = append(parentElement.Content[key][:index], parentElement.Content[key][index+1:]...)
@@ -86,9 +106,9 @@ func deleteElement(content *cms.Content, path string) bool {
 	return false
 }
 
-func findParentElement(content *cms.Content, path string) (*cms.Content, string, int) {
+func findParentElement(content *cms.Content, path string) (*cms.Content, string, string, int) {
 	if path == "" {
-		return nil, "", 0
+		return nil, "", "", 0
 	}
 
 	parts := strings.Split(path, ".")
@@ -97,14 +117,17 @@ func findParentElement(content *cms.Content, path string) (*cms.Content, string,
 	var index int
 	var key string
 	var parentElement *cms.Content
+	parentPath := make([]string, 0, len(parts))
 
 	for i, part := range parts {
+		parentPath = append(parentPath, part)
+
 		if i%2 != 0 {
 			var err error
 			index, err = strconv.Atoi(part)
 
 			if err != nil {
-				return nil, "", 0
+				return nil, "", "", 0
 			}
 
 			element = &elements[index]
@@ -115,11 +138,11 @@ func findParentElement(content *cms.Content, path string) (*cms.Content, string,
 		}
 	}
 
-	return parentElement, key, index
+	return parentElement, strings.Join(parentPath, "."), key, index
 }
 
 func findElement(content *cms.Content, path string) *cms.Content {
-	parentElement, key, index := findParentElement(content, path)
+	parentElement, _, key, index := findParentElement(content, path)
 
 	if parentElement == nil {
 		return nil
@@ -129,7 +152,7 @@ func findElement(content *cms.Content, path string) *cms.Content {
 }
 
 func setElement(content *cms.Content, path string, element *cms.Content) bool {
-	parentElement, key, index := findParentElement(content, path)
+	parentElement, _, key, index := findParentElement(content, path)
 
 	if parentElement == nil {
 		return false

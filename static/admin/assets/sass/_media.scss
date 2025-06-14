@@ -31,6 +31,10 @@
         }
     }
 
+    &-file-selection {
+        cursor: pointer;
+    }
+
     &-file-selected {
         td {
             background: var(--highlight);

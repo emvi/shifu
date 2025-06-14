@@ -7,10 +7,24 @@ import (
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
 	"github.com/emvi/shifu/pkg/cfg"
 	"github.com/emvi/shifu/pkg/cms"
+	"html/template"
 	"log/slog"
 	"net/http"
 	"path/filepath"
 )
+
+// PageTree is the data required to render the page tree.
+type PageTree struct {
+	Lang      string
+	Path      string
+	Page      *cms.Content
+	Positions map[string]string
+
+	ParentElement   string
+	ElementPosition string
+	AddElement      template.HTML
+	DeleteElement   string
+}
 
 // Page renders the page editing dialog.
 func Page(w http.ResponseWriter, r *http.Request) {
@@ -27,11 +41,7 @@ func Page(w http.ResponseWriter, r *http.Request) {
 	lang := tpl.GetLanguage(r)
 	tpl.Get().Execute(w, "page.html", struct {
 		WindowOptions ui.WindowOptions
-		Lang          string
-		Path          string
-		Page          *cms.Content
-		Positions     map[string]string
-		Delete        string
+		PageTree
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-page",
@@ -40,10 +50,12 @@ func Page(w http.ResponseWriter, r *http.Request) {
 			MinWidth:   300,
 			Lang:       lang,
 		},
-		Lang:      lang,
-		Path:      path,
-		Page:      page,
-		Positions: pos,
+		PageTree: PageTree{
+			Lang:      lang,
+			Path:      path,
+			Page:      page,
+			Positions: pos,
+		},
 	})
 }
 

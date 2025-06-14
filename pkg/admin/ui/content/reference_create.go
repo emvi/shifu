@@ -91,13 +91,7 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 
 		pos := setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
-		tpl.Get().Execute(w, "page-tree.html", struct {
-			Lang      string
-			Path      string
-			Page      *cms.Content
-			Positions map[string]string
-			Delete    string
-		}{
+		tpl.Get().Execute(w, "page-tree.html", PageTree{
 			Lang:      tpl.GetLanguage(r),
 			Path:      path,
 			Page:      page,

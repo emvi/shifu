@@ -4,7 +4,6 @@ import (
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
-	"github.com/emvi/shifu/pkg/cms"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -37,18 +36,12 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 
 		pos := setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
-		tpl.Get().Execute(w, "page-tree.html", struct {
-			Lang      string
-			Path      string
-			Page      *cms.Content
-			Positions map[string]string
-			Delete    string
-		}{
-			Lang:      tpl.GetLanguage(r),
-			Path:      path,
-			Page:      page,
-			Positions: pos,
-			Delete:    elementPath,
+		tpl.Get().Execute(w, "page-tree.html", PageTree{
+			Lang:          tpl.GetLanguage(r),
+			Path:          path,
+			Page:          page,
+			Positions:     pos,
+			DeleteElement: elementPath,
 		})
 		return
 	}

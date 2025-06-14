@@ -5,6 +5,7 @@ import (
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
 	"github.com/emvi/shifu/pkg/cms"
+	htmlTpl "html/template"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -23,12 +24,13 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var parent *cms.Content
+	var parentPath string
 	positions := make(map[string]string)
 
 	if elementPath != "" {
 		var key string
 		var index int
-		parent, key, index = findParentElement(page, elementPath)
+		parent, parentPath, key, index = findParentElement(page, elementPath)
 
 		if parent == nil {
 			slog.Debug("Parent element not found", "element", elementPath)
@@ -93,7 +95,9 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if addElement(parent, position, template, t.Positions()) {
+		element := addElement(parent, parentPath, position, template, t.Positions())
+
+		if element != nil {
 			if err := shared.SavePage(page, fullPath); err != nil {
 				slog.Error("Error while saving page", "error", err)
 				w.WriteHeader(http.StatusInternalServerError)
@@ -104,21 +108,24 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// TODO add element to page
+		newElement, err := content.RenderElement(w, r, page, element.Position, element)
+
+		if err != nil {
+			slog.Error("Error rendering updated element", "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
 		pos := setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
-		tpl.Get().Execute(w, "page-tree.html", struct {
-			Lang      string
-			Path      string
-			Page      *cms.Content
-			Positions map[string]string
-			Delete    string
-		}{
-			Lang:      tpl.GetLanguage(r),
-			Path:      path,
-			Page:      page,
-			Positions: pos,
+		tpl.Get().Execute(w, "page-tree.html", PageTree{
+			Lang:            tpl.GetLanguage(r),
+			Path:            path,
+			Page:            page,
+			Positions:       pos,
+			ParentElement:   parentPath,
+			ElementPosition: position,
+			AddElement:      htmlTpl.HTML(newElement),
 		})
 		return
 	}

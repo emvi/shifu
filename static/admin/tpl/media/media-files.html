@@ -56,21 +56,21 @@
 
         <table>
             <thead>
-            <tr>
-                {{ if not $selection }}
-                    <td>
-                        <input type="checkbox" name="name-all" id="shifu-multi-file-select-all" />
-                    </td>
-                {{ end }}
+                <tr>
+                    {{ if not $selection }}
+                        <td>
+                            <input type="checkbox" name="name-all" id="shifu-multi-file-select-all" />
+                        </td>
+                    {{ end }}
 
-                <td>{{ i18n .Data.Lang "media_files_preview" }}</td>
-                <td style="width: 100%;">{{ i18n .Data.Lang "media_files_filename" }}</td>
-                <td>{{ i18n .Data.Lang "media_files_size" }}</td>
+                    <td>{{ i18n .Data.Lang "media_files_preview" }}</td>
+                    <td style="width: 100%;">{{ i18n .Data.Lang "media_files_filename" }}</td>
+                    <td>{{ i18n .Data.Lang "media_files_size" }}</td>
 
-                {{ if not $selection }}
-                    <td>{{ i18n .Data.Lang "media_files_edit" }}</td>
-                {{ end }}
-            </tr>
+                    {{ if not $selection }}
+                        <td>{{ i18n .Data.Lang "media_files_edit" }}</td>
+                    {{ end }}
+                </tr>
             </thead>
             <tbody>
                 {{ range $file := .Data.Files }}
