@@ -4,7 +4,7 @@
         <input type="text" name="email" id="email" value="{{ .Data.Email }}" autofocus />
 
         {{ if .Data.Error }}
-            <span class="error">{{ .Data.Error }}</span>
+            <span class="error">{{ i18n .Data.Lang .Data.Error }}</span>
         {{ end }}
     </fieldset>
     <fieldset>
