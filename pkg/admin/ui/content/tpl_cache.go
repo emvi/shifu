@@ -34,13 +34,20 @@ func NewTemplateCache() *TemplateCache {
 
 // Load loads the template cache from disk.
 func (c *TemplateCache) Load() {
+	configDir := filepath.Join(cfg.Get().BaseDir, templateConfigDir)
+
+	if _, err := os.Stat(configDir); os.IsNotExist(err) {
+		slog.Warn("Administration template configuration directory does not exist")
+		return
+	}
+
 	c.m.Lock()
 	defer c.m.Unlock()
 	templates := make(map[string]TemplateConfig)
 	positions := make(map[string]string)
 	list := make([]TemplateConfig, 0)
 
-	if err := filepath.Walk(filepath.Join(cfg.Get().BaseDir, templateConfigDir), func(path string, info os.FileInfo, err error) error {
+	if err := filepath.Walk(configDir, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() && strings.Contains(path, ".json") {
 			name := strings.TrimSuffix(info.Name(), ".json")
 			tpl := c.loadTemplate(path)
