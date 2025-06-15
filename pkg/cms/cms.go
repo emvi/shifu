@@ -297,7 +297,7 @@ func (cms *CMS) renderElement(buffer *bytes.Buffer, args map[string]string, page
 		// overwrite copy
 		for language, vars := range c.Copy {
 			if _, ok := ref.Copy[language]; !ok {
-				ref.Copy[language] = make(map[string]string)
+				ref.Copy[language] = make(map[string]any)
 			}
 
 			for k, v := range vars {

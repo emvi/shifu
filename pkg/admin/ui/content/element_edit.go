@@ -202,7 +202,7 @@ func getCopyFromRequest(r *http.Request) cms.Copy {
 
 			if found {
 				if c[l] == nil {
-					c[l] = make(map[string]string)
+					c[l] = make(map[string]any)
 				}
 
 				c[l][key] = v[0]
