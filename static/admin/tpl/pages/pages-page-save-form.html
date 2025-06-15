@@ -32,7 +32,8 @@
                         <label for="path">{{ i18n $lang "pages_create_page_path" }}</label>
                         <input type="text" name="path[]" id="path" value="{{ $value }}" />
                     </fieldset>
-                    <button title="{{ i18n $lang "pages_create_page_remove_path" }}"
+                    <button type="button"
+                            title="{{ i18n $lang "pages_create_page_remove_path" }}"
                             class="shifu-pages-page-remove-path"
                             style="height: 28px;margin-bottom: 8px;">
                         <img src="{{ config.UI.Path }}/static/icons/close.svg" alt="" />
@@ -45,7 +46,9 @@
             <span class="error">{{ i18n .Data.Lang (index .Data.Errors "path") }}</span>
         {{ end }}
 
-        <button id="shifu-pages-page-add-path">{{ i18n .Data.Lang "pages_create_page_add_path" }}</button>
+        <button type="button" id="shifu-pages-page-add-path">
+            {{ i18n .Data.Lang "pages_create_page_add_path" }}
+        </button>
     </div>
     <fieldset>
         <input type="checkbox" name="cache" id="cache" {{ if .Data.Cache }}checked{{ end }} />
@@ -75,7 +78,8 @@
                         <label for="header_value">{{ i18n $lang "pages_create_page_header_value" }}</label>
                         <input type="text" name="header_value[]" id="header_value" value="{{ $value }}" />
                     </fieldset>
-                    <button title="{{ i18n $lang "pages_create_page_remove_header" }}"
+                    <button type="button"
+                            title="{{ i18n $lang "pages_create_page_remove_header" }}"
                             class="shifu-pages-page-remove-header"
                             style="height: 28px;margin-bottom: 8px;">
                         <img src="{{ config.UI.Path }}/static/icons/close.svg" alt="" />
@@ -88,7 +92,9 @@
             <span class="error">{{ i18n .Data.Lang (index .Data.Errors "header") }}</span>
         {{ end }}
 
-        <button id="shifu-pages-page-add-header">{{ i18n .Data.Lang "pages_create_page_add_header" }}</button>
+        <button type="button" id="shifu-pages-page-add-header">
+            {{ i18n .Data.Lang "pages_create_page_add_header" }}
+        </button>
     </div>
 
     {{ if .Data.New }}
@@ -125,7 +131,8 @@
             <label data-name="path">{{ i18n .Data.Lang "pages_create_page_path" }}</label>
             <input type="text" name="path[]" />
         </fieldset>
-        <button title="{{ i18n .Data.Lang "pages_create_page_remove_path" }}"
+        <button type="button"
+                title="{{ i18n .Data.Lang "pages_create_page_remove_path" }}"
                 class="shifu-pages-page-remove-path"
                 style="height: 28px;margin-bottom: 8px;">
             <img src="{{ config.UI.Path }}/static/icons/close.svg" alt="" />
@@ -143,7 +150,8 @@
             <label data-name="value">{{ i18n .Data.Lang "pages_create_page_header_value" }}</label>
             <input type="text" name="header_value[]" />
         </fieldset>
-        <button title="{{ i18n .Data.Lang "pages_create_page_remove_header" }}"
+        <button type="button"
+                title="{{ i18n .Data.Lang "pages_create_page_remove_header" }}"
                 class="shifu-pages-page-remove-header"
                 style="height: 28px;margin-bottom: 8px;">
             <img src="{{ config.UI.Path }}/static/icons/close.svg" alt="" />
@@ -156,8 +164,7 @@
         const tpl = document.getElementById("shifu-pages-page-path-template");
         let index = 0;
 
-        document.getElementById("shifu-pages-page-add-path").addEventListener("click", e => {
-            e.preventDefault();
+        document.getElementById("shifu-pages-page-add-path").addEventListener("click", () => {
             const selection = tpl.content.cloneNode(true);
             selection.querySelector("label[data-name='language']").setAttribute("for", `language-${index}`);
             selection.querySelector("label[data-name='path']").setAttribute("for", `path-${index}`);
@@ -176,7 +183,6 @@
         }
 
         function removeClick(e) {
-            e.preventDefault();
             let node = e.target.parentNode;
 
             while (!node.classList.contains("shifu-pages-page-path")) {
@@ -193,8 +199,7 @@
         const tpl = document.getElementById("shifu-pages-page-header-template");
         let index = 0;
 
-        document.getElementById("shifu-pages-page-add-header").addEventListener("click", e => {
-            e.preventDefault();
+        document.getElementById("shifu-pages-page-add-header").addEventListener("click", () => {
             const selection = tpl.content.cloneNode(true);
             selection.querySelector("label[data-name='header']").setAttribute("for", `header-${index}`);
             selection.querySelector("label[data-name='value']").setAttribute("for", `header_value-${index}`);
@@ -213,7 +218,6 @@
         }
 
         function removeClick(e) {
-            e.preventDefault();
             let node = e.target.parentNode;
 
             while (!node.classList.contains("shifu-pages-page-header")) {
