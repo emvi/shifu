@@ -1,0 +1,21 @@
+<form method="post"
+      hx-post="{{ config.UI.Path }}/media/directory/edit?path={{ .Data.Path }}"
+      hx-swap="outerHTML"
+      hx-target=".shifu-media-tree"
+      hx-target-4*="this"
+      data-window="#shifu-media-directory-edit">
+    <fieldset>
+        <label for="name">{{ i18n .Data.Lang "media_edit_dir_name" }}</label>
+        <input type="text" name="name" id="name" value="{{ .Data.Name }}" autofocus />
+
+        {{ if index .Data.Errors "name" }}
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "name") }}</span>
+        {{ end }}
+    </fieldset>
+    <div class="shifu-toolbelt">
+        <input type="submit" value="{{ i18n .Data.Lang "media_edit_dir_submit" }}" />
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            {{ i18n .Data.Lang "cancel" }}
+        </button>
+    </div>
+</form>

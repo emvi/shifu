@@ -1,0 +1,171 @@
+{{ $lang := .Data.Lang }}
+{{ $selection := .Data.Selection }}
+{{ $target := .Data.SelectionTarget }}
+{{ $type := .Data.SelectionField.Type }}
+{{ $label := .Data.SelectionField.Label }}
+{{ $field := .Data.SelectionField.Field }}
+{{ $language := .Data.SelectionField.Language }}
+{{ $prefix := .Data.SelectionField.Prefix }}
+
+{{ if .Data.Path }}
+    {{ $path := .Data.Path }}
+
+    {{ if not $selection }}
+        <div class="shifu-toolbelt" style="margin-top: 0;">
+            <button hx-get="{{ config.UI.Path }}/media/file/upload?path={{ $path }}"
+                    hx-target="body"
+                    hx-swap="beforeend">
+                <img src="{{ config.UI.Path }}/static/icons/upload.svg" alt="" />
+                {{ i18n .Data.Lang "media_files_upload_files" }}
+            </button>
+
+            {{ if len .Data.Files }}
+                <button hx-get="{{ config.UI.Path }}/media/file/move?path={{ $path }}"
+                        hx-include=".shifu-multi-file-select"
+                        hx-target="body"
+                        hx-swap="beforeend">
+                    <img src="{{ config.UI.Path }}/static/icons/move.svg" alt="" />
+                    {{ i18n .Data.Lang "media_files_move_files" }}
+                </button>
+                <button hx-get="{{ config.UI.Path }}/media/file/delete?path={{ $path }}"
+                        hx-include=".shifu-multi-file-select"
+                        hx-target="body"
+                        hx-swap="beforeend">
+                    <img src="{{ config.UI.Path }}/static/icons/delete.svg" alt="" />
+                    {{ i18n .Data.Lang "media_files_delete_files" }}
+                </button>
+            {{ end }}
+        </div>
+    {{ end }}
+
+    {{ if len .Data.Files }}
+        {{ if $selection }}
+            <form method="post"
+                  hx-post="{{ config.UI.Path }}/content/media?path={{ $path }}&target={{ $target }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $language }}&prefix={{ $prefix }}"
+                  hx-swap="outerHTML"
+                  hx-target="#{{ $target }}"
+                  hx-target-4*=".shifu-media-files"
+                  data-window="#shifu-media-selection">
+                <div class="shifu-toolbelt">
+                    <button class="secondary shifu-window-close" hx-trigger="click">
+                        {{ i18n .Data.Lang "cancel" }}
+                    </button>
+                    <button>{{ i18n .Data.Lang "media_files_select" }}</button>
+                </div>
+        {{ end }}
+
+        <table>
+            <thead>
+                <tr>
+                    {{ if not $selection }}
+                        <td>
+                            <input type="checkbox" name="name-all" id="shifu-multi-file-select-all" />
+                        </td>
+                    {{ end }}
+
+                    <td>{{ i18n .Data.Lang "media_files_preview" }}</td>
+                    <td style="width: 100%;">{{ i18n .Data.Lang "media_files_filename" }}</td>
+                    <td>{{ i18n .Data.Lang "media_files_size" }}</td>
+
+                    {{ if not $selection }}
+                        <td>{{ i18n .Data.Lang "media_files_edit" }}</td>
+                    {{ end }}
+                </tr>
+            </thead>
+            <tbody>
+                {{ range $file := .Data.Files }}
+                    <tr {{ if $selection }}class="shifu-media-file-selection"{{ end }} data-path="{{ $file.Path }}">
+                        {{ if not $selection }}
+                            <td>
+                                <input type="checkbox" name="name[]" value="{{ $file.Name }}" class="shifu-multi-file-select" />
+                            </td>
+                        {{ end }}
+
+                        <td style="text-align: center;">
+                            {{ if $file.Preview }}
+                                <img src="{{ $file.Preview }}" alt="{{ $file.Name }}" />
+                            {{ else }}
+                                <img src="{{ config.UI.Path }}/static/icons/file.svg" alt="" style="width: 20px;height: 20px;margin-top: 4px;" />
+                            {{ end }}
+                        </td>
+                        <td>{{ $file.Name }}</td>
+                        <td>{{ formatFileSize $file.Size }}</td>
+
+                        {{ if not $selection }}
+                            <td>
+                                <div class="edit">
+                                    <a href="{{ if $file.Preview }}{{ $file.Preview }}{{ else }}{{ $file.Path }}{{ end }}" target="_blank" class="button" title="Datei öffnen">
+                                        <img src="{{ config.UI.Path }}/static/icons/view.svg" alt="" style="width: 12px;height: 12px;" />
+                                    </a>
+                                    <button title="{{ i18n $lang "media_files_rename_file" }}"
+                                            hx-get="{{ config.UI.Path }}/media/file/edit?path={{ $path }}&name={{ $file.Name }}"
+                                            hx-target="body"
+                                            hx-swap="beforeend">
+                                        <img src="{{ config.UI.Path }}/static/icons/edit.svg" alt="" />
+                                    </button>
+                                    <button title="{{ i18n $lang "media_files_move_file" }}"
+                                            hx-get="{{ config.UI.Path }}/media/file/move?path={{ $path }}&name[]={{ $file.Name }}"
+                                            hx-target="body"
+                                            hx-swap="beforeend">
+                                        <img src="{{ config.UI.Path }}/static/icons/move.svg" alt="" />
+                                    </button>
+                                    <button title="{{ i18n $lang "media_files_delete_file" }}"
+                                            hx-get="{{ config.UI.Path }}/media/file/delete?path={{ $path }}&name[]={{ $file.Name }}"
+                                            hx-target="body"
+                                            hx-swap="beforeend">
+                                        <img src="{{ config.UI.Path }}/static/icons/delete.svg" alt="" />
+                                    </button>
+                                </div>
+                            </td>
+                        {{ end }}
+                    </tr>
+                {{ end }}
+            </tbody>
+        </table>
+
+        {{ if $selection }}
+                <div class="shifu-toolbelt">
+                    <button class="secondary shifu-window-close" hx-trigger="click">
+                        {{ i18n .Data.Lang "cancel" }}
+                    </button>
+                    <button>{{ i18n .Data.Lang "media_files_select" }}</button>
+                </div>
+                <input type="hidden" name="file" value="" id="shifu-media-file-selection-path" />
+                <script>
+                    (function() {
+                        const input = document.getElementById("shifu-media-file-selection-path");
+
+                        document.querySelectorAll(".shifu-media-file-selection").forEach(e => e.addEventListener("click", e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            document.querySelectorAll(".shifu-media-file-selected").forEach(e => e.classList.remove("shifu-media-file-selected"));
+                            let target = e.target;
+
+                            while (!target.classList.contains("shifu-media-file-selection")) {
+                                target = target.parentNode;
+                            }
+
+                            target.classList.add("shifu-media-file-selected");
+
+                            if (input) {
+                                input.value = target.getAttribute("data-path");
+                            }
+                        }));
+                    })();
+                </script>
+            </form>
+        {{ else }}
+            <script>
+                document.getElementById("shifu-multi-file-select-all").addEventListener("click", e => {
+                    document.querySelectorAll("input[name='name[]']").forEach(input => {
+                        input.checked = e.target.checked;
+                    });
+                });
+            </script>
+        {{ end }}
+    {{ else }}
+        <p>{{ i18n .Data.Lang "media_files_empty" }}</p>
+    {{ end }}
+{{ else }}
+    <p>{{ i18n .Data.Lang "media_files_no_directory" }}</p>
+{{ end }}

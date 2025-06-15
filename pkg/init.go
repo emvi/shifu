@@ -53,6 +53,7 @@ const (
 </html>
 `
 	gitIgnore = `.secrets.env
+shifu.db
 `
 )
 

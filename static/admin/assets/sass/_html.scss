@@ -1,0 +1,125 @@
+.shifu {
+    p {
+        margin: 0 0 8px 0;
+        padding: 0;
+    }
+
+    hr {
+        height: 1px;
+        background: var(--border-inner);
+        margin: 12px -12px 8px -12px;
+        border-width: 0;
+    }
+
+    a {
+        color: var(--border);
+        opacity: 0.7;
+        text-decoration: none;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+
+        tr:hover td {
+            background: var(--highlight);
+            color: var(--bg);
+        }
+
+        td {
+            padding: 4px;
+            border-style: solid;
+            border-color: var(--border-inner);
+            border-width: 0 0 1px 1px;
+        }
+
+        td:last-child {
+            border-width: 0 1px 1px 1px;
+        }
+
+        tbody {
+            tr:last-child td:first-child {
+                border-radius: 0 0 0 4px;
+            }
+
+            tr:last-child td:last-child {
+                border-radius: 0 0 4px 0;
+            }
+        }
+
+        thead tr {
+            text-transform: uppercase;
+            font-size: 10px;
+            font-weight: bold;
+
+            td {
+                background: var(--border-inner);
+            }
+
+            td:first-child {
+                border-radius: 4px 0 0 0;
+            }
+
+            td:last-child {
+                border-radius: 0 4px 0 0;
+            }
+        }
+    }
+
+    ul {
+        margin: 0 0 8px 8px;
+        padding: 0;
+        list-style: none;
+
+        li {
+            position: relative;
+
+            &:before {
+                content: "/";
+                display: block;
+                position: absolute;
+                left: -8px;
+            }
+        }
+    }
+
+    details.collapsible {
+        summary {
+            position: relative;
+            list-style: none;
+            border-style: solid;
+            border-color: var(--border-inner);
+            border-width: 0 0 1px 0;
+            padding: 4px 0;
+            margin: 8px 0;
+            cursor: pointer;
+            user-select: none;
+
+            &:before {
+                content: "";
+                display: block;
+                width: 12px;
+                height: 12px;
+                background-image: url("/shifu-admin/static/icons/chevron.svg");
+                position: absolute;
+                right: 0;
+                top: 8px;
+                transition: transform 0.1s;
+            }
+        }
+    }
+
+    figure {
+        margin: 4px 0;
+        padding: 0;
+
+        figcaption {
+            font-size: 10px;
+        }
+    }
+}

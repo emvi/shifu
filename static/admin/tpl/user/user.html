@@ -1,0 +1,20 @@
+{{ define "user-window-title" }}
+    <span>{{ i18n .Data.Lang "user_window_title" }}</span>
+{{ end }}
+
+{{ define "user-window-content" }}
+    {{ if .Data.Admin }}
+        <div class="shifu-toolbelt" style="margin-top: 0;">
+            <button hx-get="{{ config.UI.Path }}/user/edit"
+                    hx-target="body"
+                    hx-swap="beforeend">
+                <img src="{{ config.UI.Path }}/static/icons/add.svg" alt="" />
+                {{ i18n .Data.Lang "user_add" }}
+            </button>
+        </div>
+    {{ end }}
+
+    {{ template "user-list.html" . }}
+{{ end }}
+
+{{ template "window.html" . }}

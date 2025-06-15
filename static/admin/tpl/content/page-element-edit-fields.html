@@ -1,0 +1,34 @@
+{{ $field := index . "field" }}
+{{ $cfg := index . "cfg" }}
+{{ $lang := index . "lang" }}
+{{ $language := index . "language" }}
+{{ $idPrefix := "" }}
+
+{{ if index . "override" }}
+    {{ $idPrefix = "ref-" }}
+{{ end }}
+
+{{ if $language }}
+    {{ $copy := index . "copy" }}
+    {{
+        template "page-element-edit-field.html"
+        dict "lang" $lang
+             "cfg" $cfg
+             "field" $field
+             "language" $language
+             "prefix" "copy."
+             "idPrefix" $idPrefix
+             "value" (index $copy (fmt "copy.%s.%s" $language $field))
+    }}
+{{ else }}
+    {{ $data := index . "data" }}
+    {{
+        template "page-element-edit-field.html"
+        dict "lang" $lang
+             "cfg" $cfg
+             "field" $field
+             "prefix" "data"
+             "idPrefix" $idPrefix
+             "value" (index $data (fmt "data.%s" $field))
+    }}
+{{ end }}

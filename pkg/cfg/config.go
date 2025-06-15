@@ -35,6 +35,7 @@ type Config struct {
 	Sass      Sass      `json:"sass"`
 	JS        JS        `json:"js"`
 	Analytics Analytics `json:"analytics"`
+	UI        UI        `json:"ui"`
 }
 
 // Server is the HTTP server configuration.
@@ -105,6 +106,12 @@ type Analytics struct {
 	ClientSecret string   `json:"client_secret"`
 	Subnets      []string `json:"subnets"`
 	Header       []string `json:"header"`
+}
+
+// UI configures the admin user interface.
+type UI struct {
+	Path          string `json:"path"`
+	AdminPassword string `json:"admin_password"`
 }
 
 // Load loads the configuration from config.json.

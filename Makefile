@@ -1,7 +1,7 @@
 .PHONY: demo deps test build_mac build_windows build_linux init
 
 demo:
-	go run cmd/shifu/main.go run demo
+	modd
 
 deps:
 	go get -u -t ./...
@@ -15,16 +15,13 @@ benchmark:
 	go test -bench=. ./pkg/...
 
 build_mac: test
-	GOOS=darwin go build -a -installsuffix cgo -ldflags "-s -w" cmd/shifu/main.go
-	mv main shifu
+	GOOS=darwin go build -a -installsuffix cgo -ldflags "-s -w" -o shifu cmd/shifu/main.go
 
 build_windows: test
 	GOOS=windows GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" -o shifu.exe cmd/shifu/main.go
-	mv main.exe shifu.exe
 
 build_linux: test
-	GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" cmd/shifu/main.go
-	mv main shifu
+	GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" -o shifu cmd/shifu/main.go
 
 build_arm64: test
 	GOOS=linux GOARCH=arm64 go build -a -installsuffix cgo -ldflags "-s -w" cmd/shifu/main.go

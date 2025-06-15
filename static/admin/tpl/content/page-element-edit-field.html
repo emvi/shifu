@@ -1,0 +1,40 @@
+{{ $lang := index . "lang" }}
+{{ $cfg := index . "cfg" }}
+{{ $field := index . "field" }}
+{{ $language := index . "language" }}
+{{ $prefix := index . "prefix" }}
+{{ $idPrefix := index . "idPrefix" }}
+{{ $value := index . "value" }}
+
+<fieldset>
+    {{ if eq $cfg.Type "html" }}
+        <label for="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">{{ $cfg.Label }}</label>
+        <input id="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}" type="hidden" name="{{ $prefix }}{{ $language }}.{{ $field }}" value="{{ $value }}" />
+        <trix-editor input="{{ $prefix }}{{ $language }}.{{ $field }}"></trix-editor>
+    {{ else if or (eq $cfg.Type "img") (eq $cfg.Type "file") }}
+        {{
+            template "page-element-edit-field-file.html"
+            dict "lang" $lang
+                "type" $cfg.Type
+                "label" $cfg.Label
+                "field" $field
+                "language" $language
+                "prefix" $prefix
+                "idPrefix" $idPrefix
+                "value" $value
+        }}
+    {{ else if eq $cfg.Type "boolean" }}
+        <input id="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}" type="checkbox" name="{{ $prefix }}{{ $language }}.{{ $field }}" {{ if $value }}checked{{ end }} />
+        <label for="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">{{ $cfg.Label }}</label>
+    {{ else if eq $cfg.Type "select" }}
+        <label for="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">{{ $cfg.Label }}</label>
+        <select id="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}" name="{{ $prefix }}{{ $language }}.{{ $field }}">
+            {{ range $k, $v := $cfg.Options }}
+                <option value="{{ $k }}">{{ $v }}</option>
+            {{ end }}
+        </select>
+    {{ else }}
+        <label for="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">{{ $cfg.Label }}</label>
+        <input id="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}" type="text" name="{{ $prefix }}{{ $language }}.{{ $field }}" value="{{ $value }}" />
+    {{ end }}
+</fieldset>

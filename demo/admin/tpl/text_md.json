@@ -1,0 +1,15 @@
+{
+    "label": "Markdown Text",
+    "content": {
+        "content": "Inhalt"
+    },
+    "copy": {
+        "headline": {
+            "label": "Überschrift"
+        },
+        "text": {
+            "label": "Text",
+            "type": "html"
+        }
+    }
+}

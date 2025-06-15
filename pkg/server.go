@@ -4,6 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/emvi/shifu/pkg/admin/db"
+	adminMiddleware "github.com/emvi/shifu/pkg/admin/middleware"
+	"github.com/emvi/shifu/pkg/admin/ui"
+	"github.com/emvi/shifu/pkg/admin/ui/content"
+	"github.com/emvi/shifu/pkg/admin/ui/database"
+	"github.com/emvi/shifu/pkg/admin/ui/media"
+	"github.com/emvi/shifu/pkg/admin/ui/pages"
+	"github.com/emvi/shifu/pkg/admin/ui/user"
 	"github.com/emvi/shifu/pkg/analytics"
 	"github.com/emvi/shifu/pkg/api"
 	"github.com/emvi/shifu/pkg/cfg"
@@ -13,6 +21,7 @@ import (
 	"github.com/emvi/shifu/pkg/sass"
 	"github.com/emvi/shifu/pkg/sitemap"
 	"github.com/emvi/shifu/pkg/source"
+	"github.com/emvi/shifu/static"
 	"github.com/go-chi/chi/v5"
 	"github.com/klauspost/compress/gzhttp"
 	"html/template"
@@ -49,8 +58,8 @@ type Server struct {
 	cancel  context.CancelFunc
 }
 
-// NewServer creates a new Shifu server for given directory.
-// The second argument is an optional template.FuncMap that will be merged with Shifu's funcmap.
+// NewServer creates a new Shifu server for the given directory.
+// The second argument is an optional template.FuncMap that will be merged with Shifu's func map.
 func NewServer(dir string, options ServerOptions) (*Server, error) {
 	options.FuncMap = cms.Merge(options.FuncMap)
 
@@ -94,7 +103,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 
 	sm := sitemap.New()
 	ctx, cancel := context.WithCancel(context.Background())
-	content := cms.NewCMS(cms.Options{
+	c := cms.NewCMS(cms.Options{
 		Ctx:       ctx,
 		BaseDir:   dir,
 		HotReload: cfg.Get().Dev,
@@ -104,7 +113,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		Sitemap:   sm,
 	})
 	return &Server{
-		Content: content,
+		Content: c,
 		Sitemap: sm,
 		router:  options.Router,
 		funcMap: options.FuncMap,
@@ -117,6 +126,12 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 // The context.CancelFunc is optional and will be called on server shutdown or error if set.
 func (server *Server) Start(cancel context.CancelFunc) error {
 	slog.Info("Starting Shifu", "version", version, "directory", cfg.Get().BaseDir)
+
+	if cfg.Get().UI.Path != "" {
+		db.Connect()
+		defer db.Disconnect()
+	}
+
 	stop := func() {
 		server.cancel()
 
@@ -166,6 +181,14 @@ func (server *Server) setupRouter(dir string) {
 		server.serveAPI(router)
 	}
 
+	if cfg.Get().UI.Path != "" {
+		if err := content.Init(server.ctx, server.Content); err != nil {
+			slog.Error("Error initializing admin content", "error", err)
+		}
+
+		server.serveUI(router)
+	}
+
 	server.Sitemap.Serve(router)
 	server.serveRobotsTxt(router)
 	server.serveStaticDir(router, dir)
@@ -178,6 +201,7 @@ func (server *Server) setupRouter(dir string) {
 }
 
 func (server *Server) serveAPI(router chi.Router) {
+	slog.Info("Serving API", "path", "/api/v1")
 	router.Route("/api/v1", func(r chi.Router) {
 		r.Use(middleware.APISecret)
 		r.Get("/health", func(http.ResponseWriter, *http.Request) {})
@@ -188,6 +212,103 @@ func (server *Server) serveAPI(router chi.Router) {
 		r.Get("/content/file", api.GetContentFile)
 		r.Put("/content/file", api.PutContentFile)
 	})
+}
+
+func (server *Server) serveUI(router chi.Router) {
+	path := cfg.Get().UI.Path
+	slog.Info("Serving admin UI", "path", path)
+	router.Route(path, func(r chi.Router) {
+		r.Use(adminMiddleware.Auth)
+		r.Get("/toolbar", ui.Toolbar)
+		r.Get("/database", database.Database)
+		r.Route("/user", func(r chi.Router) {
+			r.Get("/edit", user.EditUser)
+			r.Post("/edit", user.EditUser)
+			r.Get("/delete", user.DeleteUser)
+			r.Delete("/delete", user.DeleteUser)
+			r.Get("/", user.User)
+		})
+		r.Route("/media", func(r chi.Router) {
+			r.Route("/directory", func(r chi.Router) {
+				r.Get("/add", media.AddDirectory)
+				r.Post("/add", media.AddDirectory)
+				r.Get("/edit", media.EditDirectory)
+				r.Post("/edit", media.EditDirectory)
+				r.Get("/delete", media.DeleteDirectory)
+				r.Delete("/delete", media.DeleteDirectory)
+				r.Get("/", media.DirectoryContent)
+			})
+			r.Route("/file", func(r chi.Router) {
+				r.Get("/upload", media.UploadFiles)
+				r.Post("/upload", media.UploadFiles)
+				r.Get("/delete", media.DeleteFile)
+				r.Delete("/delete", media.DeleteFile)
+				r.Get("/edit", media.EditFile)
+				r.Post("/edit", media.EditFile)
+				r.Get("/move", media.MoveFile)
+				r.Post("/move", media.MoveFile)
+			})
+			r.Get("/", media.Media)
+		})
+		r.Route("/pages", func(r chi.Router) {
+			r.Route("/directory", func(r chi.Router) {
+				r.Get("/add", pages.AddDirectory)
+				r.Post("/add", pages.AddDirectory)
+				r.Get("/edit", pages.EditDirectory)
+				r.Post("/edit", pages.EditDirectory)
+				r.Get("/delete", pages.DeleteDirectory)
+				r.Delete("/delete", pages.DeleteDirectory)
+			})
+			r.Route("/page", func(r chi.Router) {
+				r.Get("/", pages.Page)
+				r.Get("/save", pages.SavePage)
+				r.Post("/save", pages.SavePage)
+				r.Get("/delete", pages.DeletePage)
+				r.Delete("/delete", pages.DeletePage)
+			})
+			r.Get("/", pages.Pages)
+		})
+		r.Route("/content", func(r chi.Router) {
+			r.Route("/element", func(r chi.Router) {
+				r.Get("/add", content.AddElement)
+				r.Post("/add", content.AddElement)
+				r.Get("/edit", content.EditElement)
+				r.Post("/edit", content.EditElement)
+				r.Post("/move", content.MoveElement)
+				r.Get("/delete", content.DeleteElement)
+				r.Delete("/delete", content.DeleteElement)
+				r.Get("/reference", content.CreateReference)
+				r.Post("/reference", content.CreateReference)
+			})
+			r.Route("/reference", func(r chi.Router) {
+				r.Get("/add", content.AddReference)
+				r.Post("/add", content.AddReference)
+			})
+			r.Get("/media", media.Selection)
+			r.Post("/media", media.Selection)
+			r.Get("/", content.Page)
+		})
+		r.Get("/logout", user.Logout)
+	})
+	fs := http.FileServerFS(static.AdminStatic)
+	router.Handle(fmt.Sprintf("%s/static/*", path), gzhttp.GzipHandler(http.StripPrefix(path, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.URL.Path = filepath.Join("/admin", r.URL.Path)
+		w.Header().Set("Cache-Control", "max-age=86400")
+		fs.ServeHTTP(w, r)
+	}))))
+
+	// always serve on /shifu-admin
+	if strings.ToLower(path) != "/shifu-admin" {
+		slog.Info("Serving admin UI static files", "path", "/shifu-admin")
+		router.Handle("/shifu-admin/static/*", gzhttp.GzipHandler(http.StripPrefix("/shifu-admin", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			r.URL.Path = filepath.Join("/admin", r.URL.Path)
+			w.Header().Set("Cache-Control", "max-age=86400")
+			fs.ServeHTTP(w, r)
+		}))))
+	}
+
+	router.Get(path, user.Login)
+	router.Post(path, user.Login)
 }
 
 func (server *Server) serveRobotsTxt(router chi.Router) {
@@ -205,6 +326,7 @@ func (server *Server) serveRobotsTxt(router chi.Router) {
 func (server *Server) serveStaticDir(router chi.Router, dir string) {
 	fs := http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join(dir, "static"))))
 	router.Handle("/static/*", gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "max-age=86400")
 		fs.ServeHTTP(w, r)
 	})))
 }

@@ -1,0 +1,19 @@
+{{ define "media-directory-delete-window-title" }}
+    <span>{{ i18n .Data.Lang "media_delete_dir_window_title" }}</span>
+{{ end }}
+
+{{ define "media-directory-delete-window-content" }}
+    <p>{{ fmt (i18n .Data.Lang "media_delete_dir_confirm") .Data.Directory }}</p>
+    <div class="shifu-toolbelt">
+        <button hx-delete="{{ config.UI.Path }}/media/directory/delete?path={{ .Data.Path }}"
+                hx-target=".shifu-media-tree"
+                data-window="#shifu-media-directory-delete">
+            {{ i18n .Data.Lang "media_delete_dir_submit" }}
+        </button>
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            {{ i18n .Data.Lang "cancel" }}
+        </button>
+    </div>
+{{ end }}
+
+{{ template "window.html" . }}

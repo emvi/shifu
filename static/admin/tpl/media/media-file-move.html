@@ -1,0 +1,22 @@
+{{ define "media-file-move-window-title" }}
+    <span>{{ i18n .Data.Lang "media_move_file_window_title" }}</span>
+{{ end }}
+
+{{ define "media-file-move-window-content" }}
+    {{ if eq (len .Data.Name) 1 }}
+        <p>{{ fmt (i18n .Data.Lang "media_move_file_confirm") (index .Data.Name 0) }}</p>
+        <p>{{ i18n .Data.Lang "media_edit_file_window_title" }}</p>
+    {{ else }}
+        <p>{{ i18n .Data.Lang "media_move_file_confirm_all" }}</p>
+        <p>{{ i18n .Data.Lang "media_move_file_warn" }}</p>
+        <ul>
+            {{ range .Data.Name }}
+                <li>{{ . }}</li>
+            {{ end }}
+        </ul>
+    {{ end }}
+
+    {{ template "media-file-move-form.html" . }}
+{{ end }}
+
+{{ template "window.html" . }}

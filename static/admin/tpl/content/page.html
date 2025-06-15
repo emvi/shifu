@@ -1,0 +1,11 @@
+{{ define "page-window-title" }}
+    <span>{{ i18n .Data.Lang "content_page_window_title" }}</span>
+{{ end }}
+
+{{ define "page-window-content" }}
+    <div class="shifu-tree shifu-page-tree">
+        {{ template "page-tree.html" . }}
+    </div>
+{{ end }}
+
+{{ template "window.html" . }}

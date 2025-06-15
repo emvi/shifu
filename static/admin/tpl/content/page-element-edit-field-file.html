@@ -1,0 +1,72 @@
+{{ $lang := index . "lang" }}
+{{ $type := index . "type" }}
+{{ $label := index . "label" }}
+{{ $field := index . "field" }}
+{{ $language := index . "language" }}
+{{ $prefix := index . "prefix" }}
+{{ $idPrefix := index . "idPrefix" }}
+{{ $value := index . "value" }}
+
+<div id="shifu-field-{{ $idPrefix }}{{ replace $prefix "." "-" }}{{ $language }}-{{ $field }}">
+    <label for="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">{{ $label }}</label>
+    <input id="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}" type="hidden" name="{{ $prefix }}{{ $language }}.{{ $field }}" value="{{ $value }}" />
+
+    {{ if $value }}
+        {{ if eq $type "img" }}
+            <figure>
+                <img id="img_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}"
+                     src="{{ $value }}"
+                     alt="{{ $label }}"
+                     style="max-width: 33%;max-height: 150px;" />
+                <figcaption>{{ $value }}</figcaption>
+            </figure>
+        {{ else }}
+            <p id="path_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">{{ $value }}</p>
+        {{ end }}
+    {{ end }}
+
+    <div class="shifu-toolbelt" style="justify-content: flex-start;">
+        {{ if eq $type "img" }}
+            <button hx-get="{{ config.UI.Path }}/content/media?target=shifu-field-{{ $idPrefix }}{{ replace $prefix "." "-" }}{{ $language }}-{{ $field }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $language }}&prefix={{ $prefix }}"
+                    hx-target="body"
+                    hx-swap="beforeend"
+                    id="select_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">
+                {{ i18n $lang "content_element_edit_select_img" }}
+            </button>
+            <button id="clear_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">
+                {{ i18n $lang "content_element_edit_remove_img" }}
+            </button>
+        {{ else }}
+            <button hx-get="{{ config.UI.Path }}/content/media?target=shifu-field-{{ $idPrefix }}{{ replace $prefix "." "-" }}{{ $language }}-{{ $field }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $language }}&prefix={{ $prefix }}"
+                    hx-target="body"
+                    hx-swap="beforeend"
+                    id="select_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">
+                {{ i18n $lang "content_element_edit_select_file" }}
+            </button>
+            <button id="clear_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">
+                {{ i18n $lang "content_element_edit_remove_file" }}
+            </button>
+        {{ end }}
+    </div>
+
+    <script>
+        (function() {
+            const field = document.getElementById("{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}");
+            document.getElementById("clear_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}").addEventListener("click", e => {
+                e.preventDefault();
+                e.stopPropagation();
+                field.value = "";
+                const img = document.getElementById("img_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}");
+                const path = document.getElementById("path_{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}");
+
+                if (img) {
+                    img.parentNode.remove();
+                }
+
+                if (path) {
+                    path.remove();
+                }
+            });
+        })();
+    </script>
+</div>

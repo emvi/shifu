@@ -1,0 +1,198 @@
+{{ define "page-element-tree" }}
+    {{ $path := index . "path" }}
+    {{ $content := index . "content" }}
+    {{ $parentPath := index . "p" }}
+    {{ $lang := index . "lang" }}
+    {{ $pos := index . "pos" }}
+
+    {{ range $content, $elements := $content }}
+        <div>
+            <small>
+                {{ index $pos $content }}
+            </small>
+            <ul>
+                {{ range $index, $element := $elements }}
+                    {{ $p := fmt "%s%s.%d" $parentPath $content $index }}
+
+                    <li>
+                        <details data-entry="{{ $p }}">
+                            <summary
+                                {{ if $element.Ref }}
+                                    class="shifu-page-tree-ref"
+                                {{ else if len $element.Content }}
+                                    class="shifu-page-tree-container"
+                                {{ else }}
+                                    class="shifu-page-tree-element"
+                                {{ end }}>
+
+                                <span>
+                                    {{ if $element.Tpl }}
+                                        {{ $element.Tpl }}
+                                    {{ else }}
+                                        {{ $element.Ref }}
+                                    {{ end }}
+                                </span>
+                                <span>
+                                    <img src="{{ config.UI.Path }}/static/icons/edit.svg"
+                                         alt=""
+                                         title="{{ i18n $lang "content_page_element_edit" }}"
+                                         hx-get="{{ config.UI.Path }}/content/element/edit?path={{ $path }}&element={{ $p }}"
+                                         hx-target="body"
+                                         hx-swap="beforeend" />
+
+                                    {{ if len $element.Content }}
+                                        <img src="{{ config.UI.Path }}/static/icons/add.svg"
+                                             alt=""
+                                             title="{{ i18n $lang "content_page_element_add" }}"
+                                             hx-get="{{ config.UI.Path }}/content/element/add?path={{ $path }}&element={{ $p }}"
+                                             hx-target="body"
+                                             hx-swap="beforeend" />
+                                        <img src="{{ config.UI.Path }}/static/icons/frame-add.svg"
+                                             alt=""
+                                             title="{{ i18n $lang "content_page_element_add_reference" }}"
+                                             hx-get="{{ config.UI.Path }}/content/reference/add?path={{ $path }}&element={{ $p }}"
+                                             hx-target="body"
+                                             hx-swap="beforeend" />
+                                    {{ end }}
+
+                                    <img src="{{ config.UI.Path }}/static/icons/chevron.svg"
+                                         alt=""
+                                         title="{{ i18n $lang "content_page_element_move_up" }}"
+                                         hx-post="{{ config.UI.Path }}/content/element/move?path={{ $path }}&element={{ $p }}&direction=up"
+                                         hx-target=".shifu-page-tree"
+                                         hx-swap="innerHTML" />
+                                    <img src="{{ config.UI.Path }}/static/icons/chevron.svg"
+                                         alt=""
+                                         title="{{ i18n $lang "content_page_element_move_down" }}"
+                                         style="transform: rotate(180deg);"
+                                         hx-post="{{ config.UI.Path }}/content/element/move?path={{ $path }}&element={{ $p }}&direction=down"
+                                         hx-target=".shifu-page-tree"
+                                         hx-swap="innerHTML" />
+
+                                    {{ if not $element.Ref }}
+                                        <img src="{{ config.UI.Path }}/static/icons/frame.svg"
+                                             alt=""
+                                             title="{{ i18n $lang "content_page_element_reference" }}"
+                                             hx-get="{{ config.UI.Path }}/content/element/reference?path={{ $path }}&element={{ $p }}"
+                                             hx-target="body"
+                                             hx-swap="beforeend" />
+                                    {{ end }}
+
+                                    <img src="{{ config.UI.Path }}/static/icons/delete.svg"
+                                         alt=""
+                                         title="{{ i18n $lang "content_page_element_delete" }}"
+                                         hx-get="{{ config.UI.Path }}/content/element/delete?path={{ $path }}&element={{ $p }}"
+                                         hx-target="body"
+                                         hx-swap="beforeend" />
+                                </span>
+                            </summary>
+
+                            {{ if len $element.Content }}
+                                {{
+                                    template "page-element-tree"
+                                        dict "path" $path
+                                            "content" $element.Content
+                                            "p" (fmt "%s." $p)
+                                            "lang" $lang
+                                            "pos" $pos
+                                }}
+                            {{ end }}
+                        </details>
+                    </li>
+                {{ end }}
+            </ul>
+        </div>
+    {{ end }}
+{{ end }}
+
+<div id="page-element-tree" style="margin-bottom: 8px;">
+    {{
+        template "page-element-tree"
+            dict "path" .Data.Path
+                "content" .Data.Page.Content
+                "p" ""
+                "lang" .Data.Lang
+                "pos" .Data.Positions
+    }}
+</div>
+<div class="shifu-toolbelt" style="flex-direction: column;align-items: flex-start;">
+    <button title="{{ i18n .Data.Lang "content_page_element_add" }}"
+            hx-get="{{ config.UI.Path }}/content/element/add?path={{ .Data.Path }}"
+            hx-target="body"
+            hx-swap="beforeend">
+        <img src="{{ config.UI.Path }}/static/icons/cube.svg" alt="" />
+        {{ i18n .Data.Lang "content_page_element_add" }}
+    </button>
+    <button title="{{ i18n .Data.Lang "content_page_reference_add" }}"
+            hx-get="{{ config.UI.Path }}/content/reference/add?path={{ .Data.Path }}"
+            hx-target="body"
+            hx-swap="beforeend">
+        <img src="{{ config.UI.Path }}/static/icons/frame.svg" alt="" />
+        {{ i18n .Data.Lang "content_page_reference_add" }}
+    </button>
+</div>
+
+{{ if .Data.AddElement }}
+    <template id="shifu-new-element">
+        {{ .Data.AddElement }}
+    </template>
+{{ end }}
+
+<script>
+    (function(){
+        shifuTree("page-element-tree");
+
+        document.querySelectorAll(".shifu-page-tree img").forEach(e => {
+            e.addEventListener("click", e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        {{ if .Data.DeleteElement }}
+            const element = document.querySelector("[data-shifu-element='{{ .Data.DeleteElement }}']");
+
+            if (element) {
+                element.remove();
+            }
+        {{ end }}
+
+        {{ if .Data.AddElement }}
+            const tpl = document.getElementById("shifu-new-element");
+
+            if (tpl) {
+                const slot = document.querySelector("slot[name='{{ .Data.ParentElement }}/{{ .Data.ElementPosition }}']");
+
+                if (slot) {
+                    const parent = slot.parentElement;
+                    parent.appendChild(tpl.content);
+                    slot.remove();
+                    parent.appendChild(slot);
+                } else {
+                    document.body.appendChild(tpl.content);
+                }
+            }
+        {{ end }}
+
+        {{ if .Data.MoveElement }}
+            const move = document.querySelector("[data-shifu-element='{{ .Data.MoveElement }}']");
+            const direction = "{{ .Data.ElementDirection }}";
+
+            if (move) {
+                if (direction === "up" && move.previousElementSibling) {
+                    const previous = move.previousElementSibling;
+                    const id = previous.getAttribute("data-shifu-element");
+                    previous.setAttribute("data-shifu-element", move.getAttribute("data-shifu-element"));
+                    move.setAttribute("data-shifu-element", id);
+                    move.parentNode.insertBefore(move, previous);
+                } else if (move.nextElementSibling) {
+                    const next = move.nextElementSibling;
+                    const id = next.getAttribute("data-shifu-element");
+                    next.setAttribute("data-shifu-element", move.getAttribute("data-shifu-element"));
+                    move.setAttribute("data-shifu-element", id);
+                    move.parentNode.insertBefore(next, move);
+                }
+            }
+        {{ end }}
+    })();
+</script>

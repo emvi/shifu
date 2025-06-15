@@ -1,0 +1,21 @@
+<form method="post" hx-post="{{ path }}" hx-swap="outerHTML" hx-target-*="this">
+    <fieldset>
+        <label for="email">{{ i18n .Data.Lang "login_form_email" }}</label>
+        <input type="text" name="email" id="email" value="{{ .Data.Email }}" autofocus />
+
+        {{ if .Data.Error }}
+            <span class="error">{{ .Data.Error }}</span>
+        {{ end }}
+    </fieldset>
+    <fieldset>
+        <label for="password">{{ i18n .Data.Lang "login_form_password" }}</label>
+        <input type="password" name="password" id="password" />
+    </fieldset>
+    <fieldset class="checkbox">
+        <input type="checkbox" name="stay_logged_in" id="stay_logged_in" />
+        <label for="stay_logged_in">{{ i18n .Data.Lang "login_form_stay" }}</label>
+    </fieldset>
+    <div style="display: flex;justify-content: flex-end;">
+        <input type="submit" value="{{ i18n .Data.Lang "login_form_submit" }}" />
+    </div>
+</form>

@@ -1,0 +1,31 @@
+{{ define "media-file-delete-window-title" }}
+    <span>{{ i18n .Data.Lang "media_delete_file_window_title" }}</span>
+{{ end }}
+
+{{ define "media-file-delete-window-content" }}
+    {{ if eq (len .Data.Name) 1 }}
+        <p>{{ fmt (i18n .Data.Lang "media_delete_file_confirm") (index .Data.Name 0) }}</p>
+        <p>{{ i18n .Data.Lang "media_delete_file_warn" }}</p>
+    {{ else }}
+        <p>{{ i18n .Data.Lang "media_delete_file_confirm_all" }}</p>
+        <p>{{ i18n .Data.Lang "media_delete_file_warn" }}</p>
+        <ul>
+            {{ range .Data.Name }}
+                <li>{{ . }}</li>
+            {{ end }}
+        </ul>
+    {{ end }}
+
+    <div class="shifu-toolbelt">
+        <button hx-delete="{{ config.UI.Path }}/media/file/delete?path={{ .Data.Path }}{{ range .Data.Name }}&name[]={{ . }}{{ end }}"
+                hx-target=".shifu-media-files"
+                data-window="#shifu-media-file-delete">
+            {{ i18n .Data.Lang "media_delete_file_submit" }}
+        </button>
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            {{ i18n .Data.Lang "cancel" }}
+        </button>
+    </div>
+{{ end }}
+
+{{ template "window.html" . }}

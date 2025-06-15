@@ -2293,7 +2293,16 @@ func (c *linkerContext) createExportsForFile(sourceIndex uint32) {
 		} else {
 			getter = js_ast.Expr{Data: &js_ast.EArrow{PreferExpr: true, Body: body}}
 		}
+
+		// Special case for __proto__ property: use a computed property
+		// name to avoid it being treated as the object's prototype
+		var flags js_ast.PropertyFlags
+		if alias == "__proto__" && !c.options.UnsupportedJSFeatures.Has(compat.ObjectExtensions) {
+			flags |= js_ast.PropertyIsComputed
+		}
+
 		properties = append(properties, js_ast.Property{
+			Flags:      flags,
 			Key:        js_ast.Expr{Data: &js_ast.EString{Value: helpers.StringToUTF16(alias)}},
 			ValueOrNil: getter,
 		})
@@ -5078,7 +5087,7 @@ func (c *linkerContext) generateEntryPointTailJS(
 
 				// "{if: null}"
 				var valueOrNil js_ast.Expr
-				if _, ok := js_lexer.Keywords[export]; ok {
+				if _, ok := js_lexer.Keywords[export]; ok || !js_ast.IsIdentifier(export) {
 					// Make sure keywords don't cause a syntax error. This has to map to
 					// "null" instead of something shorter like "0" because the library
 					// "cjs-module-lexer" only supports identifiers in this position, and
@@ -6526,8 +6535,8 @@ func (c *linkerContext) maybeAppendLegalComments(
 	}
 
 	type thirdPartyEntry struct {
-		packagePath string
-		comments    []string
+		packagePaths []string
+		comments     []string
 	}
 
 	var uniqueFirstPartyComments []string
@@ -6573,8 +6582,8 @@ func (c *linkerContext) maybeAppendLegalComments(
 
 		if packagePath != "" {
 			thirdPartyComments = append(thirdPartyComments, thirdPartyEntry{
-				packagePath: packagePath,
-				comments:    entry.comments,
+				packagePaths: []string{packagePath},
+				comments:     entry.comments,
 			})
 		} else {
 			for _, comment := range entry.comments {
@@ -6586,6 +6595,22 @@ func (c *linkerContext) maybeAppendLegalComments(
 		}
 	}
 
+	// Merge package paths with identical comments
+	identical := make(map[string]int)
+	end := 0
+	for _, entry := range thirdPartyComments {
+		key := strings.Join(entry.comments, "\x00")
+		if index, ok := identical[key]; ok {
+			existing := &thirdPartyComments[index]
+			existing.packagePaths = append(existing.packagePaths, entry.packagePaths...)
+		} else {
+			identical[key] = end
+			thirdPartyComments[end] = entry
+			end++
+		}
+	}
+	thirdPartyComments = thirdPartyComments[:end]
+
 	switch legalComments {
 	case config.LegalCommentsEndOfFile:
 		for _, comment := range uniqueFirstPartyComments {
@@ -6596,7 +6621,10 @@ func (c *linkerContext) maybeAppendLegalComments(
 		if len(thirdPartyComments) > 0 {
 			j.AddString("/*! Bundled license information:\n")
 			for _, entry := range thirdPartyComments {
-				j.AddString(fmt.Sprintf("\n%s:\n", helpers.EscapeClosingTag(entry.packagePath, slashTag)))
+				j.AddString("\n")
+				for _, packagePath := range entry.packagePaths {
+					j.AddString(fmt.Sprintf("%s:\n", helpers.EscapeClosingTag(packagePath, slashTag)))
+				}
 				for _, comment := range entry.comments {
 					comment = helpers.EscapeClosingTag(comment, slashTag)
 					if strings.HasPrefix(comment, "//") {
@@ -6623,7 +6651,10 @@ func (c *linkerContext) maybeAppendLegalComments(
 			}
 			jComments.AddString("Bundled license information:\n")
 			for _, entry := range thirdPartyComments {
-				jComments.AddString(fmt.Sprintf("\n%s:\n", entry.packagePath))
+				jComments.AddString("\n")
+				for _, packagePath := range entry.packagePaths {
+					jComments.AddString(fmt.Sprintf("%s:\n", packagePath))
+				}
 				for _, comment := range entry.comments {
 					jComments.AddString(fmt.Sprintf("  %s\n", strings.ReplaceAll(comment, "\n", "\n  ")))
 				}
@@ -6963,13 +6994,13 @@ func (c *linkerContext) generateSourceMapForChunk(
 	items := make([]item, 0, len(results))
 	nextSourcesIndex := 0
 	for _, result := range results {
+		if result.isNullEntry {
+			continue
+		}
 		if _, ok := sourceIndexToSourcesIndex[result.sourceIndex]; ok {
 			continue
 		}
 		sourceIndexToSourcesIndex[result.sourceIndex] = nextSourcesIndex
-		if result.isNullEntry {
-			continue
-		}
 		file := &c.graph.Files[result.sourceIndex]
 
 		// Simple case: no nested source map
@@ -6980,7 +7011,39 @@ func (c *linkerContext) generateSourceMapForChunk(
 			}
 			source := file.InputFile.Source.KeyPath.Text
 			if file.InputFile.Source.KeyPath.Namespace == "file" {
+				// Serialize the file path as a "file://" URL, since source maps encode
+				// sources as URLs. While we could output absolute "file://" URLs, it
+				// will be turned into a relative path when it's written out below for
+				// better readability and to be independent of build directory.
 				source = helpers.FileURLFromFilePath(source).String()
+			} else {
+				// If the path for this file isn't in the "file" namespace, then write
+				// out something arbitrary instead. Source maps encode sources as URLs
+				// but plugins are allowed to put almost anything in the "namespace"
+				// and "path" fields, so we don't attempt to control whether this forms
+				// a valid URL or not.
+				//
+				// The approach used here is to join the namespace with the path text
+				// using a ":" character. It's important to include the namespace
+				// because esbuild considers paths with different namespaces to have
+				// separate identities. And using a ":" means that the path is more
+				// likely to form a valid URL in the source map.
+				//
+				// For example, you could imagine a plugin that uses the "https"
+				// namespace and path text like "//example.com/foo.js", which would
+				// then be joined into the URL "https://example.com/foo.js" here.
+				//
+				// Note that this logic is currently mostly the same as the pretty-
+				// printed paths that esbuild shows to humans in error messages.
+				// However, this code has been forked below as these source map URLs
+				// are intended for code instead of humans, and we don't want the
+				// changes for humans to unintentionally break code that uses them.
+				//
+				// See https://github.com/evanw/esbuild/issues/4078 for more info.
+				if ns := file.InputFile.Source.KeyPath.Namespace; ns != "" {
+					source = fmt.Sprintf("%s:%s", ns, source)
+				}
+				source += file.InputFile.Source.KeyPath.IgnoredSuffix
 			}
 			items = append(items, item{
 				source:         source,
@@ -7057,7 +7120,16 @@ func (c *linkerContext) generateSourceMapForChunk(
 	for _, result := range results {
 		chunk := result.sourceMapChunk
 		offset := result.generatedOffset
-		sourcesIndex := sourceIndexToSourcesIndex[result.sourceIndex]
+		sourcesIndex, ok := sourceIndexToSourcesIndex[result.sourceIndex]
+		if !ok {
+			// If there's no sourcesIndex, then every mapping for this result's
+			// sourceIndex were null mappings. We still need to emit the null
+			// mapping, but its source index won't matter.
+			sourcesIndex = 0
+			if !result.isNullEntry {
+				panic("Internal error")
+			}
+		}
 
 		// This should have already been checked earlier
 		if chunk.ShouldIgnore {

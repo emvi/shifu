@@ -1,0 +1,65 @@
+@import "vars";
+@import "fonts";
+
+html.shifu {
+    font-family: "Inter", "Roboto", sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    box-sizing: border-box;
+}
+
+body.shifu {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    min-height: 100vh;
+    background: var(--bg);
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.shifu {
+    @extend html, .shifu;
+
+    font-size: 12px;
+    color: var(--text);
+
+    *,
+    *::before,
+    *::after {
+        font-family: inherit;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    trix-editor {
+        min-height: 20em;
+        border-color: var(--border-inner);
+        border-radius: 4px;
+
+        &:focus {
+            border-color: var(--border);
+        }
+    }
+
+    .trix-button {
+        background: #fff;
+        font-size: 0.75em !important;
+    }
+}
+
+@import "html";
+@import "form";
+@import "window";
+@import "toolbar";
+@import "toolbelt";
+@import "tree";
+@import "tabs";
+@import "media";
+@import "pages";
+@import "page";

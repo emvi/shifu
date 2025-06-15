@@ -1,0 +1,9 @@
+{{ define "media-directory-edit-window-title" }}
+    <span>{{ i18n .Data.Lang "media_edit_dir_window_title" }}</span>
+{{ end }}
+
+{{ define "media-directory-edit-window-content" }}
+    {{ template "media-directory-edit-form.html" . }}
+{{ end }}
+
+{{ template "window.html" . }}

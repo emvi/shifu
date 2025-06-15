@@ -1,0 +1,9 @@
+{{ define "database-window-title" }}
+    <span>{{ i18n .Data.Lang "db_window_title" }}</span>
+{{ end }}
+
+{{ define "database-window-content" }}
+    <p>{{ i18n .Data.Lang "db_wip" }}</p>
+{{ end }}
+
+{{ template "window.html" . }}

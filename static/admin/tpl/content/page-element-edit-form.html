@@ -1,0 +1,107 @@
+{{ $copy := .Data.Copy }}
+{{ $data := .Data.Data }}
+{{ $lang := .Data.Lang }}
+{{ $override := .Data.Override }}
+
+{{ if and (not $override) .Data.Element.Ref }}
+    <p style="color: var(--highlight);">
+        {{ i18n .Data.Lang "content_element_reference_warn" }}
+    </p>
+    <p>
+        <button hx-get="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}&override=true"
+                hx-target="body"
+                hx-swap="beforeend">
+            {{ i18n .Data.Lang "content_element_reference_original" }}
+        </button>
+    </p>
+{{ end }}
+
+<form method="post"
+      hx-post="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}{{ if $override }}&override=true{{end}}"
+      hx-swap="outerHTML"
+      hx-target-4*="this"
+      data-window="#shifu-page-element-edit{{ if $override }}-override{{end}}">
+    {{ if len .Data.Config.Copy }}
+        {{ $cfg := .Data.Config.Copy }}
+
+        <div class="shifu-tabs">
+            <div class="shifu-tabs-header">
+                {{ range $index, $lang := .Data.Languages }}
+                    <div class="shifu-tabs-header-tab {{ if eq $index 0 }}shifu-tabs-header-tab-active{{ end }}">
+                    {{ $lang }}
+                </div>
+                {{ end }}
+            </div>
+
+            {{ range $language := .Data.Languages }}
+                <div class="shifu-tabs-content">
+                    <details class="collapsible" open>
+                        <summary>{{ i18n $lang "content_element_reference_content" }}</summary>
+
+                        {{ range $field, $config := index $cfg }}
+                            {{
+                                template "page-element-edit-fields.html"
+                                dict "lang" $lang
+                                     "field" $field
+                                     "cfg" $config
+                                     "language" $language
+                                     "copy" $copy
+                                     "override" $override
+                            }}
+                        {{ end }}
+                    </details>
+                </div>
+            {{ end }}
+        </div>
+    {{ end }}
+
+    {{ if len .Data.Config.Data }}
+        <details class="collapsible">
+            <summary>{{ i18n .Data.Lang "content_element_reference_data" }}</summary>
+
+            {{ range $field, $cfg := .Data.Config.Data }}
+                {{
+                    template "page-element-edit-fields.html"
+                    dict "lang" $lang
+                         "field" $field
+                         "cfg" $cfg
+                         "data" $data
+                         "override" $override
+                }}
+            {{ end }}
+        </details>
+    {{ end }}
+
+    <div class="shifu-toolbelt">
+        <input type="submit" value="{{ i18n .Data.Lang "content_element_reference_submit" }}" />
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            {{ i18n .Data.Lang "cancel" }}
+        </button>
+    </div>
+</form>
+
+<script>
+    (function() {
+        document.querySelectorAll(".shifu-tabs").forEach(element => {
+            const tabs = element.querySelectorAll(".shifu-tabs-header-tab");
+            const content = element.querySelectorAll(".shifu-tabs-content");
+            tabs.forEach((e, index) => {
+                e.addEventListener("click", () => {
+                    tabs.forEach(e => e.classList.remove("shifu-tabs-header-tab-active"));
+                    e.classList.add("shifu-tabs-header-tab-active");
+                    content.forEach(e => e.style.display = "none");
+
+                    if (index < content.length) {
+                        content[index].style.display = "block";
+                    }
+                });
+            });
+
+            if (content.length) {
+                for (let i = 1; i < content.length; i++) {
+                    content[i].style.display = "none";
+                }
+            }
+        });
+    })();
+</script>

@@ -1,0 +1,129 @@
+{{ define "media-tree-directories" }}
+    {{ $lang := index . "lang" }}
+    {{ $interactive := index . "interactive" }}
+    {{ $selection := index . "selection" }}
+    {{ $target := index . "target" }}
+    {{ $type := index . "type" }}
+    {{ $label := index . "label" }}
+    {{ $field := index . "field" }}
+    {{ $language := index . "language" }}
+    {{ $prefix := index . "prefix" }}
+
+    <ul>
+        {{ range $dir := index . "dirs" }}
+            <li>
+                <details data-entry="{{ $dir.Path }}" {{ if not (len $dir.Children) }}class="empty"{{ end }}>
+                    <summary>
+                        {{ if $interactive }}
+                            <span class="shifu-media-directory-name"
+                                  hx-get="{{ config.UI.Path }}/media/directory?path={{ $dir.Path }}"
+                                  hx-target=".shifu-media-files">
+                                {{ $dir.Name }}
+                            </span>
+                            <span>
+                                <img src="{{ config.UI.Path }}/static/icons/edit.svg"
+                                     alt=""
+                                     title="{{ i18n $lang "media_tree_edit" }}"
+                                     hx-get="{{ config.UI.Path }}/media/directory/edit?path={{ $dir.Path }}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
+                                <img src="{{ config.UI.Path }}/static/icons/add.svg"
+                                     alt=""
+                                     title="{{ i18n $lang "media_tree_add" }}"
+                                     hx-get="{{ config.UI.Path }}/media/directory/add?path={{ $dir.Path }}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
+                                <img src="{{ config.UI.Path }}/static/icons/delete.svg"
+                                     alt=""
+                                     title="{{ i18n $lang "media_tree_delete" }}"
+                                     hx-get="{{ config.UI.Path }}/media/directory/delete?path={{ $dir.Path }}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
+                            </span>
+                        {{ else if $selection }}
+                            <span class="shifu-media-directory-name shifu-media-directory-selection"
+                                  hx-get="{{ config.UI.Path }}/media/directory?path={{ $dir.Path }}&selection=true&target={{ $target }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $language }}&prefix={{ $prefix }}"
+                                  hx-target=".shifu-media-files">
+                                {{ $dir.Name }}
+                            </span>
+                            <span></span>
+                        {{ else }}
+                            <span class="shifu-media-directory-name shifu-media-directory-selection" data-path="{{ $dir.Path }}">
+                                {{ $dir.Name }}
+                            </span>
+                            <span></span>
+                        {{ end }}
+                    </summary>
+
+                    {{ if len $dir.Children }}
+                        {{
+                            template "media-tree-directories"
+                                dict "lang" $lang
+                                    "dirs" $dir.Children
+                                    "interactive" $interactive
+                                    "selection" $selection
+                                    "target" $target
+                                    "type" $type
+                                    "label" $label
+                                    "field" $field
+                                    "language" $language
+                                    "prefix" $prefix
+                        }}
+                    {{ end }}
+                </details>
+            </li>
+        {{ end }}
+    </ul>
+{{ end }}
+
+{{ $interactive := .Data.Interactive }}
+{{ $selector := ".shifu-media-directory-selection" }}
+
+<div id="shifu-media-tree" style="margin-bottom: 8px;">
+    {{
+        template "media-tree-directories"
+            dict "lang" .Data.Lang
+                "dirs" .Data.Directories
+                "interactive" $interactive
+                "selection" .Data.Selection
+                "target" .Data.SelectionTarget
+                "type" .Data.SelectionField.Type
+                "label" .Data.SelectionField.Label
+                "field" .Data.SelectionField.Field
+                "lang" .Data.SelectionField.Language
+                "prefix" .Data.SelectionField.Prefix
+    }}
+</div>
+
+{{ if $interactive }}
+    {{ $selector = ".shifu-media-directory-name" }}
+
+    <button title="{{ i18n .Data.Lang "media_tree_add" }}"
+            hx-get="{{ config.UI.Path }}/media/directory/add"
+            hx-target="body"
+            hx-swap="beforeend">
+        <img src="{{ config.UI.Path }}/static/icons/add.svg" alt="" />
+        {{ i18n .Data.Lang "media_tree_add" }}
+    </button>
+{{ else }}
+    <input type="hidden" name="path" value="" id="shifu-media-directory-selection-path" />
+{{ end }}
+
+<script>
+    (function() {
+        shifuTree("shifu-media-tree");
+        const input = document.getElementById("shifu-media-directory-selection-path");
+        const updateInput = {{ not .Data.Selection }};
+
+        document.querySelectorAll({{ $selector }}).forEach(e => e.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+            document.querySelectorAll({{ $selector }}).forEach(e => e.classList.remove("shifu-media-directory-selected"));
+            e.target.classList.add("shifu-media-directory-selected");
+
+            if (input && updateInput) {
+                input.value = e.target.getAttribute("data-path");
+            }
+        }));
+    })();
+</script>

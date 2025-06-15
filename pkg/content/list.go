@@ -22,6 +22,10 @@ func List() []File {
 	files := make([]File, 0)
 
 	if err := filepath.WalkDir(filepath.Join(dir, "content"), func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
 		if !d.IsDir() && strings.ToLower(filepath.Ext(path)) == ".json" {
 			info, e := d.Info()
 
@@ -36,7 +40,7 @@ func List() []File {
 			})
 		}
 
-		return err
+		return nil
 	}); err != nil {
 		slog.Error("Error listing content files", "error", err)
 	}

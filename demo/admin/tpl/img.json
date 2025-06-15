@@ -1,0 +1,18 @@
+{
+    "label": "Bild",
+    "copy": {
+        "alt": {
+            "label": "Alt-Text"
+        }
+    },
+    "data": {
+        "src": {
+            "label": "Bild",
+            "type": "img"
+        },
+        "file": {
+            "label": "Datei",
+            "type": "file"
+        }
+    }
+}

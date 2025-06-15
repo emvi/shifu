@@ -11,7 +11,7 @@ import (
 	"sync"
 )
 
-// Cache caches a HTML template directory.
+// Cache caches an HTML template directory.
 type Cache struct {
 	temp     template.Template
 	funcMap  template.FuncMap
@@ -21,8 +21,8 @@ type Cache struct {
 	m        sync.RWMutex
 }
 
-// NewCache creates a new template cache for given directory and function map.
-// disable is used to disable the cache for testing.
+// NewCache creates a new template cache for the given directory and function map.
+// Disable is used to disable the cache for testing.
 func NewCache(dir string, funcMap template.FuncMap, disable bool) *Cache {
 	cache := &Cache{
 		funcMap:  funcMap,
@@ -37,7 +37,7 @@ func NewCache(dir string, funcMap template.FuncMap, disable bool) *Cache {
 	return cache
 }
 
-// Execute executes the template for given name. It logs errors and returns an error code, if something goes wrong.
+// Execute executes the template for the given name. It logs errors and returns an error code if something goes wrong.
 func (cache *Cache) Execute(w http.ResponseWriter, name string, data any) {
 	if err := cache.Get().ExecuteTemplate(w, name, data); err != nil {
 		slog.Error("Error executing template", "error", err, "name", name)
@@ -45,7 +45,7 @@ func (cache *Cache) Execute(w http.ResponseWriter, name string, data any) {
 	}
 }
 
-// Render executes the template for given name and returns the output.
+// Render executes the template for the given name and returns the output.
 func (cache *Cache) Render(name string, data any) ([]byte, error) {
 	var buffer bytes.Buffer
 
@@ -82,7 +82,7 @@ func (cache *Cache) loadTemplate() error {
 	t := template.New("").Funcs(cache.funcMap)
 
 	if err := filepath.Walk(cache.dir, func(path string, info os.FileInfo, err error) error {
-		if strings.Contains(path, ".html") {
+		if !info.IsDir() && strings.Contains(path, ".html") {
 			if _, err = t.ParseFiles(path); err != nil {
 				return err
 			}

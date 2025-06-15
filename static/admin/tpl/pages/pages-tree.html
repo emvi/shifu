@@ -1,0 +1,106 @@
+{{ define "pages-tree-entries" }}
+    {{ $lang := index . "lang" }}
+
+    <ul>
+        {{ range $entry := index . "entries" }}
+            <li>
+                {{ if $entry.IsDir }}
+                    <details data-entry="{{ $entry.Path }}" {{ if not (len $entry.Children) }}class="empty"{{ end }}>
+                        <summary>
+                            <span class="shifu-pages-entry-name" data-path="{{ $entry.Path }}">
+                                {{ $entry.Name }}
+                            </span>
+                            <span>
+                                <img src="{{ config.UI.Path }}/static/icons/edit.svg"
+                                     alt=""
+                                     title="{{ i18n $lang "pages_tree_edit_directory" }}"
+                                     hx-get="{{ config.UI.Path }}/pages/directory/edit?path={{ $entry.Path }}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
+                                <img src="{{ config.UI.Path }}/static/icons/add.svg"
+                                     alt=""
+                                     title="{{ i18n $lang "pages_tree_add_directory" }}"
+                                     hx-get="{{ config.UI.Path }}/pages/directory/add?path={{ $entry.Path }}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
+                                <img src="{{ config.UI.Path }}/static/icons/delete.svg"
+                                     alt=""
+                                     title="{{ i18n $lang "pages_tree_delete_directory" }}"
+                                     hx-get="{{ config.UI.Path }}/pages/directory/delete?path={{ $entry.Path }}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
+                            </span>
+                        </summary>
+
+                        {{ if len $entry.Children }}
+                            {{ template "pages-tree-entries" dict "entries" $entry.Children "lang" $lang }}
+                        {{ end }}
+                    </details>
+                {{ else }}
+                    <details class="file">
+                        <summary>
+                            <span class="shifu-pages-entry-name"
+                                  data-path="{{ $entry.Path }}"
+                                  hx-get="{{ config.UI.Path }}/pages/page?path={{ $entry.Path }}"
+                                  hx-target=".shifu-pages-page">
+                                        {{ $entry.Name }}
+                                    </span>
+                            <span>
+                                <img src="{{ config.UI.Path }}/static/icons/delete.svg"
+                                     alt=""
+                                     title="{{ i18n $lang "pages_tree_delete_page" }}"
+                                     hx-get="{{ config.UI.Path }}/pages/page/delete?path={{ $entry.Path }}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
+                            </span>
+                        </summary>
+                    </details>
+                {{ end }}
+            </li>
+        {{ end }}
+    </ul>
+{{ end }}
+
+<div id="shifu-pages-tree" style="margin-bottom: 8px;">
+    {{ template "pages-tree-entries" dict "entries" .Data.Entries "lang" .Data.Lang }}
+</div>
+<input type="hidden" name="path" value="" id="shifu-pages-entry-selection-path" />
+<div style="display: inline-flex;gap: 4px;flex-direction: column">
+    <button title="{{ i18n .Data.Lang "pages_tree_add_directory" }}"
+            hx-get="{{ config.UI.Path }}/pages/directory/add"
+            hx-target="body"
+            hx-swap="beforeend">
+        <img src="{{ config.UI.Path }}/static/icons/add.svg" alt="" />
+    {{ i18n .Data.Lang "pages_tree_add_directory" }}
+    </button>
+    <button title="{{ i18n .Data.Lang "pages_tree_add_page" }}"
+            hx-get="{{ config.UI.Path }}/pages/page/save"
+            hx-include="#shifu-pages-entry-selection-path"
+            hx-target="body"
+            hx-swap="beforeend">
+        <img src="{{ config.UI.Path }}/static/icons/add.svg" alt="" />
+    {{ i18n .Data.Lang "pages_tree_add_page" }}
+    </button>
+</div>
+
+<script>
+    (function(){
+        shifuTree("shifu-pages-tree");
+        const input = document.getElementById("shifu-pages-entry-selection-path");
+
+        document.querySelectorAll(".shifu-pages-entry-name").forEach(e => {
+            e.addEventListener("click", e => {
+                e.preventDefault();
+                e.stopPropagation();
+                document.querySelectorAll(".shifu-pages-entry-name").forEach(e => {
+                    e.classList.remove("shifu-pages-entry-selected");
+                });
+                e.target.classList.add("shifu-pages-entry-selected");
+
+                if (input) {
+                    input.value = e.target.getAttribute("data-path");
+                }
+            });
+        });
+    })();
+</script>

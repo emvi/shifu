@@ -1,0 +1,55 @@
+.shifu-page-tree {
+    small {
+        margin: 0 0 0 -2px;
+        color: var(--border);
+    }
+
+    details > div {
+        margin-left: 14px;
+    }
+
+    &-element, &-container, &-ref {
+        padding: 0 2px;
+
+        &::before {
+            background-image: url("/shifu-admin/static/icons/cube.svg") !important;
+            background-size: 10px;
+
+            details {
+                &[open] > summary {
+                    &::before {
+                        background-image: url("/shifu-admin/static/icons/cube.svg") !important;
+                    }
+                }
+            }
+        }
+    }
+
+    &-container {
+        &::before {
+            background-image: url("/shifu-admin/static/icons/cube-box.svg") !important;
+
+            details {
+                &[open] > summary {
+                    &::before {
+                        background-image: url("/shifu-admin/static/icons/cube-box.svg") !important;
+                    }
+                }
+            }
+        }
+    }
+
+    &-ref {
+        &::before {
+            background-image: url("/shifu-admin/static/icons/frame.svg") !important;
+
+            details {
+                &[open] > summary {
+                    &::before {
+                        background-image: url("/shifu-admin/static/icons/frame.svg") !important;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,9 @@
+{{ define "media-directory-create-window-title" }}
+    <span>{{ i18n .Data.Lang "media_create_dir_window_title" }}</span>
+{{ end }}
+
+{{ define "media-directory-create-window-content" }}
+    {{ template "media-directory-create-form.html" . }}
+{{ end }}
+
+{{ template "window.html" . }}

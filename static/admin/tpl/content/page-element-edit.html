@@ -1,0 +1,13 @@
+{{ define "page-element-edit-window-title" }}
+    <span>{{ i18n .Data.Lang "content_element_edit_element_window_title" }}</span>
+{{ end }}
+
+{{ define "page-element-edit-window-title-override" }}
+    <span>{{ i18n .Data.Lang "content_element_edit_reference_window_title" }}</span>
+{{ end }}
+
+{{ define "page-element-edit-window-content" }}
+    {{ template "page-element-edit-form.html" . }}
+{{ end }}
+
+{{ template "window.html" . }}

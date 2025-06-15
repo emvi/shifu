@@ -25,6 +25,7 @@ Shifu can also be used as a library in your Go application to add template funct
 * Simple configuration and easy deployment
 * Standalone server or library
 * Push/Pull files to/from a remote server
+* Admin UI
 
 ## Installation and Setup
 
@@ -152,6 +153,12 @@ Below is the entire configuration. Keys starting with `_` are comments.
             "X-Forwarded-For",
             "Forwarded"
         ]
+    },
+    "ui": {
+        "_path": "The path where you can sign in to the admin UI.",
+        "path": "/admin",
+        "_admin_password": "The default admin user password.",
+        "admin_password": "${ADMIN_PASSWORD}"
     }
 }
 ```
@@ -160,11 +167,12 @@ Below is the entire configuration. Keys starting with `_` are comments.
 
 The directory structure is as follows:
 
-| Directory | Description                                          |
-|-----------|------------------------------------------------------|
-| content/  | Recursive content files in JSON format.              |
-| static/   | Static content (will be served as is on `/static/`). |
-| tpl/      | Recursive Golang template files.                     |
+| Directory  | Description                                          |
+|------------|------------------------------------------------------|
+| admin/tpl/ | The template configuration for the admin UI.         |
+| content/   | Recursive content files in JSON format.              |
+| static/    | Static content (will be served as is on `/static/`). |
+| tpl/       | Recursive Golang template files.                     |
 
 The JSON structure for a content file is as follows:
 
@@ -298,8 +306,75 @@ Shifu comes with a number of template functions that can be used within template
 | int           | Converts given string to an integer.                                                                               | `{{int "123"}}`                                            |
 | uint64        | Converts given int to an uint64.                                                                                   | `{{uint64 123}}`                                           |
 | shuffle       | Shuffles given list and returns up to n results if n > 0.                                                          | `{{shuffle .List 10}}`                                     |
+| fmt           | Formats a string.                                                                                                  | `{{fmt "foo %s" "bar"}}`                                   |
+| dict          | Creates a map from given key value pairs.                                                                          | `{{dict "key" "value" "answer" 42}}`                       |
+| default       | Returns the first value that's not nil.                                                                            | `{{default .Val0 .Val1}}`                                  |
+| year          | Returns the current year                                                                                           | `{{year}}`                                                 |
+| formatFloat   | Formats the given value with two decimal places.                                                                   | `{{formatFloat 42.34567}}`                                 |
+| formatInt     | Formats the given value with separators (comma).                                                                   | `{{formatInt 4213465576}}`                                 |
+| formatDate    | Formats a data for given layout.                                                                                   | `{{formatDate .Date "2006-01-02"}}`                        |
+| gtFloat       | Checks whether the first value is bigger than the second.                                                          | `{{gtFloat 6 3}}`                                          |
+| ltFloat       | Checks whether the first value is smaller than the second.                                                         | `{{gtFloat 6 3}}`                                          |
+| html          | Returns given string as valid HTML. This is unsafe if the input is user provided.                                  | `{{html "<p>Text</p>"}}`                                   |
+| htmlAttr      | Returns given string as a valid HTML attribute. This is unsafe if the input is user provided.                      | `{{htmlAttr "value"}}`                                     |
+| loggedIn      | Returns true if the visitor is signed in as admin.                                                                 | `{{loggedIn}}`                                             |
+| adminHead     | Returns the HTML for the `<head>` section for the admin UI.                                                        | `{{adminHead .Page.Request}}`                              |
+| adminBody     | Returns the HTML for the `<body>` section for the admin UI.                                                        | `{{adminBody .Page.Request .Page.File}}`                   |
 
-For more template functions, see the [Sprig documentation](github.com/Masterminds/sprig).
+For more template functions, see the [Sprig documentation](https://github.com/Masterminds/sprig).
+
+## Admin UI
+
+Shifu has a build-in admin UI. To enable it, add the `ui` section to the `config.json`. Static files are provided under the configured path and always under `/shifu-admin`.
+
+Elements and references on the page can only be edited if you add a template configuration file for them. They need to be created inside `admin/tpl/` and look like this:
+
+```json
+{
+    "_label": "The display name for the template file.",
+    "label": "Label",
+    "_content": "The display name for the content areas.",
+    "content": {
+        "content": "Inhalt"
+    },
+    "_copy": "The display name and field types for the copy section. The type can be html, img, file, boolean, or select.",
+    "copy": {
+        "headline": {
+            "label": "Headline"
+        },
+        "text": {
+            "label": "Main Text",
+            "type": "html"
+        }
+    },
+    "_data": "The same as for copy, but for the data fields instead.",
+    "data": {
+        "headline_size": {
+            "label": "Headline Size",
+            "type": "select",
+            "_options": "A list of options for a select field.",
+            "options": {
+                "h1": "H1",
+                "h2": "H2",
+                "h3": "H3"
+            }
+        }
+    }
+}
+```
+
+In order for the on-page editor to work, the HTML for the elements need to be structured like this:
+
+```html
+<section data-shifu-element="{{ .Content.Position }}">
+    <p>An element...</p>
+
+    {{.CMS.Render .Args .Page (fmt "%s.content" .Content.Position) (index .Content.Content "content")}}
+    <slot name="{{ .Content.Position }}/content"></slot>
+</section>
+```
+
+Where `data-shifu-element="{{ .Content.Position }}"` must be added to the top-level element, so that it can be modified. `<slot name="{{ .Content.Position }}/content"></slot>` can be used to allow nesting, where the part after the slash is the name of the position in the template.
 
 ## Using Shifu as a Library
 
@@ -349,10 +424,6 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func loadAndRenderBlogArticle() string {
-	return "TODO"
-}
-
 func main() {
 	// Optional custom router. The routes will be merged with the Shifu router.
 	router := chi.NewRouter()
@@ -366,7 +437,10 @@ func main() {
 
 		// Define a custom FuncMap to load and render blog articles from an external source.
 		FuncMap: template.FuncMap{
-			"blogArticle": loadAndRenderBlogArticle,
+			"blogArticle": func() string {
+				// ...
+				return "TODO"
+            },
 		},
 	})
 

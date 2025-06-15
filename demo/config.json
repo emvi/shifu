@@ -28,5 +28,9 @@
         "out": "static/bundle.js",
         "source_map": true,
         "watch": true
+    },
+    "ui": {
+        "path": "/admin",
+        "admin_password": "${ADMIN_PASSWORD}"
     }
 }

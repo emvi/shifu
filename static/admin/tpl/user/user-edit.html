@@ -1,0 +1,13 @@
+{{ define "user-edit-window-title" }}
+    {{ if .Data.User.ID }}
+        <span>{{ i18n .Data.Lang "user_edit_window_title" }}</span>
+    {{ else }}
+        <span>{{ i18n .Data.Lang "user_create_window_title" }}</span>
+    {{ end }}
+{{ end }}
+
+{{ define "user-edit-window-content" }}
+    {{ template "user-edit-form.html" . }}
+{{ end }}
+
+{{ template "window.html" . }}

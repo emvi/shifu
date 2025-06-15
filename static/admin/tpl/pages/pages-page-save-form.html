@@ -1,0 +1,228 @@
+{{ $lang := .Data.Lang }}
+{{ $langs := .Data.Languages }}
+
+<form method="post"
+      id="shifu-save-page-form"
+      hx-post="{{ config.UI.Path }}/pages/page/save?path={{ .Data.Path }}"
+      hx-swap="outerHTML"
+      hx-target=".shifu-pages-tree"
+      hx-target-4*="this"
+      data-window="#shifu-pages-page-save">
+    <fieldset>
+        <label for="name">{{ i18n .Data.Lang "pages_create_page_name" }}</label>
+        <input type="text" name="name" id="name" value="{{ .Data.Name }}" autofocus />
+
+        {{ if index .Data.Errors "name" }}
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "name") }}</span>
+        {{ end }}
+    </fieldset>
+    <div class="shifu-form-group">
+        <div id="shifu-pages-page-path-list">
+            {{ range $key, $value := .Data.PagePath }}
+                <div class="shifu-pages-page-path" style="display: flex;gap: 8px;align-items: flex-end;">
+                    <fieldset style="flex: 1;">
+                        <label for="language">{{ i18n $lang "pages_create_page_language" }}</label>
+                        <select name="language[]" id="language">
+                            {{ range $langs }}
+                                <option value="{{ .Code }}" {{ if eq .Code $key }}selected{{ end }}>{{ .Name }}</option>
+                            {{ end }}
+                        </select>
+                    </fieldset>
+                    <fieldset style="flex: 4;">
+                        <label for="path">{{ i18n $lang "pages_create_page_path" }}</label>
+                        <input type="text" name="path[]" id="path" value="{{ $value }}" />
+                    </fieldset>
+                    <button title="{{ i18n $lang "pages_create_page_remove_path" }}"
+                            class="shifu-pages-page-remove-path"
+                            style="height: 28px;margin-bottom: 8px;">
+                        <img src="{{ config.UI.Path }}/static/icons/close.svg" alt="" />
+                    </button>
+                </div>
+            {{ end }}
+        </div>
+
+        {{ if index .Data.Errors "path" }}
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "path") }}</span>
+        {{ end }}
+
+        <button id="shifu-pages-page-add-path">{{ i18n .Data.Lang "pages_create_page_add_path" }}</button>
+    </div>
+    <fieldset>
+        <input type="checkbox" name="cache" id="cache" {{ if .Data.Cache }}checked{{ end }} />
+        <label for="cache">{{ i18n .Data.Lang "pages_create_page_cache" }}</label>
+    </fieldset>
+    <fieldset>
+        <label for="sitemap">{{ i18n .Data.Lang "pages_create_page_sitemap" }}</label>
+        <input type="number" name="sitemap" id="sitemap" value="{{ .Data.Sitemap }}" step="0.01" />
+
+        {{ if index .Data.Errors "sitemap" }}
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "sitemap") }}</span>
+        {{ end }}
+    </fieldset>
+    <fieldset>
+        <label for="handler">{{ i18n .Data.Lang "pages_create_page_handler" }}</label>
+        <input type="text" name="handler" id="handler" value="{{ .Data.Handler }}" />
+    </fieldset>
+    <div class="shifu-form-group">
+        <div id="shifu-pages-page-header-list">
+            {{ range $key, $value := .Data.Header }}
+                <div class="shifu-pages-page-header" style="display: flex;gap: 8px;align-items: flex-end;">
+                    <fieldset style="flex: 1;">
+                        <label for="header">{{ i18n $lang "pages_create_page_header_key" }}</label>
+                        <input type="text" name="header[]" id="header" value="{{ $key }}" />
+                    </fieldset>
+                    <fieldset style="flex: 1;">
+                        <label for="header_value">{{ i18n $lang "pages_create_page_header_value" }}</label>
+                        <input type="text" name="header_value[]" id="header_value" value="{{ $value }}" />
+                    </fieldset>
+                    <button title="{{ i18n $lang "pages_create_page_remove_header" }}"
+                            class="shifu-pages-page-remove-header"
+                            style="height: 28px;margin-bottom: 8px;">
+                        <img src="{{ config.UI.Path }}/static/icons/close.svg" alt="" />
+                    </button>
+                </div>
+            {{ end }}
+        </div>
+
+        {{ if index .Data.Errors "header" }}
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "header") }}</span>
+        {{ end }}
+
+        <button id="shifu-pages-page-add-header">{{ i18n .Data.Lang "pages_create_page_add_header" }}</button>
+    </div>
+
+    {{ if .Data.New }}
+        <div class="shifu-toolbelt">
+            <input type="submit" value="Erstellen" />
+            <button class="secondary shifu-window-close" hx-trigger="click">
+                {{ i18n .Data.Lang "cancel" }}
+            </button>
+        </div>
+    {{ else }}
+        <div class="shifu-toolbelt">
+            {{ if .Data.Saved }}
+                <div class="shifu-saved">
+                    {{ i18n .Data.Lang "saved" }}
+                </div>
+            {{ end }}
+
+            <input type="submit" value="{{ i18n .Data.Lang "pages_create_page_submit" }}" />
+        </div>
+    {{ end }}
+</form>
+
+<template id="shifu-pages-page-path-template">
+    <div class="shifu-pages-page-path" style="display: flex;gap: 8px;align-items: flex-end;">
+        <fieldset style="flex: 1;">
+            <label data-name="language">{{ i18n .Data.Lang "pages_create_page_language" }}</label>
+            <select name="language[]">
+                {{ range $langs }}
+                    <option value="{{ .Code }}">{{ .Name }}</option>
+                {{ end }}
+            </select>
+        </fieldset>
+        <fieldset style="flex: 4;">
+            <label data-name="path">{{ i18n .Data.Lang "pages_create_page_path" }}</label>
+            <input type="text" name="path[]" />
+        </fieldset>
+        <button title="{{ i18n .Data.Lang "pages_create_page_remove_path" }}"
+                class="shifu-pages-page-remove-path"
+                style="height: 28px;margin-bottom: 8px;">
+            <img src="{{ config.UI.Path }}/static/icons/close.svg" alt="" />
+        </button>
+    </div>
+</template>
+
+<template id="shifu-pages-page-header-template">
+    <div class="shifu-pages-page-header" style="display: flex;gap: 8px;align-items: flex-end;">
+        <fieldset style="flex: 1;">
+            <label data-name="header">{{ i18n .Data.Lang "pages_create_page_header_key" }}</label>
+            <input type="text" name="header[]" />
+        </fieldset>
+        <fieldset style="flex: 1;">
+            <label data-name="value">{{ i18n .Data.Lang "pages_create_page_header_value" }}</label>
+            <input type="text" name="header_value[]" />
+        </fieldset>
+        <button title="{{ i18n .Data.Lang "pages_create_page_remove_header" }}"
+                class="shifu-pages-page-remove-header"
+                style="height: 28px;margin-bottom: 8px;">
+            <img src="{{ config.UI.Path }}/static/icons/close.svg" alt="" />
+        </button>
+    </div>
+</template>
+
+<script>
+    (function (){
+        const tpl = document.getElementById("shifu-pages-page-path-template");
+        let index = 0;
+
+        document.getElementById("shifu-pages-page-add-path").addEventListener("click", e => {
+            e.preventDefault();
+            const selection = tpl.content.cloneNode(true);
+            selection.querySelector("label[data-name='language']").setAttribute("for", `language-${index}`);
+            selection.querySelector("label[data-name='path']").setAttribute("for", `path-${index}`);
+            selection.querySelector("select").id = `language-${index}`;
+            selection.querySelector("input").id = `path-${index}`;
+            document.getElementById("shifu-pages-page-path-list").append(selection);
+            index++;
+            remove();
+        });
+
+        function remove() {
+            document.querySelectorAll(".shifu-pages-page-remove-path").forEach(button => {
+                button.removeEventListener("click", removeClick);
+                button.addEventListener("click", removeClick);
+            });
+        }
+
+        function removeClick(e) {
+            e.preventDefault();
+            let node = e.target.parentNode;
+
+            while (!node.classList.contains("shifu-pages-page-path")) {
+                node = node.parentNode;
+            }
+
+            node.remove();
+        }
+
+        remove();
+    })();
+
+    (function (){
+        const tpl = document.getElementById("shifu-pages-page-header-template");
+        let index = 0;
+
+        document.getElementById("shifu-pages-page-add-header").addEventListener("click", e => {
+            e.preventDefault();
+            const selection = tpl.content.cloneNode(true);
+            selection.querySelector("label[data-name='header']").setAttribute("for", `header-${index}`);
+            selection.querySelector("label[data-name='value']").setAttribute("for", `header_value-${index}`);
+            selection.querySelector("input[name='header[]']").id = `header-${index}`;
+            selection.querySelector("input[name='header_value[]']").id = `header_value-${index}`;
+            document.getElementById("shifu-pages-page-header-list").append(selection);
+            index++;
+            remove();
+        });
+
+        function remove() {
+            document.querySelectorAll(".shifu-pages-page-remove-header").forEach(button => {
+                button.removeEventListener("click", removeClick);
+                button.addEventListener("click", removeClick);
+            });
+        }
+
+        function removeClick(e) {
+            e.preventDefault();
+            let node = e.target.parentNode;
+
+            while (!node.classList.contains("shifu-pages-page-header")) {
+                node = node.parentNode;
+            }
+
+            node.remove();
+        }
+
+        remove();
+    })();
+</script>

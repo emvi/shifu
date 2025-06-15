@@ -1,0 +1,45 @@
+{{ $lang := .Data.Lang }}
+
+<table>
+    <thead>
+        <tr>
+            <td>{{ i18n $lang "user_table_id" }}</td>
+            <td>{{ i18n $lang "user_table_email" }}</td>
+            <td>{{ i18n $lang "user_table_name" }}</td>
+            <td>{{ i18n $lang "user_table_edit" }}</td>
+        </tr>
+    </thead>
+    <tbody>
+        {{ $isAdmin := .Data.Admin }}
+        {{ $selfID := .Data.Self.ID }}
+
+        {{ range $user := .Data.User }}
+            <tr>
+                <td>{{ $user.ID }}</td>
+                <td>{{ $user.Email }}</td>
+                <td>{{ $user.FullName }}</td>
+                <td>
+                    {{ if or $isAdmin (eq $user.ID $selfID) }}
+                        <div class="edit">
+                            <button title="{{ i18n $lang "user_table_tooltip_edit" }}"
+                                    hx-get="{{ config.UI.Path }}/user/edit?id={{ $user.ID }}"
+                                    hx-target="body"
+                                    hx-swap="beforeend">
+                                <img src="{{ config.UI.Path }}/static/icons/edit.svg" alt="" />
+                            </button>
+
+                            {{ if and (not (eq $user.Email "admin")) (not (eq $user.ID $selfID)) }}
+                                <button title="{{ i18n $lang "user_table_tooltip_delete" }}"
+                                        hx-get="{{ config.UI.Path }}/user/delete?id={{ $user.ID }}"
+                                        hx-target="body"
+                                        hx-swap="beforeend">
+                                    <img src="{{ config.UI.Path }}/static/icons/delete.svg" alt="" />
+                                </button>
+                            {{ end }}
+                        </div>
+                    {{ end }}
+                </td>
+            </tr>
+        {{ end }}
+    </tbody>
+</table>

@@ -11,6 +11,7 @@ import (
 	"html/template"
 	"log/slog"
 	"math/rand/v2"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -39,6 +40,10 @@ var (
 		"gtFloat":       func(a, b float64) bool { return a > b },
 		"ltFloat":       func(a, b float64) bool { return a < b },
 		"html":          func(str string) template.HTML { return template.HTML(str) },
+		"htmlAttr":      func(str string) template.HTMLAttr { return template.HTMLAttr(str) },
+		"loggedIn":      isLoggedIn,
+		"adminHead":     adminHead,
+		"adminBody":     adminBody,
 	}
 )
 
@@ -260,4 +265,42 @@ func formatInt(i int) string {
 	}
 
 	return out[:len(out)-1]
+}
+
+func isLoggedIn(r *http.Request) bool {
+	cookie, err := r.Cookie("session")
+
+	if err != nil {
+		return false
+	}
+
+	return cookie.Value != "" && cookie.Expires.Before(time.Now())
+}
+
+func adminHead(r *http.Request) template.HTML {
+	if isLoggedIn(r) {
+		path := cfg.Get().UI.Path
+		return template.HTML(fmt.Sprintf(`<link rel="prefetch" href="%s/static/fonts/Inter-Medium.woff2" as="font" type="font/woff2" />
+			<link rel="prefetch" href="%s/static/fonts/Inter-Regular.woff2" as="font" type="font/woff2" />
+			<link rel="prefetch" href="%s/static/fonts/InterDisplay-Medium.woff2" as="font" type="font/woff2" />
+			<link rel="stylesheet" type="text/css" href="%s/static/admin.css" />
+			<link rel="stylesheet" type="text/css" href="%s/static/trix/trix.css" />
+			<script defer src="%s/static/trix/trix.min.js"></script>
+			<script defer src="%s/static/htmx.min.js"></script>
+			<script defer src="%s/static/htmx-ext-response-targets.min.js"></script>
+			<script defer src="%s/static/admin.js"></script>`, path, path, path, path, path, path, path, path, path))
+	}
+
+	return ""
+}
+
+func adminBody(r *http.Request, file string) template.HTML {
+	if isLoggedIn(r) {
+		path := cfg.Get().UI.Path
+		return template.HTML(fmt.Sprintf(`<div hx-get="%s/toolbar?path=%s"
+			hx-swap="outerHTML"
+			hx-trigger="load"></div>`, path, file))
+	}
+
+	return ""
 }

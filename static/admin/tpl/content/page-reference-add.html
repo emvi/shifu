@@ -1,0 +1,9 @@
+{{ define "page-reference-add-window-title" }}
+    <span>{{ i18n .Data.Lang "content_reference_window_title" }}</span>
+{{ end }}
+
+{{ define "page-reference-add-window-content" }}
+    {{ template "page-reference-add-form.html" . }}
+{{ end }}
+
+{{ template "window.html" . }}

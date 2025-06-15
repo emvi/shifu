@@ -1,0 +1,21 @@
+<form method="post"
+      hx-post="{{ config.UI.Path }}/media/file/move?path={{ .Data.Path }}{{ range .Data.Name }}&name[]={{ . }}{{ end }}"
+      hx-swap="outerHTML"
+      hx-target=".shifu-media-files"
+      hx-target-4*="this"
+      data-window="#shifu-media-file-move">
+    <div class="shifu-media-tree shifu-tree">
+        {{ template "media-tree.html" . }}
+    </div>
+
+    {{ if index .Data.Errors "path" }}
+        <span class="error">{{ i18n .Data.Lang (index .Data.Errors "path") }}</span>
+    {{ end }}
+
+    <div class="shifu-toolbelt">
+        <input type="submit" value="{{ i18n .Data.Lang "media_move_file_submit" }}" />
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            {{ i18n .Data.Lang "cancel" }}
+        </button>
+    </div>
+</form>

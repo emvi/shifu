@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0
+
+* added admin UI
+* updated dependencies
+
 ## 0.13.0
 
 * removed dir parameter from `Server.Start`

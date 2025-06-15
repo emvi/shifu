@@ -1,0 +1,16 @@
+{{ define "pages-window-title" }}
+    <span>{{ i18n .Data.Lang "pages_window_title" }}</span>
+{{ end }}
+
+{{ define "pages-window-content" }}
+    <div class="shifu-window-content-flex">
+        <div class="shifu-pages-tree shifu-tree">
+            {{ template "pages-tree.html" . }}
+        </div>
+        <div class="shifu-pages-page">
+            <p>{{ i18n .Data.Lang "pages_select_page" }}</p>
+        </div>
+    </div>
+{{ end }}
+
+{{ template "window.html" . }}

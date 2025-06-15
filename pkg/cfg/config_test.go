@@ -23,7 +23,7 @@ const (
 		"cookie_domain_name": "example.com"
     },
 	"api": {
-		"secret": "foobar"
+		"secret": "${ACCESS_KEY}"
 	},
 	"remote": {
 		"url": "https://example.com",
@@ -69,7 +69,11 @@ const (
             "X-Forwarded-For",
             "Forwarded"
         ]
-    }
+    },
+	"ui": {
+		"path": "/admin",
+		"admin_password": "foobar"
+	}
 }
 `
 )
@@ -90,7 +94,7 @@ func TestLoadConfig(t *testing.T) {
 	assert.Equal(t, "example.com", cfg.Server.Hostname)
 	assert.True(t, cfg.Server.SecureCookies)
 	assert.Equal(t, "example.com", cfg.Server.CookieDomainName)
-	assert.Equal(t, "foobar", cfg.API.Secret)
+	assert.Equal(t, "access key", cfg.API.Secret)
 	assert.Equal(t, "https://example.com", cfg.Remote.URL)
 	assert.Equal(t, "foobar", cfg.Remote.Secret)
 	assert.Equal(t, 600, cfg.Git.UpdateSeconds)
@@ -118,6 +122,8 @@ func TestLoadConfig(t *testing.T) {
 	assert.Len(t, cfg.Analytics.Header, 2)
 	assert.Equal(t, "X-Forwarded-For", cfg.Analytics.Header[0])
 	assert.Equal(t, "Forwarded", cfg.Analytics.Header[1])
+	assert.Equal(t, "/admin", cfg.UI.Path)
+	assert.Equal(t, "foobar", cfg.UI.AdminPassword)
 }
 
 func TestLoadConfigNotExists(t *testing.T) {

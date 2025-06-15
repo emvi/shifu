@@ -1,0 +1,9 @@
+{{ define "pages-directory-edit-window-title" }}
+    <span>{{ i18n .Data.Lang "pages_edit_directory_window_title" }}</span>
+{{ end }}
+
+{{ define "pages-directory-edit-window-content" }}
+    {{ template "pages-directory-edit-form.html" . }}
+{{ end }}
+
+{{ template "window.html" . }}

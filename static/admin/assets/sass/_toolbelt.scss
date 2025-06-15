@@ -1,0 +1,16 @@
+.shifu {
+    &-toolbelt {
+        display: flex;
+        gap: 4px;
+        margin: 8px 0;
+        justify-content: flex-end;
+
+        button, .button {
+            padding: 4px 8px;
+        }
+
+        .shifu-window-close {
+            order: -1;
+        }
+    }
+}

@@ -1,15 +1,33 @@
-{{$headline := copy .Page .Content "headline"}}
-{{$n := index .Args "n"}}
+{{ $headline := copy .Page .Content "headline" }}
+{{ $size := get .Content "headline_size" }}
+{{ $n := index .Args "n" }}
 
-<section>
+<section data-shifu-element="{{ .Content.Position }}">
     <article>
-        {{if $headline}}<h1>{{$headline}}</h1>{{end}}
-        {{html (copy .Page .Content "text")}}
-    </article>
-</section>
+        {{ if $headline }}
+            {{ if $size }}
+                {{ html (fmt "<%s>" $size) }}
+                {{ $headline }}
+                {{ html (fmt "</%s>" $size) }}
+            {{ else }}
+                <h1>{{ $headline }}</h1>
+            {{ end }}
+        {{ else }}
+            <strong>Headline not set!</strong>
+        {{ end }}
+        {{ html (copy .Page .Content "text") }}
 
-{{if $n}}
-    <section>
-        <p>Arg: {{$n}}</p>
-    </section>
-{{end}}
+        {{ if (get .Content "hr_bottom") }}
+            <hr />
+        {{ end }}
+    </article>
+
+    {{ if $n }}
+        <section>
+            <p>Arg: {{ $n }}</p>
+        </section>
+    {{ end }}
+
+    {{.CMS.Render .Args .Page (fmt "%s.content" .Content.Position) (index .Content.Content "content")}}
+    <slot name="{{ .Content.Position }}/content"></slot>
+</section>

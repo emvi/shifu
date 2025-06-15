@@ -1,0 +1,9 @@
+{{ define "pages-page-save-window-title" }}
+    <span>{{ i18n .Data.Lang "pages_create_page_window_title" }}</span>
+{{ end }}
+
+{{ define "pages-page-save-window-content" }}
+    {{ template "pages-page-save-form.html" . }}
+{{ end }}
+
+{{ template "window.html" . }}

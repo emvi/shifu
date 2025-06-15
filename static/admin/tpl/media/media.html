@@ -1,0 +1,16 @@
+{{ define "media-window-title" }}
+    <span>{{ i18n .Data.Lang "media_window_title" }}</span>
+{{ end }}
+
+{{ define "media-window-content" }}
+    <div class="shifu-window-content-flex">
+        <div class="shifu-media-tree shifu-tree">
+            {{ template "media-tree.html" . }}
+        </div>
+        <div class="shifu-media-files">
+            {{ template "media-files.html" . }}
+        </div>
+    </div>
+{{ end }}
+
+{{ template "window.html" . }}

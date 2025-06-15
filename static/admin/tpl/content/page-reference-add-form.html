@@ -1,0 +1,44 @@
+{{ $reference := .Data.Reference }}
+{{ $position := .Data.Position }}
+
+<form method="post"
+      hx-post="{{ config.UI.Path }}/content/reference/add?path={{ .Data.Path }}&element={{ .Data.Element }}"
+      hx-swap="outerHTML"
+      hx-target=".shifu-page-tree"
+      hx-target-4*="this"
+      data-window="#shifu-page-reference-add">
+    <fieldset>
+        <label for="reference">{{ i18n .Data.Lang "content_reference_reference" }}</label>
+        <select name="reference" id="reference">
+            {{ range .Data.References }}
+                <option value="{{ .Name }}" {{ if eq .Name $reference }}selected{{ end }}>{{ .Label }} ({{ .Name }})</option>
+            {{ end }}
+        </select>
+
+        {{ if index .Data.Errors "reference" }}
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "reference") }}</span>
+        {{ end }}
+    </fieldset>
+
+    {{  if len .Data.Positions }}
+        <fieldset>
+            <label for="position">{{ i18n .Data.Lang "content_reference_position" }}</label>
+            <select name="position" id="position">
+                {{ range $key, $value := .Data.Positions }}
+                    <option value="{{ $key }}" {{ if eq $key $position }}selected{{ end }}>{{ $value }}</option>
+                {{ end }}
+            </select>
+
+            {{ if index .Data.Errors "position" }}
+                <span class="error">{{ i18n .Data.Lang (index .Data.Errors "position") }}</span>
+            {{ end }}
+        </fieldset>
+    {{ end }}
+
+    <div class="shifu-toolbelt">
+        <input type="submit" value="{{ i18n .Data.Lang "content_reference_submit" }}" />
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            {{ i18n .Data.Lang "cancel" }}
+        </button>
+    </div>
+</form>
