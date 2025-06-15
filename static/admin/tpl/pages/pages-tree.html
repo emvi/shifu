@@ -5,7 +5,7 @@
         {{ range $entry := index . "entries" }}
             <li>
                 {{ if $entry.IsDir }}
-                    <details {{ if not (len $entry.Children) }}class="empty"{{ end }}>
+                    <details data-entry="{{ $entry.Path }}" {{ if not (len $entry.Children) }}class="empty"{{ end }}>
                         <summary>
                             <span class="shifu-pages-entry-name" data-path="{{ $entry.Path }}">
                                 {{ $entry.Name }}
@@ -61,7 +61,7 @@
     </ul>
 {{ end }}
 
-<div style="margin-bottom: 8px;">
+<div id="shifu-pages-tree" style="margin-bottom: 8px;">
     {{ template "pages-tree-entries" dict "entries" .Data.Entries "lang" .Data.Lang }}
 </div>
 <input type="hidden" name="path" value="" id="shifu-pages-entry-selection-path" />
@@ -85,7 +85,9 @@
 
 <script>
     (function(){
+        shifuTree("shifu-pages-tree");
         const input = document.getElementById("shifu-pages-entry-selection-path");
+
         document.querySelectorAll(".shifu-pages-entry-name").forEach(e => {
             e.addEventListener("click", e => {
                 e.preventDefault();

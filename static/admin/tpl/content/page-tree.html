@@ -15,7 +15,7 @@
                     {{ $p := fmt "%s%s.%d" $parentPath $content $index }}
 
                     <li>
-                        <details>
+                        <details data-entry="{{ $p }}">
                             <summary
                                 {{ if $element.Ref }}
                                     class="shifu-page-tree-ref"
@@ -105,7 +105,7 @@
     {{ end }}
 {{ end }}
 
-<div style="margin-bottom: 8px;">
+<div id="page-element-tree" style="margin-bottom: 8px;">
     {{
         template "page-element-tree"
             dict "path" .Data.Path
@@ -140,6 +140,8 @@
 
 <script>
     (function(){
+        shifuTree("page-element-tree");
+
         document.querySelectorAll(".shifu-page-tree img").forEach(e => {
             e.addEventListener("click", e => {
                 e.preventDefault();

@@ -12,7 +12,7 @@
     <ul>
         {{ range $dir := index . "dirs" }}
             <li>
-                <details {{ if not (len $dir.Children) }}class="empty"{{ end }}>
+                <details data-entry="{{ $dir.Path }}" {{ if not (len $dir.Children) }}class="empty"{{ end }}>
                     <summary>
                         {{ if $interactive }}
                             <span class="shifu-media-directory-name"
@@ -79,7 +79,7 @@
 {{ $interactive := .Data.Interactive }}
 {{ $selector := ".shifu-media-directory-selection" }}
 
-<div style="margin-bottom: 8px;">
+<div id="shifu-media-tree" style="margin-bottom: 8px;">
     {{
         template "media-tree-directories"
             dict "lang" .Data.Lang
@@ -111,6 +111,7 @@
 
 <script>
     (function() {
+        shifuTree("shifu-media-tree");
         const input = document.getElementById("shifu-media-directory-selection-path");
         const updateInput = {{ not .Data.Selection }};
 
