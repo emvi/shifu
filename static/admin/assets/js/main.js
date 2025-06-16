@@ -141,3 +141,4 @@ import {debounce} from "./debounce";
 
 import "./trix";
 import "./tree";
+import "./page";

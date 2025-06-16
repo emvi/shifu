@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -33,12 +34,19 @@ func addElement(content *cms.Content, parentPath, position, template string, pos
 		children[p] = make([]cms.Content, 0)
 	}
 
+	index := findElementPositionToInsert(content, position)
+	n := len(content.Content[position])
+
+	if index > -1 {
+		n = index
+	}
+
 	pos := ""
 
 	if parentPath != "" {
-		pos = fmt.Sprintf("%s.%s.%d", parentPath, position, len(content.Content[position]))
+		pos = fmt.Sprintf("%s.%s.%d", parentPath, position, n)
 	} else {
-		pos = fmt.Sprintf("%s.%d", position, len(content.Content[position]))
+		pos = fmt.Sprintf("%s.%d", position, n)
 	}
 
 	element := cms.Content{
@@ -46,7 +54,13 @@ func addElement(content *cms.Content, parentPath, position, template string, pos
 		Content:  children,
 		Position: pos,
 	}
-	content.Content[position] = append(content.Content[position], element)
+
+	if index < 0 {
+		content.Content[position] = append(content.Content[position], element)
+	} else {
+		content.Content[position] = slices.Insert(content.Content[position], index, element)
+	}
+
 	return &element
 }
 
@@ -59,19 +73,32 @@ func addReference(content *cms.Content, parentPath, position, reference string) 
 		content.Content[position] = make([]cms.Content, 0)
 	}
 
+	index := findElementPositionToInsert(content, position)
+	n := len(content.Content[position])
+
+	if index > -1 {
+		n = index
+	}
+
 	pos := ""
 
 	if parentPath != "" {
-		pos = fmt.Sprintf("%s.%s.%d", parentPath, position, len(content.Content[position]))
+		pos = fmt.Sprintf("%s.%s.%d", parentPath, position, n)
 	} else {
-		pos = fmt.Sprintf("%s.%d", position, len(content.Content[position]))
+		pos = fmt.Sprintf("%s.%d", position, n)
 	}
 
 	element := cms.Content{
 		Ref:      reference,
 		Position: pos,
 	}
-	content.Content[position] = append(content.Content[position], element)
+
+	if index < 0 {
+		content.Content[position] = append(content.Content[position], element)
+	} else {
+		content.Content[position] = slices.Insert(content.Content[position], index, element)
+	}
+
 	return &element
 }
 
@@ -84,8 +111,20 @@ func moveElement(content *cms.Content, path string, direction int) bool {
 		}
 
 		if direction == -1 {
+			config, found := findTemplateConfig(parentElement, key, index-1)
+
+			if !found || config.Layout {
+				return false
+			}
+
 			parentElement.Content[key][index], parentElement.Content[key][index-1] = parentElement.Content[key][index-1], parentElement.Content[key][index]
 		} else if direction == 1 {
+			config, found := findTemplateConfig(parentElement, key, index+1)
+
+			if !found || config.Layout {
+				return false
+			}
+
 			parentElement.Content[key][index], parentElement.Content[key][index+1] = parentElement.Content[key][index+1], parentElement.Content[key][index]
 		}
 
@@ -93,6 +132,40 @@ func moveElement(content *cms.Content, path string, direction int) bool {
 	}
 
 	return false
+}
+
+func findElementPositionToInsert(content *cms.Content, position string) int {
+	index := -1
+
+	for i := len(content.Content[position]) - 1; i > 0; i-- {
+		config, found := findTemplateConfig(content, position, i)
+
+		if !found {
+			continue
+		}
+
+		if !config.Layout {
+			index = i + 1
+			break
+		}
+	}
+
+	return index
+}
+
+func findTemplateConfig(content *cms.Content, position string, i int) (TemplateConfig, bool) {
+	config, found := tplCache.GetTemplate(content.Content[position][i].Tpl)
+
+	if !found {
+		config, found = tplCache.GetTemplate(content.Content[position][i].Ref)
+	}
+
+	if !found {
+		slog.Warn("Error loading template configuration")
+		return TemplateConfig{}, false
+	}
+
+	return config, true
 }
 
 func deleteElement(content *cms.Content, path string) bool {

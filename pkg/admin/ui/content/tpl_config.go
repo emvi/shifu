@@ -4,6 +4,7 @@ package content
 type TemplateConfig struct {
 	Name    string                  `json:"-"`
 	Label   string                  `json:"label"`
+	Layout  bool                    `json:"layout"`
 	Content map[string]string       `json:"content"`
 	Copy    map[string]TemplateCopy `json:"copy"`
 	Data    map[string]TemplateData `json:"data"`

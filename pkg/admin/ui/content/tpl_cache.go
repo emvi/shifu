@@ -14,8 +14,8 @@ const (
 	templateConfigDir = "admin/tpl"
 )
 
-// TemplateCache is a cache for template configurations.
-type TemplateCache struct {
+// TemplateCfgCache is a cache for template configurations.
+type TemplateCfgCache struct {
 	templates map[string]TemplateConfig
 	positions map[string]string
 	list      []TemplateConfig
@@ -23,8 +23,8 @@ type TemplateCache struct {
 }
 
 // NewTemplateCache creates a new template cache.
-func NewTemplateCache() *TemplateCache {
-	cache := &TemplateCache{
+func NewTemplateCache() *TemplateCfgCache {
+	cache := &TemplateCfgCache{
 		templates: make(map[string]TemplateConfig),
 		positions: make(map[string]string),
 	}
@@ -33,7 +33,7 @@ func NewTemplateCache() *TemplateCache {
 }
 
 // Load loads the template cache from disk.
-func (c *TemplateCache) Load() {
+func (c *TemplateCfgCache) Load() {
 	configDir := filepath.Join(cfg.Get().BaseDir, templateConfigDir)
 
 	if _, err := os.Stat(configDir); os.IsNotExist(err) {
@@ -72,14 +72,14 @@ func (c *TemplateCache) Load() {
 }
 
 // List returns a list of all template configurations.
-func (c *TemplateCache) List() []TemplateConfig {
+func (c *TemplateCfgCache) List() []TemplateConfig {
 	c.m.RLock()
 	defer c.m.RUnlock()
 	return c.list
 }
 
 // GetTemplate returns a template configuration by name.
-func (c *TemplateCache) GetTemplate(name string) (TemplateConfig, bool) {
+func (c *TemplateCfgCache) GetTemplate(name string) (TemplateConfig, bool) {
 	c.m.RLock()
 	defer c.m.RUnlock()
 	tpl, found := c.templates[name]
@@ -87,7 +87,7 @@ func (c *TemplateCache) GetTemplate(name string) (TemplateConfig, bool) {
 }
 
 // GetPosition returns a template position by name or the name if not found.
-func (c *TemplateCache) GetPosition(name string) string {
+func (c *TemplateCfgCache) GetPosition(name string) string {
 	c.m.RLock()
 	defer c.m.RUnlock()
 	label, found := c.positions[name]
@@ -99,7 +99,7 @@ func (c *TemplateCache) GetPosition(name string) string {
 	return label
 }
 
-func (c *TemplateCache) loadTemplate(path string) *TemplateConfig {
+func (c *TemplateCfgCache) loadTemplate(path string) *TemplateConfig {
 	content, err := os.ReadFile(path)
 
 	if err != nil {

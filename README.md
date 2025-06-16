@@ -333,6 +333,8 @@ Elements and references on the page can only be edited if you add a template con
 {
     "_label": "The display name for the template file.",
     "label": "Label",
+    "_layout": "Layout marks the element as structural, like for the head section, disabling certain actions.",
+    "layout": false,
     "_content": "The display name for the content areas.",
     "content": {
         "content": "Inhalt"

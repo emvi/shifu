@@ -12,7 +12,7 @@ import (
 
 var (
 	content  *cms.CMS
-	tplCache *TemplateCache
+	tplCache *TemplateCfgCache
 )
 
 // Init initializes the template cache and watches for configuration changes.

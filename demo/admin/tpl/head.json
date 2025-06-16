@@ -1,5 +1,6 @@
 {
     "label": "Seite Header",
+    "layout": true,
     "copy": {
         "copyright": {
             "label": "Copyright"

@@ -150,58 +150,15 @@
         });
 
         {{ if .Data.DeleteElement }}
-            const element = document.querySelector("[data-shifu-element='{{ .Data.DeleteElement }}']");
-
-            if (element) {
-                element.remove();
-            } else {
-                console.error("Element to delete not found", "{{ .Data.DeleteElement }}");
-                location.reload();
-            }
+            shifuDeleteElement("{{ .Data.DeleteElement }}");
         {{ end }}
 
         {{ if .Data.AddElement }}
-            const tpl = document.getElementById("shifu-new-element");
-
-            if (tpl) {
-                const slot = document.querySelector("slot[name='{{ .Data.ParentElement }}/{{ .Data.ElementPosition }}']");
-
-                if (slot) {
-                    const parent = slot.parentElement;
-                    parent.appendChild(tpl.content);
-                    slot.remove();
-                    parent.appendChild(slot);
-                } else {
-                    document.body.appendChild(tpl.content);
-                }
-            } else {
-                console.error("New element template not found");
-                location.reload();
-            }
+            shifuAddElement("{{ .Data.ParentElement }}", "{{ .Data.ElementPosition }}");
         {{ end }}
 
         {{ if .Data.MoveElement }}
-            const move = document.querySelector("[data-shifu-element='{{ .Data.MoveElement }}']");
-            const direction = "{{ .Data.ElementDirection }}";
-
-            if (move) {
-                if (direction === "up" && move.previousElementSibling) {
-                    const previous = move.previousElementSibling;
-                    const id = previous.getAttribute("data-shifu-element");
-                    previous.setAttribute("data-shifu-element", move.getAttribute("data-shifu-element"));
-                    move.setAttribute("data-shifu-element", id);
-                    move.parentNode.insertBefore(move, previous);
-                } else if (move.nextElementSibling) {
-                    const next = move.nextElementSibling;
-                    const id = next.getAttribute("data-shifu-element");
-                    next.setAttribute("data-shifu-element", move.getAttribute("data-shifu-element"));
-                    move.setAttribute("data-shifu-element", id);
-                    move.parentNode.insertBefore(next, move);
-                }
-            } else {
-                console.error("Element to move not found", "{{ .Data.MoveElement }}", direction);
-                location.reload();
-            }
+            shifuMoveElement("{{ .Data.MoveElement }}", "{{ .Data.ElementDirection }}");
         {{ end }}
     })();
 </script>
