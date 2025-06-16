@@ -150,7 +150,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 
 			if overwrite {
 				outPath = getPagePath(path)
-				page, err = shared.LoadPage(outPath)
+				page, err = shared.LoadPage(r, outPath)
 
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)

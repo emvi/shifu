@@ -2,13 +2,15 @@ package shared
 
 import (
 	"encoding/json"
+	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/cms"
 	"log/slog"
+	"net/http"
 	"os"
 )
 
 // LoadPage loads a page for the given path and parses it into a cms.Content object.
-func LoadPage(path string) (*cms.Content, error) {
+func LoadPage(r *http.Request, path string) (*cms.Content, error) {
 	content, err := os.ReadFile(path)
 
 	if err != nil {
@@ -24,6 +26,7 @@ func LoadPage(path string) (*cms.Content, error) {
 	}
 
 	page.File = path
+	page.Language = tpl.GetLanguage(r)
 	return &page, nil
 }
 

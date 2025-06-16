@@ -17,7 +17,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
 	override := strings.TrimSpace(r.URL.Query().Get("override")) != ""
 	fullPath := getPagePath(path)
-	page, err := shared.LoadPage(fullPath)
+	page, err := shared.LoadPage(r, fullPath)
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)

@@ -154,6 +154,9 @@
 
             if (element) {
                 element.remove();
+            } else {
+                console.error("Element to delete not found", "{{ .Data.DeleteElement }}");
+                location.reload();
             }
         {{ end }}
 
@@ -171,6 +174,9 @@
                 } else {
                     document.body.appendChild(tpl.content);
                 }
+            } else {
+                console.error("New element template not found");
+                location.reload();
             }
         {{ end }}
 
@@ -192,6 +198,9 @@
                     move.setAttribute("data-shifu-element", id);
                     move.parentNode.insertBefore(next, move);
                 }
+            } else {
+                console.error("Element to move not found", "{{ .Data.MoveElement }}", direction);
+                location.reload();
             }
         {{ end }}
     })();

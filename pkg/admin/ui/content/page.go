@@ -32,7 +32,7 @@ type PageTree struct {
 func Page(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
 	fullPath := getPagePath(path)
-	page, err := shared.LoadPage(fullPath)
+	page, err := shared.LoadPage(r, fullPath)
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)

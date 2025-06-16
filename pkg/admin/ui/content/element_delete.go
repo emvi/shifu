@@ -16,7 +16,7 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodDelete {
 		fullPath := getPagePath(path)
-		page, err := shared.LoadPage(fullPath)
+		page, err := shared.LoadPage(r, fullPath)
 
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)

@@ -23,7 +23,7 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
 	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
 	fullPath := getPagePath(path)
-	page, err := shared.LoadPage(fullPath)
+	page, err := shared.LoadPage(r, fullPath)
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)

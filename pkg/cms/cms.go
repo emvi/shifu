@@ -213,6 +213,7 @@ func (cms *CMS) Render(args map[string]string, page *Content, position string, c
 
 // RenderElement renders the given element and returns the content.
 func (cms *CMS) RenderElement(w http.ResponseWriter, r *http.Request, page *Content, position string, element *Content) ([]byte, error) {
+	page.Request = r
 	cms.selectExperiments(w, r, page)
 	var buffer bytes.Buffer
 
