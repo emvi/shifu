@@ -2,15 +2,15 @@ package shared
 
 import (
 	"encoding/json"
-	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/cms"
 	"log/slog"
 	"net/http"
 	"os"
+	"strings"
 )
 
 // LoadPage loads a page for the given path and parses it into a cms.Content object.
-func LoadPage(r *http.Request, path string) (*cms.Content, error) {
+func LoadPage(r *http.Request, path, language string) (*cms.Content, error) {
 	content, err := os.ReadFile(path)
 
 	if err != nil {
@@ -26,7 +26,26 @@ func LoadPage(r *http.Request, path string) (*cms.Content, error) {
 	}
 
 	page.File = path
-	page.Language = tpl.GetLanguage(r)
+
+	// The language must set when adding or updating an element to response in the displayed language.
+	// Otherwise, setting the language explicitly isn't required. Extracting it from the request is just a "fallback".
+	if language == "" {
+		languages := cms.GetAcceptedLanguages(r)
+
+		for _, lang := range languages {
+			if _, ok := page.Path[lang]; ok {
+				page.Language = lang
+				break
+			}
+		}
+
+		if page.Language == "" {
+			page.Language = "en"
+		}
+	} else {
+		page.Language = language
+	}
+
 	return &page, nil
 }
 
@@ -45,4 +64,9 @@ func SavePage(page *cms.Content, path string) error {
 	}
 
 	return nil
+}
+
+// GetLanguage returns the language query parameter.
+func GetLanguage(r *http.Request) string {
+	return strings.ToLower(strings.TrimSpace(r.URL.Query().Get("language")))
 }

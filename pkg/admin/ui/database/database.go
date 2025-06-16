@@ -17,8 +17,8 @@ func Database(w http.ResponseWriter, r *http.Request) {
 			TitleTpl:   "database-window-title",
 			ContentTpl: "database-window-content",
 			MinWidth:   500,
-			Lang:       tpl.GetLanguage(r),
+			Lang:       tpl.GetUILanguage(r),
 		},
-		Lang: tpl.GetLanguage(r),
+		Lang: tpl.GetUILanguage(r),
 	})
 }

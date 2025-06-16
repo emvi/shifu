@@ -30,12 +30,12 @@ func Selection(w http.ResponseWriter, r *http.Request) {
 				SelectionField  SelectionField
 				Files           []File
 			}{
-				Lang:            tpl.GetLanguage(r),
+				Lang:            tpl.GetUILanguage(r),
 				Path:            path,
 				Selection:       true,
 				SelectionTarget: target,
 				SelectionField: SelectionField{
-					Lang:     tpl.GetLanguage(r),
+					Lang:     tpl.GetUILanguage(r),
 					Type:     r.URL.Query().Get("type"),
 					Label:    r.URL.Query().Get("label"),
 					Field:    r.URL.Query().Get("field"),
@@ -48,7 +48,7 @@ func Selection(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tpl.Get().Execute(w, "page-element-edit-field-file-data.html", SelectionField{
-			Lang:     tpl.GetLanguage(r),
+			Lang:     tpl.GetUILanguage(r),
 			Type:     r.URL.Query().Get("type"),
 			Label:    r.URL.Query().Get("label"),
 			Field:    r.URL.Query().Get("field"),
@@ -59,7 +59,7 @@ func Selection(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "media.html", struct {
 		WindowOptions   ui.WindowOptions
 		Lang            string

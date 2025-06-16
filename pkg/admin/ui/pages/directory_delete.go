@@ -35,13 +35,13 @@ func DeleteDirectory(w http.ResponseWriter, r *http.Request) {
 			Lang    string
 			Entries []Entry
 		}{
-			Lang:    tpl.GetLanguage(r),
+			Lang:    tpl.GetUILanguage(r),
 			Entries: listEntries(w),
 		})
 		return
 	}
 
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "pages-directory-delete.html", struct {
 		WindowOptions ui.WindowOptions
 		Lang          string

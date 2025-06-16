@@ -41,7 +41,7 @@ func DirectoryContent(w http.ResponseWriter, r *http.Request) {
 		SelectionField  SelectionField
 		Files           []File
 	}{
-		Lang:            tpl.GetLanguage(r),
+		Lang:            tpl.GetUILanguage(r),
 		Path:            path,
 		Selection:       strings.TrimSpace(r.URL.Query().Get("selection")) != "",
 		SelectionTarget: strings.TrimSpace(r.URL.Query().Get("target")),

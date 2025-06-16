@@ -28,7 +28,7 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
 	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
 	fullPath := getPagePath(path)
-	page, err := shared.LoadPage(r, fullPath)
+	page, err := shared.LoadPage(r, fullPath, "")
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
@@ -63,7 +63,7 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 				Name    string
 				Errors  map[string]string
 			}{
-				Lang:    tpl.GetLanguage(r),
+				Lang:    tpl.GetUILanguage(r),
 				Path:    path,
 				Element: elementPath,
 				Name:    name,
@@ -92,7 +92,8 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 		pos := setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "page-tree.html", PageTree{
-			Lang:      tpl.GetLanguage(r),
+			Language:  shared.GetLanguage(r),
+			Lang:      tpl.GetUILanguage(r),
 			Path:      path,
 			Page:      page,
 			Positions: pos,
@@ -100,7 +101,7 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "page-element-reference.html", struct {
 		WindowOptions ui.WindowOptions
 		Lang          string

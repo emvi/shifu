@@ -54,14 +54,14 @@ func DeleteFile(w http.ResponseWriter, r *http.Request) {
 			SelectionField  SelectionField
 			Files           []File
 		}{
-			Lang:  tpl.GetLanguage(r),
+			Lang:  tpl.GetUILanguage(r),
 			Path:  path,
 			Files: listFiles(path),
 		})
 		return
 	}
 
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "media-file-delete.html", struct {
 		WindowOptions ui.WindowOptions
 		Lang          string

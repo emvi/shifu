@@ -1,5 +1,5 @@
 <form method="post"
-      hx-post="{{ config.UI.Path }}/content/element/reference?path={{ .Data.Path }}&element={{ .Data.Element }}"
+      hx-post="{{ config.UI.Path }}/content/element/reference?path={{ .Data.Path }}&element={{ .Data.Element }}&language={{ .Data.Language }}"
       hx-swap="outerHTML"
       hx-target=".shifu-page-tree"
       hx-target-4*="this"

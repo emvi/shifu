@@ -41,7 +41,7 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 				Path   string
 				Errors map[string]string
 			}{
-				Lang:   tpl.GetLanguage(r),
+				Lang:   tpl.GetUILanguage(r),
 				Name:   name,
 				Path:   path,
 				Errors: errs,
@@ -58,14 +58,14 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 			SelectionTarget string
 			SelectionField  SelectionField
 		}{
-			Lang:        tpl.GetLanguage(r),
+			Lang:        tpl.GetUILanguage(r),
 			Directories: listDirectories(w),
 			Interactive: true,
 		})
 		return
 	}
 
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "media-directory-create.html", struct {
 		WindowOptions ui.WindowOptions
 		Lang          string

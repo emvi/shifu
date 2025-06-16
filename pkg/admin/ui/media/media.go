@@ -25,7 +25,7 @@ type Directory struct {
 
 // Media renders the media management dialog.
 func Media(w http.ResponseWriter, r *http.Request) {
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "media.html", struct {
 		WindowOptions   ui.WindowOptions
 		Lang            string

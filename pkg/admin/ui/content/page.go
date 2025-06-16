@@ -15,6 +15,7 @@ import (
 
 // PageTree is the data required to render the page tree.
 type PageTree struct {
+	Language  string
 	Lang      string
 	Path      string
 	Page      *cms.Content
@@ -32,7 +33,7 @@ type PageTree struct {
 func Page(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
 	fullPath := getPagePath(path)
-	page, err := shared.LoadPage(r, fullPath)
+	page, err := shared.LoadPage(r, fullPath, "")
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
@@ -40,7 +41,7 @@ func Page(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pos := setTemplateNames(page)
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "page.html", struct {
 		WindowOptions ui.WindowOptions
 		PageTree
@@ -53,6 +54,7 @@ func Page(w http.ResponseWriter, r *http.Request) {
 			Lang:       lang,
 		},
 		PageTree: PageTree{
+			Language:  shared.GetLanguage(r),
 			Lang:      lang,
 			Path:      path,
 			Page:      page,

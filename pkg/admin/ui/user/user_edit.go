@@ -91,7 +91,7 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 				Name   string
 				Errors map[string]string
 			}{
-				Lang:   tpl.GetLanguage(r),
+				Lang:   tpl.GetUILanguage(r),
 				User:   user,
 				Email:  email,
 				Name:   name,
@@ -138,7 +138,7 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 			Self  *model.User
 			User  []model.User
 		}{
-			Lang:  tpl.GetLanguage(r),
+			Lang:  tpl.GetUILanguage(r),
 			Admin: isAdmin,
 			Self:  middleware.GetUser(r),
 			User:  listUser(),
@@ -146,7 +146,7 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "user-edit.html", struct {
 		WindowOptions ui.WindowOptions
 		Lang          string

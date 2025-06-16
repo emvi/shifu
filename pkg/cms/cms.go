@@ -172,7 +172,7 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 
 		data = buffer.Bytes()
 	} else {
-		data = []byte(fmt.Sprintf(defaultPageContent, adminBody(r, page.File)))
+		data = []byte(fmt.Sprintf(defaultPageContent, adminBody(page)))
 	}
 
 	if _, err := w.Write(data); err != nil {

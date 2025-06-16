@@ -412,8 +412,8 @@ func getTranslation(language, key string) string {
 	return i18n["en"][key]
 }
 
-// GetLanguage returns the accepted language or "en" by default.
-func GetLanguage(r *http.Request) string {
+// GetUILanguage returns the accepted language for the UI or "en" by default.
+func GetUILanguage(r *http.Request) string {
 	languages := cms.GetAcceptedLanguages(r)
 
 	if len(languages) == 0 {

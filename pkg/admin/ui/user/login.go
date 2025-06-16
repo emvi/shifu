@@ -38,7 +38,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 		if err := db.Get().Get(&user, `SELECT * FROM "user" WHERE lower(email) = ?`, email); err != nil {
 			tpl.Get().Execute(w, "login-form.html", LoginForm{
-				Lang:  tpl.GetLanguage(r),
+				Lang:  tpl.GetUILanguage(r),
 				Email: email,
 				Error: "user not found",
 			})
@@ -48,7 +48,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 		if !util.ComparePassword(password+user.PasswordSalt, user.Password) {
 			tpl.Get().Execute(w, "login-form.html", LoginForm{
-				Lang:  tpl.GetLanguage(r),
+				Lang:  tpl.GetUILanguage(r),
 				Email: email,
 				Error: "user not found",
 			})
@@ -65,7 +65,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			if err := db.Get().Get(&exists, `SELECT EXISTS (SELECT 1 FROM "session" WHERE session = ?)`, session); err != nil {
 				slog.Error("Error reading session", "error", err)
 				tpl.Get().Execute(w, "login-form.html", LoginForm{
-					Lang:  tpl.GetLanguage(r),
+					Lang:  tpl.GetUILanguage(r),
 					Email: email,
 					Error: "error creating session",
 				})
@@ -85,7 +85,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		if _, err := db.Get().Exec(`INSERT INTO "session" (user_id, session, expires) VALUES (?, ?, ?)`, user.ID, session, expires); err != nil {
 			slog.Error("Error storing session", "error", err)
 			tpl.Get().Execute(w, "login-form.html", LoginForm{
-				Lang:  tpl.GetLanguage(r),
+				Lang:  tpl.GetUILanguage(r),
 				Email: email,
 				Error: "error creating session",
 			})
@@ -107,6 +107,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tpl.Get().Execute(w, "login.html", LoginForm{
-		Lang: tpl.GetLanguage(r),
+		Lang: tpl.GetUILanguage(r),
 	})
 }

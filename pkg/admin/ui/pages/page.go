@@ -14,7 +14,7 @@ import (
 func Page(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimSpace(r.URL.Query().Get("path"))
 	fullPath := getPagePath(path)
-	page, err := shared.LoadPage(r, fullPath)
+	page, err := shared.LoadPage(r, fullPath, "")
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -23,7 +23,7 @@ func Page(w http.ResponseWriter, r *http.Request) {
 
 	sitemapPriority, _ := strconv.ParseFloat(page.Sitemap.Priority, 64)
 	tpl.Get().Execute(w, "pages-page-save-form.html", SavePageData{
-		Lang:      tpl.GetLanguage(r),
+		Lang:      tpl.GetUILanguage(r),
 		Name:      strings.TrimSuffix(filepath.Base(path), ".json"),
 		PagePath:  page.Path,
 		Cache:     page.DisableCache,

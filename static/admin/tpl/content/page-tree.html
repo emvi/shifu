@@ -1,4 +1,5 @@
 {{ define "page-element-tree" }}
+    {{ $language := index . "language" }}
     {{ $path := index . "path" }}
     {{ $content := index . "content" }}
     {{ $parentPath := index . "p" }}
@@ -36,7 +37,7 @@
                                     <img src="{{ config.UI.Path }}/static/icons/edit.svg"
                                          alt=""
                                          title="{{ i18n $lang "content_page_element_edit" }}"
-                                         hx-get="{{ config.UI.Path }}/content/element/edit?path={{ $path }}&element={{ $p }}"
+                                         hx-get="{{ config.UI.Path }}/content/element/edit?path={{ $path }}&element={{ $p }}&language={{ $language }}"
                                          hx-target="body"
                                          hx-swap="beforeend" />
 
@@ -44,13 +45,13 @@
                                         <img src="{{ config.UI.Path }}/static/icons/add.svg"
                                              alt=""
                                              title="{{ i18n $lang "content_page_element_add" }}"
-                                             hx-get="{{ config.UI.Path }}/content/element/add?path={{ $path }}&element={{ $p }}"
+                                             hx-get="{{ config.UI.Path }}/content/element/add?path={{ $path }}&element={{ $p }}&language={{ $language }}"
                                              hx-target="body"
                                              hx-swap="beforeend" />
                                         <img src="{{ config.UI.Path }}/static/icons/frame-add.svg"
                                              alt=""
                                              title="{{ i18n $lang "content_page_element_add_reference" }}"
-                                             hx-get="{{ config.UI.Path }}/content/reference/add?path={{ $path }}&element={{ $p }}"
+                                             hx-get="{{ config.UI.Path }}/content/reference/add?path={{ $path }}&element={{ $p }}&language={{ $language }}"
                                              hx-target="body"
                                              hx-swap="beforeend" />
                                     {{ end }}
@@ -58,14 +59,14 @@
                                     <img src="{{ config.UI.Path }}/static/icons/chevron.svg"
                                          alt=""
                                          title="{{ i18n $lang "content_page_element_move_up" }}"
-                                         hx-post="{{ config.UI.Path }}/content/element/move?path={{ $path }}&element={{ $p }}&direction=up"
+                                         hx-post="{{ config.UI.Path }}/content/element/move?path={{ $path }}&element={{ $p }}&direction=up&language={{ $language }}"
                                          hx-target=".shifu-page-tree"
                                          hx-swap="innerHTML" />
                                     <img src="{{ config.UI.Path }}/static/icons/chevron.svg"
                                          alt=""
                                          title="{{ i18n $lang "content_page_element_move_down" }}"
                                          style="transform: rotate(180deg);"
-                                         hx-post="{{ config.UI.Path }}/content/element/move?path={{ $path }}&element={{ $p }}&direction=down"
+                                         hx-post="{{ config.UI.Path }}/content/element/move?path={{ $path }}&element={{ $p }}&direction=down&language={{ $language }}"
                                          hx-target=".shifu-page-tree"
                                          hx-swap="innerHTML" />
 
@@ -73,7 +74,7 @@
                                         <img src="{{ config.UI.Path }}/static/icons/frame.svg"
                                              alt=""
                                              title="{{ i18n $lang "content_page_element_reference" }}"
-                                             hx-get="{{ config.UI.Path }}/content/element/reference?path={{ $path }}&element={{ $p }}"
+                                             hx-get="{{ config.UI.Path }}/content/element/reference?path={{ $path }}&element={{ $p }}&language={{ $language }}"
                                              hx-target="body"
                                              hx-swap="beforeend" />
                                     {{ end }}
@@ -81,7 +82,7 @@
                                     <img src="{{ config.UI.Path }}/static/icons/delete.svg"
                                          alt=""
                                          title="{{ i18n $lang "content_page_element_delete" }}"
-                                         hx-get="{{ config.UI.Path }}/content/element/delete?path={{ $path }}&element={{ $p }}"
+                                         hx-get="{{ config.UI.Path }}/content/element/delete?path={{ $path }}&element={{ $p }}&language={{ $language }}"
                                          hx-target="body"
                                          hx-swap="beforeend" />
                                 </span>
@@ -90,7 +91,8 @@
                             {{ if len $element.Content }}
                                 {{
                                     template "page-element-tree"
-                                        dict "path" $path
+                                        dict "language" $language
+                                            "path" $path
                                             "content" $element.Content
                                             "p" (fmt "%s." $p)
                                             "lang" $lang
@@ -108,7 +110,8 @@
 <div id="page-element-tree" style="margin-bottom: 8px;">
     {{
         template "page-element-tree"
-            dict "path" .Data.Path
+            dict "language" .Data.Language
+                "path" .Data.Path
                 "content" .Data.Page.Content
                 "p" ""
                 "lang" .Data.Lang
@@ -117,14 +120,14 @@
 </div>
 <div class="shifu-toolbelt" style="flex-direction: column;align-items: flex-start;">
     <button title="{{ i18n .Data.Lang "content_page_element_add" }}"
-            hx-get="{{ config.UI.Path }}/content/element/add?path={{ .Data.Path }}"
+            hx-get="{{ config.UI.Path }}/content/element/add?path={{ .Data.Path }}&language={{ .Data.Language }}"
             hx-target="body"
             hx-swap="beforeend">
         <img src="{{ config.UI.Path }}/static/icons/cube.svg" alt="" />
         {{ i18n .Data.Lang "content_page_element_add" }}
     </button>
     <button title="{{ i18n .Data.Lang "content_page_reference_add" }}"
-            hx-get="{{ config.UI.Path }}/content/reference/add?path={{ .Data.Path }}"
+            hx-get="{{ config.UI.Path }}/content/reference/add?path={{ .Data.Path }}&language={{ .Data.Language }}"
             hx-target="body"
             hx-swap="beforeend">
         <img src="{{ config.UI.Path }}/static/icons/frame.svg" alt="" />

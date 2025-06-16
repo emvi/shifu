@@ -39,14 +39,14 @@ func DeleteDirectory(w http.ResponseWriter, r *http.Request) {
 			SelectionTarget string
 			SelectionField  SelectionField
 		}{
-			Lang:        tpl.GetLanguage(r),
+			Lang:        tpl.GetUILanguage(r),
 			Directories: listDirectories(w),
 			Interactive: true,
 		})
 		return
 	}
 
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "media-directory-delete.html", struct {
 		WindowOptions ui.WindowOptions
 		Lang          string

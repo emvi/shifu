@@ -132,7 +132,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "pages-page-save-form.html", SavePageData{
-				Lang:      tpl.GetLanguage(r),
+				Lang:      tpl.GetUILanguage(r),
 				Name:      name,
 				PagePath:  pagePath,
 				Cache:     cache,
@@ -150,7 +150,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 
 			if overwrite {
 				outPath = getPagePath(path)
-				page, err = shared.LoadPage(r, outPath)
+				page, err = shared.LoadPage(r, outPath, "")
 
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
@@ -193,7 +193,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		lang := tpl.GetLanguage(r)
+		lang := tpl.GetUILanguage(r)
 		tpl.Get().Execute(w, "pages-tree-save.html", struct {
 			SavePageData
 			WindowOptions ui.WindowOptions
@@ -224,7 +224,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "pages-page-save.html", struct {
 		SavePageData
 		WindowOptions ui.WindowOptions

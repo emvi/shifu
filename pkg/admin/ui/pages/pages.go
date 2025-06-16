@@ -26,7 +26,7 @@ type Entry struct {
 
 // Pages renders the pages management dialog.
 func Pages(w http.ResponseWriter, r *http.Request) {
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "pages.html", struct {
 		WindowOptions ui.WindowOptions
 		Lang          string

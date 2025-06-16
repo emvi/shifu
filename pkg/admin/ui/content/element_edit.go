@@ -17,7 +17,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
 	override := strings.TrimSpace(r.URL.Query().Get("override")) != ""
 	fullPath := getPagePath(path)
-	page, err := shared.LoadPage(r, fullPath)
+	page, err := shared.LoadPage(r, fullPath, shared.GetLanguage(r))
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
@@ -128,9 +128,10 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		windowTitleTpl = "page-element-edit-window-title-override"
 	}
 
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "page-element-edit.html", struct {
 		WindowOptions ui.WindowOptions
+		Language      string
 		Lang          string
 		Path          string
 		ElementPath   string
@@ -149,6 +150,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 			Overlay:    true,
 			Lang:       lang,
 		},
+		Language:    shared.GetLanguage(r),
 		Lang:        lang,
 		Path:        path,
 		ElementPath: elementPath,

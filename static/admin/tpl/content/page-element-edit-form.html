@@ -17,7 +17,7 @@
 {{ end }}
 
 <form method="post"
-      hx-post="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}{{ if $override }}&override=true{{end}}"
+      hx-post="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}{{ if $override }}&override=true{{end}}&language={{ .Data.Language }}"
       hx-swap="outerHTML"
       hx-target-4*="this"
       data-window="#shifu-page-element-edit{{ if $override }}-override{{end}}">

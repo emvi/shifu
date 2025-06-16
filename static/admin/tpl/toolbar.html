@@ -1,7 +1,7 @@
 <div id="shifu-toolbar" class="shifu shifu-window shifu-toolbar">
     <div class="shifu-window-title">CMS</div>
     <div class="shifu-window-content shifu-toolbar-icons">
-        <a hx-get="{{ config.UI.Path }}/content?path={{ .Data.Path }}"
+        <a hx-get="{{ config.UI.Path }}/content?path={{ .Data.Path }}&language={{ .Data.Language }}"
            title="{{ i18n .Data.Lang "edit_page" }}"
            hx-target="body"
            hx-swap="beforeend"

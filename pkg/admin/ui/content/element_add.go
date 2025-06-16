@@ -16,7 +16,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
 	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
 	fullPath := getPagePath(path)
-	page, err := shared.LoadPage(r, fullPath)
+	page, err := shared.LoadPage(r, fullPath, shared.GetLanguage(r))
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
@@ -74,6 +74,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "page-element-add-form.html", struct {
+				Language  string
 				Lang      string
 				Path      string
 				Element   string
@@ -83,7 +84,8 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 				Position  string
 				Errors    map[string]string
 			}{
-				Lang:      tpl.GetLanguage(r),
+				Language:  shared.GetLanguage(r),
+				Lang:      tpl.GetUILanguage(r),
 				Path:      path,
 				Element:   elementPath,
 				Templates: tplCache.List(),
@@ -119,7 +121,8 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 		pos := setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "page-tree.html", PageTree{
-			Lang:            tpl.GetLanguage(r),
+			Language:        shared.GetLanguage(r),
+			Lang:            tpl.GetUILanguage(r),
 			Path:            path,
 			Page:            page,
 			Positions:       pos,
@@ -130,9 +133,10 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "page-element-add.html", struct {
 		WindowOptions ui.WindowOptions
+		Language      string
 		Lang          string
 		Path          string
 		Element       string
@@ -150,6 +154,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 			Overlay:    true,
 			Lang:       lang,
 		},
+		Language:  shared.GetLanguage(r),
 		Lang:      lang,
 		Path:      path,
 		Element:   elementPath,

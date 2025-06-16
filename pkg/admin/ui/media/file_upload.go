@@ -92,7 +92,7 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 				Errors        map[string]string
 				ExistingFiles []string
 			}{
-				Lang:          tpl.GetLanguage(r),
+				Lang:          tpl.GetUILanguage(r),
 				Path:          path,
 				Overwrite:     overwrite,
 				Errors:        errs,
@@ -110,14 +110,14 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 			SelectionField  SelectionField
 			Files           []File
 		}{
-			Lang:  tpl.GetLanguage(r),
+			Lang:  tpl.GetUILanguage(r),
 			Path:  path,
 			Files: listFiles(path),
 		})
 		return
 	}
 
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "media-file-upload.html", struct {
 		WindowOptions ui.WindowOptions
 		Lang          string

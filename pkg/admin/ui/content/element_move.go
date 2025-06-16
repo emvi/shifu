@@ -14,7 +14,7 @@ func MoveElement(w http.ResponseWriter, r *http.Request) {
 	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
 	direction := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("direction")))
 	fullPath := getPagePath(path)
-	page, err := shared.LoadPage(r, fullPath)
+	page, err := shared.LoadPage(r, fullPath, shared.GetLanguage(r))
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
@@ -45,7 +45,8 @@ func MoveElement(w http.ResponseWriter, r *http.Request) {
 
 	pos := setTemplateNames(page)
 	tpl.Get().Execute(w, "page-tree.html", PageTree{
-		Lang:             tpl.GetLanguage(r),
+		Language:         shared.GetLanguage(r),
+		Lang:             tpl.GetUILanguage(r),
 		Path:             path,
 		Page:             page,
 		Positions:        pos,

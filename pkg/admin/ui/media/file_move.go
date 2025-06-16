@@ -76,7 +76,7 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 				Name        []string
 				Errors      map[string]string
 			}{
-				Lang:        tpl.GetLanguage(r),
+				Lang:        tpl.GetUILanguage(r),
 				Directories: listDirectories(w),
 				Interactive: false,
 				Path:        path,
@@ -95,14 +95,14 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 			SelectionField  SelectionField
 			Files           []File
 		}{
-			Lang:  tpl.GetLanguage(r),
+			Lang:  tpl.GetUILanguage(r),
 			Path:  path,
 			Files: listFiles(path),
 		})
 		return
 	}
 
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "media-file-move.html", struct {
 		WindowOptions   ui.WindowOptions
 		Lang            string

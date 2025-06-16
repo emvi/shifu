@@ -16,7 +16,7 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodDelete {
 		fullPath := getPagePath(path)
-		page, err := shared.LoadPage(r, fullPath)
+		page, err := shared.LoadPage(r, fullPath, shared.GetLanguage(r))
 
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
@@ -37,7 +37,8 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 		pos := setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "page-tree.html", PageTree{
-			Lang:          tpl.GetLanguage(r),
+			Language:      shared.GetLanguage(r),
+			Lang:          tpl.GetUILanguage(r),
 			Path:          path,
 			Page:          page,
 			Positions:     pos,
@@ -46,9 +47,10 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "page-element-delete.html", struct {
 		WindowOptions ui.WindowOptions
+		Language      string
 		Lang          string
 		Path          string
 		Element       string
@@ -60,8 +62,9 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 			Overlay:    true,
 			Lang:       lang,
 		},
-		Lang:    lang,
-		Path:    path,
-		Element: elementPath,
+		Language: shared.GetLanguage(r),
+		Lang:     lang,
+		Path:     path,
+		Element:  elementPath,
 	})
 }

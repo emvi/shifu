@@ -12,7 +12,7 @@ import (
 
 // User renders the user management dialog.
 func User(w http.ResponseWriter, r *http.Request) {
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "user.html", struct {
 		WindowOptions ui.WindowOptions
 		Lang          string

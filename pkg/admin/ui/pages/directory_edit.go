@@ -41,7 +41,7 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 				Path   string
 				Errors map[string]string
 			}{
-				Lang:   tpl.GetLanguage(r),
+				Lang:   tpl.GetUILanguage(r),
 				Name:   name,
 				Path:   path,
 				Errors: errs,
@@ -54,13 +54,13 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 			Lang    string
 			Entries []Entry
 		}{
-			Lang:    tpl.GetLanguage(r),
+			Lang:    tpl.GetUILanguage(r),
 			Entries: listEntries(w),
 		})
 		return
 	}
 
-	lang := tpl.GetLanguage(r)
+	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "pages-directory-edit.html", struct {
 		WindowOptions ui.WindowOptions
 		Lang          string
