@@ -1,8 +1,0 @@
-<section class="img" data-shifu-element="{{ .Content.Position }}">
-    <img src="{{ get .Content "src" }}" alt="{{ copy .Page .Content "alt" }}" />
-
-    {{ $file := get .Content "file" }}
-    {{ if $file }}
-        <a href="{{ $file }}">Download</a>
-    {{ end }}
-</section>
