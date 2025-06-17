@@ -37,7 +37,7 @@
                         {{ end }}
                     </details>
                 {{ else }}
-                    <details class="file">
+                    <details class="file" data-entry="{{ $entry.Path }}">
                         <summary>
                             <span class="shifu-pages-entry-name"
                                   data-path="{{ $entry.Path }}"
