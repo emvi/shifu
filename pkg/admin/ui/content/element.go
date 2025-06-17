@@ -135,36 +135,41 @@ func moveElement(content *cms.Content, path string, direction int) bool {
 }
 
 func findElementPositionToInsert(content *cms.Content, position string) int {
-	index := -1
+	n := len(content.Content[position])
 
-	for i := len(content.Content[position]) - 1; i > 0; i-- {
-		config, found := findTemplateConfig(content, position, i)
+	if n > 0 {
+		config, found := findTemplateConfig(content, position, n-1)
 
-		if !found {
-			continue
+		if found && config.Layout {
+			return n - 1
 		}
 
-		if !config.Layout {
-			index = i + 1
-			break
-		}
+		return n
 	}
 
-	return index
+	return -1
 }
 
 func findTemplateConfig(content *cms.Content, position string, i int) (TemplateConfig, bool) {
 	config, found := tplCache.GetTemplate(content.Content[position][i].Tpl)
 
 	if !found {
-		config, found = tplCache.GetTemplate(content.Content[position][i].Ref)
+		ref, err := loadRef(content.Content[position][i].Ref)
+
+		if err != nil {
+			slog.Error("Error loading reference file", "error", err)
+			return TemplateConfig{}, false
+		}
+
+		config, found = tplCache.GetTemplate(ref.Tpl)
 	}
 
 	if !found {
-		slog.Warn("Error loading template configuration")
+		slog.Warn("Error loading template configuration", "tpl", content.Content[position][i].Tpl, "ref", content.Content[position][i].Ref)
 		return TemplateConfig{}, false
 	}
 
+	slog.Debug("Found template configuration", "name", config.Name, "layout", config.Layout)
 	return config, true
 }
 

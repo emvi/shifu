@@ -67,9 +67,28 @@ window.shifuDeleteElement = function(selector) {
     const element = document.querySelector(`[data-shifu-element='${selector}']`);
 
     if (element) {
+        const parent = element.parentElement;
+        let update = false;
+
+        for (const child of parent.children) {
+            if (update) {
+                if (child.hasAttribute("data-shifu-element")) {
+                    child.setAttribute("data-shifu-element", decrementElementPathIndex(child.getAttribute("data-shifu-element")));
+                }
+            } else {
+                update = child.getAttribute("data-shifu-element") === element.getAttribute("data-shifu-element");
+            }
+        }
+
         element.remove();
     } else {
         console.error("Element to delete not found", selector);
         location.reload();
     }
+}
+
+function decrementElementPathIndex(path) {
+    const parts = path.split(".");
+    parts[parts.length-1] = parseInt(parts[parts.length-1]) - 1;
+    return parts.join(".");
 }

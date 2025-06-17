@@ -57,17 +57,19 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "page-element-reference-form.html", struct {
-				Lang    string
-				Path    string
-				Element string
-				Name    string
-				Errors  map[string]string
+				Language string
+				Lang     string
+				Path     string
+				Element  string
+				Name     string
+				Errors   map[string]string
 			}{
-				Lang:    tpl.GetUILanguage(r),
-				Path:    path,
-				Element: elementPath,
-				Name:    name,
-				Errors:  errs,
+				Language: shared.GetLanguage(r),
+				Lang:     tpl.GetUILanguage(r),
+				Path:     path,
+				Element:  elementPath,
+				Name:     name,
+				Errors:   errs,
 			})
 			return
 		}
@@ -104,6 +106,7 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "page-element-reference.html", struct {
 		WindowOptions ui.WindowOptions
+		Language      string
 		Lang          string
 		Path          string
 		Element       string
@@ -118,9 +121,10 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 			Overlay:    true,
 			Lang:       lang,
 		},
-		Lang:    lang,
-		Path:    path,
-		Element: elementPath,
+		Language: shared.GetLanguage(r),
+		Lang:     lang,
+		Path:     path,
+		Element:  elementPath,
 	})
 }
 
