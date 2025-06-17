@@ -143,6 +143,7 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 			ElementPosition: position,
 			AddElement:      htmlTpl.HTML(newElement),
 		})
+		go content.Update()
 		return
 	}
 

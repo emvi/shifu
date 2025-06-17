@@ -101,6 +101,7 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 			Page:      page,
 			Positions: pos,
 		})
+		go content.Update()
 		return
 	}
 

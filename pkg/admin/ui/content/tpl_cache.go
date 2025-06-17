@@ -51,6 +51,11 @@ func (c *TemplateCfgCache) Load() {
 		if !info.IsDir() && strings.Contains(path, ".json") {
 			name := strings.TrimSuffix(info.Name(), ".json")
 			tpl := c.loadTemplate(path)
+
+			if tpl == nil {
+				return nil
+			}
+
 			tpl.Name = name
 			templates[name] = *tpl
 			list = append(list, *tpl)

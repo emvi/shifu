@@ -186,6 +186,7 @@ func (server *Server) setupRouter(dir string) {
 			slog.Error("Error initializing admin content", "error", err)
 		}
 
+		pages.Init(server.Content)
 		server.serveUI(router)
 	}
 

@@ -221,6 +221,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 			},
 			Entries: listEntries(w),
 		})
+		go content.Update()
 		return
 	}
 

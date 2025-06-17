@@ -156,7 +156,7 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 
 	var data []byte
 
-	if len(page.Content) > 0 {
+	if cms.hasContent(page) {
 		var buffer bytes.Buffer
 
 		for position, content := range page.Content {
@@ -687,6 +687,16 @@ func (cms *CMS) getNotFoundPath(r *http.Request) string {
 	}
 
 	return ""
+}
+
+func (cms *CMS) hasContent(page *Content) bool {
+	for _, content := range page.Content {
+		if len(content) > 0 {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (cms *CMS) isZeroValue(v any) bool {

@@ -37,6 +37,7 @@ func DeletePage(w http.ResponseWriter, r *http.Request) {
 			Lang:    tpl.GetUILanguage(r),
 			Entries: listEntries(w),
 		})
+		go content.Update()
 		return
 	}
 

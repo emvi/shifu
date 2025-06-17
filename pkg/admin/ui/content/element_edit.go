@@ -117,6 +117,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 			slog.Error("Error sending updated element", "error", err)
 		}
 
+		go content.Update()
 		return
 	}
 

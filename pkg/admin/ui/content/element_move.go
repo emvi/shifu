@@ -53,4 +53,5 @@ func MoveElement(w http.ResponseWriter, r *http.Request) {
 		MoveElement:      elementPath,
 		ElementDirection: direction,
 	})
+	go content.Update()
 }

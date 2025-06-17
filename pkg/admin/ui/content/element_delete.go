@@ -44,6 +44,7 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 			Positions:     pos,
 			DeleteElement: elementPath,
 		})
+		go content.Update()
 		return
 	}
 
