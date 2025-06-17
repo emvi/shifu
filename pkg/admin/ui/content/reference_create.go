@@ -91,6 +91,7 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		content.Update()
 		pos := setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "page-tree.html", PageTree{
