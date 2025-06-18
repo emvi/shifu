@@ -15,17 +15,24 @@ benchmark:
 	go test -bench=. ./pkg/...
 
 build_mac: test
-	GOOS=darwin go build -a -installsuffix cgo -ldflags "-s -w" -o shifu cmd/shifu/main.go
+	esbuild --bundle --minify --sourcemap --outfile=static/admin/static/admin.js static/admin/assets/js/main.js && \
+    sass -I static/admin/assets/sass --style=compressed static/admin/assets/sass/main.scss static/admin/static/admin.css && \
+    GOOS=darwin go build -a -installsuffix cgo -ldflags "-s -w" -o shifu cmd/shifu/main.go
 
 build_windows: test
-	GOOS=windows GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" -o shifu.exe cmd/shifu/main.go
+	esbuild --bundle --minify --sourcemap --outfile=static/admin/static/admin.js static/admin/assets/js/main.js && \
+    sass -I static/admin/assets/sass --style=compressed static/admin/assets/sass/main.scss static/admin/static/admin.css && \
+    GOOS=windows GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" -o shifu.exe cmd/shifu/main.go
 
 build_linux: test
-	GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" -o shifu cmd/shifu/main.go
+	esbuild --bundle --minify --sourcemap --outfile=static/admin/static/admin.js static/admin/assets/js/main.js && \
+    sass -I static/admin/assets/sass --style=compressed static/admin/assets/sass/main.scss static/admin/static/admin.css && \
+    GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" -o shifu cmd/shifu/main.go
 
 build_arm64: test
-	GOOS=linux GOARCH=arm64 go build -a -installsuffix cgo -ldflags "-s -w" cmd/shifu/main.go
-	mv main shifu
+	esbuild --bundle --minify --sourcemap --outfile=static/admin/static/admin.js static/admin/assets/js/main.js && \
+    sass -I static/admin/assets/sass --style=compressed static/admin/assets/sass/main.scss static/admin/static/admin.css && \
+	GOOS=linux GOARCH=arm64 go build -a -installsuffix cgo -ldflags "-s -w" -o shifu cmd/shifu/main.go
 
 init:
 	rm -r -f test

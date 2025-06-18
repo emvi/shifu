@@ -55,6 +55,10 @@ body.shifu {
     .trix-input {
         color: #000;
     }
+
+    span, li, label {
+        color: var(--text) !important;
+    }
 }
 
 @import "html";
