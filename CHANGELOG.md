@@ -3,6 +3,7 @@
 ## 1.0.0
 
 * added admin UI
+* always use file system provider if dev mode is enabled
 * updated dependencies
 
 ## 0.13.0

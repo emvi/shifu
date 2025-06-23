@@ -87,18 +87,23 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 
 	var provider source.Provider
 
-	switch strings.ToLower(strings.TrimSpace(cfg.Get().Content.Provider)) {
-	case "git":
-		gitConfig := cfg.Get().Git
-
-		if gitConfig.Repository == "" {
-			return nil, errors.New("git repository URL is empty")
-		}
-
-		provider = source.NewGit(dir, gitConfig.Repository, gitConfig.UpdateSeconds)
-		break
-	default:
+	if cfg.Get().Dev {
+		slog.Info("Using file system provider because dev mode is enabled")
 		provider = source.NewFileSystem(dir, cfg.Get().Git.UpdateSeconds)
+	} else {
+		switch strings.ToLower(strings.TrimSpace(cfg.Get().Content.Provider)) {
+		case "git":
+			gitConfig := cfg.Get().Git
+
+			if gitConfig.Repository == "" {
+				return nil, errors.New("git repository URL is empty")
+			}
+
+			provider = source.NewGit(dir, gitConfig.Repository, gitConfig.UpdateSeconds)
+			break
+		default:
+			provider = source.NewFileSystem(dir, cfg.Get().Git.UpdateSeconds)
+		}
 	}
 
 	sm := sitemap.New()
