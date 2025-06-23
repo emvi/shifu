@@ -295,31 +295,31 @@ cms.SetHandler("blog", func(c *cms.CMS, page cms.Content, args map[string]string
 
 Shifu comes with a number of template functions that can be used within templates.
 
-| Function      | Description                                                                                                        | Example                                                    |
-|---------------|--------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| config        | Exposes the Oogway configuration.                                                                                  | `{{config.Server.Host}}`                                   |
-| hostname      | Returns the hostname from configuration.                                                                           | `{{hostname}}`                                             |
-| copy          | Returns the copy (text) for given page, content, and key.                                                          | `{{copy .Page .Content "meta_description"}}`               |
-| get           | Returns the variable for given content and key.                                                                    | `{{get .Content "img"}}`                                   |
-| markdown      | Renders given markdown file as HTML using Go text templates. Use the full path for the template name.              | `{{markdown "static/blog/article.md" .}}`                  |
-| markdownBlock | Renders a block from given markdown file as HTML using Go text templates. Use the full path for the template name. | `{{markdownBlock "static/blog/article.md" "blockName" .}}` |
-| int           | Converts given string to an integer.                                                                               | `{{int "123"}}`                                            |
-| uint64        | Converts given int to an uint64.                                                                                   | `{{uint64 123}}`                                           |
-| shuffle       | Shuffles given list and returns up to n results if n > 0.                                                          | `{{shuffle .List 10}}`                                     |
-| fmt           | Formats a string.                                                                                                  | `{{fmt "foo %s" "bar"}}`                                   |
-| dict          | Creates a map from given key value pairs.                                                                          | `{{dict "key" "value" "answer" 42}}`                       |
-| default       | Returns the first value that's not nil.                                                                            | `{{default .Val0 .Val1}}`                                  |
-| year          | Returns the current year                                                                                           | `{{year}}`                                                 |
-| formatFloat   | Formats the given value with two decimal places.                                                                   | `{{formatFloat 42.34567}}`                                 |
-| formatInt     | Formats the given value with separators (comma).                                                                   | `{{formatInt 4213465576}}`                                 |
-| formatDate    | Formats a data for given layout.                                                                                   | `{{formatDate .Date "2006-01-02"}}`                        |
-| gtFloat       | Checks whether the first value is bigger than the second.                                                          | `{{gtFloat 6 3}}`                                          |
-| ltFloat       | Checks whether the first value is smaller than the second.                                                         | `{{gtFloat 6 3}}`                                          |
-| html          | Returns given string as valid HTML. This is unsafe if the input is user provided.                                  | `{{html "<p>Text</p>"}}`                                   |
-| htmlAttr      | Returns given string as a valid HTML attribute. This is unsafe if the input is user provided.                      | `{{htmlAttr "value"}}`                                     |
-| loggedIn      | Returns true if the visitor is signed in as admin.                                                                 | `{{loggedIn}}`                                             |
-| adminHead     | Returns the HTML for the `<head>` section for the admin UI.                                                        | `{{adminHead .Page.Request}}`                              |
-| adminBody     | Returns the HTML for the `<body>` section for the admin UI.                                                        | `{{adminBody .Page}}`                                      |
+| Function      | Description                                                                                                        | Example                                                      |
+|---------------|--------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+| config        | Exposes the Oogway configuration.                                                                                  | `{{ config.Server.Host }}`                                   |
+| hostname      | Returns the hostname from configuration.                                                                           | `{{ hostname }}`                                             |
+| copy          | Returns the copy (text) for given page, content, and key.                                                          | `{{ copy .Page .Content "meta_description" }}`               |
+| get           | Returns the variable for given content and key.                                                                    | `{{ get .Content "img" }}`                                   |
+| markdown      | Renders given markdown file as HTML using Go text templates. Use the full path for the template name.              | `{{ markdown "static/blog/article.md" . }}`                  |
+| markdownBlock | Renders a block from given markdown file as HTML using Go text templates. Use the full path for the template name. | `{{ markdownBlock "static/blog/article.md" "blockName" . }}` |
+| int           | Converts given string to an integer.                                                                               | `{{ int "123" }}`                                            |
+| uint64        | Converts given int to an uint64.                                                                                   | `{{ uint64 123 }}`                                           |
+| shuffle       | Shuffles given list and returns up to n results if n > 0.                                                          | `{{ shuffle .List 10 }}`                                     |
+| fmt           | Formats a string.                                                                                                  | `{{ fmt "foo %s" "bar" }}`                                   |
+| dict          | Creates a map from given key value pairs.                                                                          | `{{ dict "key" "value" "answer" 42 }}`                       |
+| default       | Returns the first value that's not nil.                                                                            | `{{ default .Val0 .Val1 }}`                                  |
+| year          | Returns the current year                                                                                           | `{{ year }}`                                                 |
+| formatFloat   | Formats the given value with two decimal places.                                                                   | `{{ formatFloat 42.34567 }}`                                 |
+| formatInt     | Formats the given value with separators (comma).                                                                   | `{{ formatInt 4213465576 }}`                                 |
+| formatDate    | Formats a data for given layout.                                                                                   | `{{ formatDate .Date "2006-01-02" }}`                        |
+| gtFloat       | Checks whether the first value is bigger than the second.                                                          | `{{ gtFloat 6 3 }}`                                          |
+| ltFloat       | Checks whether the first value is smaller than the second.                                                         | `{{ gtFloat 6 3 }}`                                          |
+| html          | Returns given string as valid HTML. This is unsafe if the input is user provided.                                  | `{{ html "<p>Text</p>" }}`                                   |
+| htmlAttr      | Returns given string as a valid HTML attribute. This is unsafe if the input is user provided.                      | `{{ htmlAttr "value" }}`                                     |
+| loggedIn      | Returns true if the visitor is signed in as admin.                                                                 | `{{ loggedIn .Page.Request }}`                               |
+| adminHead     | Returns the HTML for the `<head>` section for the admin UI.                                                        | `{{ adminHead .Page.Request }}`                              |
+| adminBody     | Returns the HTML for the `<body>` section for the admin UI.                                                        | `{{ adminBody .Page }}`                                      |
 
 For more template functions, see the [Sprig documentation](https://github.com/Masterminds/sprig).
 
@@ -371,7 +371,7 @@ In order for the on-page editor to work, the HTML for the elements need to be st
 <section data-shifu-element="{{ .Content.Position }}">
     <p>An element...</p>
 
-    {{.CMS.Render .Args .Page (fmt "%s.content" .Content.Position) (index .Content.Content "content")}}
+    {{ .CMS.Render .Args .Page (fmt "%s.content" .Content.Position) (index .Content.Content "content") }}
     <slot name="{{ .Content.Position }}/content"></slot>
 </section>
 ```
