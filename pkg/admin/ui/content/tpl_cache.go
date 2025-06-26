@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 )
@@ -73,6 +74,18 @@ func (c *TemplateCfgCache) Load() {
 
 	c.templates = templates
 	c.positions = positions
+	slices.SortFunc(list, func(a, b TemplateConfig) int {
+		nameA := strings.ToLower(a.Name)
+		nameB := strings.ToLower(b.Name)
+
+		if nameA < nameB {
+			return -1
+		} else if nameA > nameB {
+			return 1
+		}
+
+		return 0
+	})
 	c.list = list
 }
 
