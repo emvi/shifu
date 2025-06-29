@@ -1,0 +1,32 @@
+<form method="post"
+      id="shifu-json-page-form"
+      hx-post="{{ config.UI.Path }}/pages/page/json?path={{ .Data.Path }}"
+      hx-swap="none"
+      hx-target-4*="this"
+      data-window="#shifu-pages-page-json">
+    <div id="shifu-json" style="all: initial;width: 100%;"></div>
+    <input type="hidden" name="json" value="{{ .Data.JSON }}" id="shifu-json-content" />
+    <div class="shifu-toolbelt">
+        {{ if .Data.Saved }}
+            <div class="shifu-saved">
+                {{ i18n .Data.Lang "saved" }}
+            </div>
+        {{ end }}
+
+        <input type="submit" value="{{ i18n .Data.Lang "pages_json_page_submit" }}" />
+    </div>
+</form>
+
+<script>
+    (function() {
+        try {
+            const hidden = document.getElementById("shifu-json-content");
+            const editor = new JSONEditor(document.getElementById("shifu-json"), {
+                onChangeJSON: json => hidden.value = JSON.stringify(json)
+            });
+            editor.set(JSON.parse(`{{ .Data.JSON }}`));
+        } catch(e) {
+            console.error(e);
+        }
+    })();
+</script>

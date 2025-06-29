@@ -2,6 +2,7 @@ package pages
 
 import (
 	iso6391 "github.com/emvi/iso-639-1"
+	"github.com/emvi/shifu/pkg/admin/middleware"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
 	"net/http"
@@ -23,6 +24,7 @@ func Page(w http.ResponseWriter, r *http.Request) {
 
 	sitemapPriority, _ := strconv.ParseFloat(page.Sitemap.Priority, 64)
 	tpl.Get().Execute(w, "pages-page-save-form.html", SavePageData{
+		Admin:     middleware.IsAdmin(r),
 		Lang:      tpl.GetUILanguage(r),
 		Name:      strings.TrimSuffix(filepath.Base(path), ".json"),
 		PagePath:  page.Path,

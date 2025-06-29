@@ -1,6 +1,14 @@
 {{ $lang := .Data.Lang }}
 {{ $langs := .Data.Languages }}
 
+{{ if .Data.Admin }}
+    <button hx-get="{{ config.UI.Path }}/pages/page/json?path={{ .Data.Path }}"
+            hx-target="body"
+            hx-swap="beforeend">
+        {{ i18n .Data.Lang "pages_create_page_edit" }}
+    </button>
+{{ end }}
+
 <form method="post"
       id="shifu-save-page-form"
       hx-post="{{ config.UI.Path }}/pages/page/save?path={{ .Data.Path }}"

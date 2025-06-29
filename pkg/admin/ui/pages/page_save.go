@@ -3,6 +3,7 @@ package pages
 import (
 	"fmt"
 	"github.com/emvi/iso-639-1"
+	"github.com/emvi/shifu/pkg/admin/middleware"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
@@ -20,6 +21,7 @@ import (
 
 // SavePageData is the data for the page form.
 type SavePageData struct {
+	Admin     bool
 	Lang      string
 	Name      string
 	PagePath  map[string]string
@@ -132,6 +134,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "pages-page-save-form.html", SavePageData{
+				Admin:     middleware.IsAdmin(r),
 				Lang:      tpl.GetUILanguage(r),
 				Name:      name,
 				PagePath:  pagePath,
@@ -208,6 +211,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 				Lang:       lang,
 			},
 			SavePageData: SavePageData{
+				Admin:     middleware.IsAdmin(r),
 				Lang:      lang,
 				Name:      name,
 				PagePath:  pagePath,
@@ -239,6 +243,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 			Lang:       lang,
 		},
 		SavePageData: SavePageData{
+			Admin:     middleware.IsAdmin(r),
 			Lang:      lang,
 			PagePath:  map[string]string{"de": "/"},
 			Path:      path,

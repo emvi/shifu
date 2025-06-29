@@ -271,6 +271,8 @@ func (server *Server) serveUI(router chi.Router) {
 				r.Post("/save", pages.SavePage)
 				r.Get("/delete", pages.DeletePage)
 				r.Delete("/delete", pages.DeletePage)
+				r.Get("/json", pages.SaveJSON)
+				r.Post("/json", pages.SaveJSON)
 			})
 			r.Get("/", pages.Pages)
 		})

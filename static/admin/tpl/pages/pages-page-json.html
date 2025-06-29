@@ -1,0 +1,9 @@
+{{ define "pages-page-json-window-title" }}
+    <span>{{ i18n .Data.Lang "pages_json_window_title" }}</span>
+{{ end }}
+
+{{ define "pages-page-json-window-content" }}
+    {{ template "pages-page-json-form.html" . }}
+{{ end }}
+
+{{ template "window.html" . }}

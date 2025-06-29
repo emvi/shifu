@@ -17,7 +17,7 @@
 
         &:focus-within label {
             background: var(--highlight);
-            color: var(--bg) !important;
+            color: var(--bg);
         }
     }
 

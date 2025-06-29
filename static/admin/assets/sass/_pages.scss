@@ -20,7 +20,7 @@
 
         &-selected {
             background: var(--highlight);
-            color: var(--bg);
+            color: var(--bg) !important;
             border-radius: 4px;
         }
     }

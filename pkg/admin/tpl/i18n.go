@@ -123,6 +123,7 @@ var i18n = map[string]map[string]string{
 		"pages_delete_page_confirm":           "Are you sure you want to delete the page \"%s\"?",
 		"pages_delete_page_submit":            "Delete Page",
 		"pages_create_page_window_title":      "Create Page",
+		"pages_create_page_edit":              "Edit JSON",
 		"pages_create_page_name":              "Name",
 		"pages_create_page_language":          "Language",
 		"pages_create_page_path":              "Path",
@@ -136,6 +137,8 @@ var i18n = map[string]map[string]string{
 		"pages_create_page_add_header":        "Add Header",
 		"pages_create_page_remove_header":     "Remove Header",
 		"pages_create_page_submit":            "Save",
+		"pages_json_window_title":             "Edit JSON",
+		"pages_json_page_submit":              "Save",
 
 		// content
 		"content_page_window_title":                   "Page",
@@ -320,6 +323,7 @@ var i18n = map[string]map[string]string{
 		"pages_delete_page_confirm":           "Bist du sicher, dass du die Seite \"%s\" löschen möchtest?",
 		"pages_delete_page_submit":            "Seite löschen",
 		"pages_create_page_window_title":      "Seite anlegen",
+		"pages_create_page_edit":              "JSON bearbeiten",
 		"pages_create_page_name":              "Name",
 		"pages_create_page_language":          "Sprache",
 		"pages_create_page_path":              "Pfad",
@@ -333,6 +337,8 @@ var i18n = map[string]map[string]string{
 		"pages_create_page_add_header":        "Header hinzufügen",
 		"pages_create_page_remove_header":     "Header entfernen",
 		"pages_create_page_submit":            "Speichern",
+		"pages_json_window_title":             "JSON bearbeiten",
+		"pages_json_page_submit":              "Speichern",
 
 		// content
 		"content_page_window_title":                   "Seite",
