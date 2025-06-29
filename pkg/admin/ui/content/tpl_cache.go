@@ -75,8 +75,17 @@ func (c *TemplateCfgCache) Load() {
 	c.templates = templates
 	c.positions = positions
 	slices.SortFunc(list, func(a, b TemplateConfig) int {
-		nameA := strings.ToLower(a.Name)
-		nameB := strings.ToLower(b.Name)
+		nameA := strings.ToLower(a.Label)
+
+		if nameA == "" {
+			nameA = a.Name
+		}
+
+		nameB := strings.ToLower(b.Label)
+
+		if nameB == "" {
+			nameB = b.Name
+		}
 
 		if nameA < nameB {
 			return -1

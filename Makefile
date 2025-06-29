@@ -9,7 +9,7 @@ deps:
 
 test:
 	go test -cover ./pkg/cfg
-	go test -cover -race $$(go list ./pkg/... | grep -v /cfg)
+	go test -cover -race ./...
 
 benchmark:
 	go test -bench=. ./pkg/...
