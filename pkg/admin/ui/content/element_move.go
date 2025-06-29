@@ -43,13 +43,13 @@ func MoveElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pos := setTemplateNames(page)
+	setTemplateNames(page)
 	tpl.Get().Execute(w, "page-tree.html", PageTree{
 		Language:         shared.GetLanguage(r),
 		Lang:             tpl.GetUILanguage(r),
 		Path:             path,
 		Page:             page,
-		Positions:        pos,
+		Positions:        tplCfgCache.GetPositions(),
 		MoveElement:      elementPath,
 		ElementDirection: direction,
 	})

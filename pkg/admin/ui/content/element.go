@@ -151,7 +151,7 @@ func findElementPositionToInsert(content *cms.Content, position string) int {
 }
 
 func findTemplateConfig(content *cms.Content, position string, i int) (TemplateConfig, bool) {
-	config, found := tplCache.GetTemplate(content.Content[position][i].Tpl)
+	config, found := tplCfgCache.GetTemplate(content.Content[position][i].Tpl)
 
 	if !found {
 		ref, err := loadRef(content.Content[position][i].Ref)
@@ -161,7 +161,7 @@ func findTemplateConfig(content *cms.Content, position string, i int) (TemplateC
 			return TemplateConfig{}, false
 		}
 
-		config, found = tplCache.GetTemplate(ref.Tpl)
+		config, found = tplCfgCache.GetTemplate(ref.Tpl)
 	}
 
 	if !found {

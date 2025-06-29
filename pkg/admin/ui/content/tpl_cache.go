@@ -72,8 +72,6 @@ func (c *TemplateCfgCache) Load() {
 		return
 	}
 
-	c.templates = templates
-	c.positions = positions
 	slices.SortFunc(list, func(a, b TemplateConfig) int {
 		nameA := strings.ToLower(a.Label)
 
@@ -95,6 +93,8 @@ func (c *TemplateCfgCache) Load() {
 
 		return 0
 	})
+	c.templates = templates
+	c.positions = positions
 	c.list = list
 }
 
@@ -113,17 +113,17 @@ func (c *TemplateCfgCache) GetTemplate(name string) (TemplateConfig, bool) {
 	return tpl, found
 }
 
-// GetPosition returns a template position by name or the name if not found.
-func (c *TemplateCfgCache) GetPosition(name string) string {
+// GetPositions returns the template position mapping.
+func (c *TemplateCfgCache) GetPositions() map[string]string {
 	c.m.RLock()
 	defer c.m.RUnlock()
-	label, found := c.positions[name]
+	m := make(map[string]string)
 
-	if !found {
-		return name
+	for k, v := range c.positions {
+		m[k] = v
 	}
 
-	return label
+	return m
 }
 
 func (c *TemplateCfgCache) loadTemplate(path string) *TemplateConfig {

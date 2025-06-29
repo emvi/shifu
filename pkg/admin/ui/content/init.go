@@ -11,14 +11,14 @@ import (
 )
 
 var (
-	content  *cms.CMS
-	tplCache *TemplateCfgCache
+	content     *cms.CMS
+	tplCfgCache *TemplateCfgCache
 )
 
 // Init initializes the template cache and watches for configuration changes.
 func Init(ctx context.Context, cms *cms.CMS) error {
 	content = cms
-	tplCache = NewTemplateCache()
+	tplCfgCache = NewTemplateCache()
 	watcher, err := fsnotify.NewWatcher()
 
 	if err != nil {
@@ -34,7 +34,7 @@ func Init(ctx context.Context, cms *cms.CMS) error {
 				}
 
 				if event.Op == fsnotify.Write && strings.ToLower(filepath.Ext(event.Name)) == ".json" {
-					tplCache.Load()
+					tplCfgCache.Load()
 				}
 			case <-ctx.Done():
 				if err := watcher.Close(); err != nil {

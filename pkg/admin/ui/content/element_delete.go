@@ -34,14 +34,14 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		pos := setTemplateNames(page)
+		setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "page-tree.html", PageTree{
 			Language:      shared.GetLanguage(r),
 			Lang:          tpl.GetUILanguage(r),
 			Path:          path,
 			Page:          page,
-			Positions:     pos,
+			Positions:     tplCfgCache.GetPositions(),
 			DeleteElement: elementPath,
 		})
 		go content.Update()

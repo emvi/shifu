@@ -55,7 +55,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 	var found bool
 
 	if element.Tpl != "" {
-		config, found = tplCache.GetTemplate(element.Tpl)
+		config, found = tplCfgCache.GetTemplate(element.Tpl)
 	} else {
 		ref, err := loadRef(element.Ref)
 
@@ -65,7 +65,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		config, found = tplCache.GetTemplate(ref.Tpl)
+		config, found = tplCfgCache.GetTemplate(ref.Tpl)
 	}
 
 	if !found {

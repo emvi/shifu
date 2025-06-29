@@ -47,7 +47,7 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 
 		parent = &parent.Content[key][index]
 		parentName := parent.Tpl
-		parentTpl, found := tplCache.GetTemplate(parentName)
+		parentTpl, found := tplCfgCache.GetTemplate(parentName)
 
 		if !found {
 			slog.Debug("Parent template not found", "name", parentName)
@@ -131,14 +131,14 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		pos := setTemplateNames(page)
+		setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "page-tree.html", PageTree{
 			Language:        shared.GetLanguage(r),
 			Lang:            tpl.GetUILanguage(r),
 			Path:            path,
 			Page:            page,
-			Positions:       pos,
+			Positions:       tplCfgCache.GetPositions(),
 			ParentElement:   parentPath,
 			ElementPosition: position,
 			AddElement:      htmlTpl.HTML(newElement),
@@ -201,7 +201,7 @@ func getReferences() []Ref {
 			continue
 		}
 
-		name, found := tplCache.GetTemplate(ref.Tpl)
+		name, found := tplCfgCache.GetTemplate(ref.Tpl)
 
 		if found {
 			entity.Label = name.Label

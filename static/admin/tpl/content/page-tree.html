@@ -9,7 +9,13 @@
     {{ range $content, $elements := $content }}
         <div>
             <small>
-                {{ index $pos $content }}
+                {{ $posLabel := index $pos $content }}
+                
+                {{ if $posLabel }}
+                    {{ $posLabel }}
+                {{ else }}
+                    {{ $content }}
+                {{ end }}
             </small>
             <ul>
                 {{ range $index, $element := $elements }}

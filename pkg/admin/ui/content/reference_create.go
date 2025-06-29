@@ -92,14 +92,14 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 		}
 
 		content.Update()
-		pos := setTemplateNames(page)
+		setTemplateNames(page)
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "page-tree.html", PageTree{
 			Language:  shared.GetLanguage(r),
 			Lang:      tpl.GetUILanguage(r),
 			Path:      path,
 			Page:      page,
-			Positions: pos,
+			Positions: tplCfgCache.GetPositions(),
 		})
 		go content.Update()
 		return
