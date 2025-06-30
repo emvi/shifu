@@ -31,7 +31,10 @@
         }
     }
 
-    input, button, .button, select {
+    input:not(.jsoneditor-frame > input),
+    button:not([class*="jsoneditor"]),
+    .button,
+    select {
         width: 100%;
         padding: 4px 8px;
         font-size: 12px;
@@ -47,7 +50,9 @@
         }
     }
 
-    input[type~="submit"], button, .button {
+    input[type~="submit"]:not(.jsoneditor-frame > input),
+    button:not([class*="jsoneditor"]),
+    .button {
         width: auto;
         background: var(--bg);
         color: var(--border);
@@ -77,7 +82,7 @@
         }
     }
 
-    input[type~="checkbox"] {
+    input[type~="checkbox"]:not(.jsoneditor-frame > input) {
         width: auto;
         margin: 0;
         height: 10px;
@@ -92,7 +97,8 @@
         display: flex;
         gap: 4px;
 
-        button, .button {
+        button:not([class*="jsoneditor"]),
+        .button {
             padding: 4px;
         }
     }

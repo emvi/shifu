@@ -296,6 +296,12 @@ func (server *Server) serveUI(router chi.Router) {
 			r.Post("/media", media.Selection)
 			r.Get("/", content.Page)
 		})
+		r.Route("/refs", func(r chi.Router) {
+			r.Route("/ref", func(r chi.Router) {
+				r.Get("/", content.Reference)
+			})
+			r.Get("/", content.References)
+		})
 		r.Get("/logout", user.Logout)
 	})
 	fs := http.FileServerFS(static.AdminStatic)

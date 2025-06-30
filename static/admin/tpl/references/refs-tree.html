@@ -1,0 +1,55 @@
+{{ define "refs-tree-entries" }}
+    {{ $lang := index . "lang" }}
+
+    <ul>
+        {{ range $entry := index . "entries" }}
+            <li>
+                <details class="file" data-entry="{{ $entry.Path }}">
+                    <summary>
+                        <span class="shifu-refs-entry-name"
+                              data-path="{{ $entry.Path }}"
+                              hx-get="{{ config.UI.Path }}/refs/ref?path={{ $entry.Path }}"
+                              hx-target=".shifu-refs-ref">
+                            {{ $entry.Name }}
+                        </span>
+                        <span>
+                            <img src="{{ config.UI.Path }}/static/icons/delete.svg"
+                                 alt=""
+                                 title="{{ i18n $lang "refs_tree_delete_ref" }}"
+                                 hx-get="{{ config.UI.Path }}/refs/delete?path={{ $entry.Path }}"
+                                 hx-target="body"
+                                 hx-swap="beforeend" />
+                        </span>
+                    </summary>
+                </details>
+            </li>
+        {{ end }}
+    </ul>
+{{ end }}
+
+<div id="shifu-refs-tree" style="margin-bottom: 8px;">
+    {{ template "refs-tree-entries" dict "entries" .Data.Entries "lang" .Data.Lang }}
+</div>
+<input type="hidden" name="path" value="" id="shifu-refs-entry-selection-path" />
+
+<script>
+    (function(){
+        shifuTree("shifu-refs-tree");
+        const input = document.getElementById("shifu-refs-entry-selection-path");
+
+        document.querySelectorAll(".shifu-refs-entry-name").forEach(e => {
+            e.addEventListener("click", e => {
+                e.preventDefault();
+                e.stopPropagation();
+                document.querySelectorAll(".shifu-refs-entry-name").forEach(e => {
+                    e.classList.remove("shifu-refs-entry-selected");
+                });
+                e.target.classList.add("shifu-refs-entry-selected");
+
+                if (input) {
+                    input.value = e.target.getAttribute("data-path");
+                }
+            });
+        });
+    })();
+</script>

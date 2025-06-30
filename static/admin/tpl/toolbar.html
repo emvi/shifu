@@ -8,6 +8,17 @@
            data-window="shifu-page">
             <img src="{{ config.UI.Path }}/static/icons/cube.svg" alt="{{ i18n .Data.Lang "edit_page" }}" />
         </a>
+
+        {{ if .Data.Admin }}
+            <a hx-get="{{ config.UI.Path }}/refs"
+               title="{{ i18n .Data.Lang "refs" }}"
+                hx-target="body"
+                hx-swap="beforeend"
+                data-window="shifu-refs">
+                <img src="{{ config.UI.Path }}/static/icons/frame.svg" alt="{{ i18n .Data.Lang "refs" }}" />
+            </a>
+        {{ end }}
+
         <a hx-get="{{ config.UI.Path }}/pages"
            title="{{ i18n .Data.Lang "pages" }}"
            hx-target="body"

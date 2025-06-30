@@ -25,6 +25,7 @@ var i18n = map[string]map[string]string{
 
 		// toolbar
 		"edit_page": "Edit page",
+		"refs":      "References",
 		"pages":     "Pages",
 		"media":     "Media",
 		"database":  "Database",
@@ -175,6 +176,9 @@ var i18n = map[string]map[string]string{
 		"content_reference_create_window_title":       "Create Reference",
 		"content_reference_create_name":               "Name",
 		"content_reference_create_submit":             "Create Reference",
+		"refs_window_title":                           "References",
+		"refs_select_ref":                             "Please select a reference to edit it.",
+		"refs_json_ref_submit":                        "Save",
 
 		// errors
 		"the reference does not exist":                            "The referenced element does not exist.",
@@ -225,6 +229,7 @@ var i18n = map[string]map[string]string{
 
 		// toolbar
 		"edit_page": "Seite bearbeiten",
+		"refs":      "Referenzen",
 		"pages":     "Seiten",
 		"media":     "Medien",
 		"database":  "Datenbank",
@@ -375,6 +380,9 @@ var i18n = map[string]map[string]string{
 		"content_reference_create_window_title":       "Referenz erstellen",
 		"content_reference_create_name":               "Name",
 		"content_reference_create_submit":             "Referenz erstellen",
+		"refs_window_title":                           "Referenzen",
+		"refs_select_ref":                             "Bitte wähle eine Referenz aus um sie zu bearbeiten.",
+		"refs_json_ref_submit":                        "Speichern",
 
 		// errors
 		"the reference does not exist":                            "Das referenzierte Element existiert nicht.",

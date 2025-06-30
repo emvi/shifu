@@ -101,10 +101,12 @@ func readContentTree(prefix, dir string) ([]Entry, error) {
 
 func sortEntries(entries []Entry) {
 	slices.SortFunc(entries, func(a, b Entry) int {
-		if strings.ToLower(a.Name) > strings.ToLower(b.Name) {
-			return 1
+		nameA := strings.ToLower(a.Name)
+		nameB := strings.ToLower(b.Name)
 
-		} else if strings.ToLower(a.Name) < strings.ToLower(b.Name) {
+		if nameA > nameB {
+			return 1
+		} else if nameA < nameB {
 			return -1
 		}
 

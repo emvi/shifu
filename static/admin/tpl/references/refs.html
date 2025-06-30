@@ -1,0 +1,16 @@
+{{ define "refs-window-title" }}
+    <span>{{ i18n .Data.Lang "refs_window_title" }}</span>
+{{ end }}
+
+{{ define "refs-window-content" }}
+    <div class="shifu-window-content-flex">
+        <div class="shifu-refs-tree shifu-tree">
+            {{ template "refs-tree.html" . }}
+        </div>
+        <div class="shifu-refs-ref">
+            <p>{{ i18n .Data.Lang "refs_select_ref" }}</p>
+        </div>
+    </div>
+{{ end }}
+
+{{ template "window.html" . }}
