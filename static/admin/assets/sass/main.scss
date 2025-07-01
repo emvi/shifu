@@ -1,5 +1,6 @@
-@import "vars";
-@import "fonts";
+@use "sass:meta";
+@use "vars";
+@use "fonts";
 
 html.shifu {
     font-family: "Inter", "Roboto", sans-serif;
@@ -63,14 +64,14 @@ body.shifu {
     }
 }
 
-@import "html";
-@import "form";
-@import "window";
-@import "toolbar";
-@import "toolbelt";
-@import "tree";
-@import "tabs";
-@import "media";
-@import "pages";
-@import "page";
-@import "refs";
+@include meta.load-css("html");
+@include meta.load-css("form");
+@include meta.load-css("window");
+@include meta.load-css("toolbar");
+@include meta.load-css("toolbelt");
+@include meta.load-css("tree");
+@include meta.load-css("tabs");
+@include meta.load-css("media");
+@include meta.load-css("pages");
+@include meta.load-css("page");
+@include meta.load-css("refs");
