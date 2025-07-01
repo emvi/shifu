@@ -127,7 +127,7 @@ func (c *TemplateCfgCache) GetPositions() map[string]string {
 }
 
 func (c *TemplateCfgCache) loadTemplate(path string) *TemplateConfig {
-	content, err := os.ReadFile(path)
+	file, err := os.ReadFile(path)
 
 	if err != nil {
 		slog.Warn("TemplateConfig configuration not found", "error", err, "path", path)
@@ -136,7 +136,7 @@ func (c *TemplateCfgCache) loadTemplate(path string) *TemplateConfig {
 
 	var tpl TemplateConfig
 
-	if err := json.Unmarshal(content, &tpl); err != nil {
+	if err := json.Unmarshal(file, &tpl); err != nil {
 		slog.Error("Error unmarshalling template configuration", "error", err, "path", path)
 		return nil
 	}

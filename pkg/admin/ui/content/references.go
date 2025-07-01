@@ -49,7 +49,7 @@ func listReferences(w http.ResponseWriter) []Entry {
 		}
 	}
 
-	tree, err := readReferences(dir, dir)
+	tree, err := readReferences(dir)
 
 	if err != nil {
 		slog.Error("Error reading references directory", "error", err)
@@ -59,7 +59,7 @@ func listReferences(w http.ResponseWriter) []Entry {
 	return tree
 }
 
-func readReferences(prefix, dir string) ([]Entry, error) {
+func readReferences(dir string) ([]Entry, error) {
 	files, err := os.ReadDir(dir)
 
 	if err != nil {
@@ -71,7 +71,7 @@ func readReferences(prefix, dir string) ([]Entry, error) {
 	for _, file := range files {
 		refs = append(refs, Entry{
 			Name: getReferenceName(file.Name()),
-			Path: strings.TrimPrefix(filepath.Join(dir, file.Name()), prefix),
+			Path: strings.TrimPrefix(filepath.Join(dir, file.Name()), dir),
 		})
 	}
 

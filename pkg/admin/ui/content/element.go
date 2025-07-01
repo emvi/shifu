@@ -263,7 +263,7 @@ func loadRef(name string) (*cms.Content, error) {
 		return nil, errors.New("file not found")
 	}
 
-	content, err := os.ReadFile(path)
+	c, err := os.ReadFile(path)
 
 	if err != nil {
 		slog.Error("Error reading reference file", "error", err)
@@ -272,7 +272,7 @@ func loadRef(name string) (*cms.Content, error) {
 
 	var element cms.Content
 
-	if err := json.Unmarshal(content, &element); err != nil {
+	if err := json.Unmarshal(c, &element); err != nil {
 		slog.Error("Error parsing reference file", "error", err)
 		return nil, err
 	}

@@ -1,8 +1,8 @@
 <form method="post"
       id="shifu-json-ref-form"
       hx-post="{{ config.UI.Path }}/refs/ref?path={{ .Data.Path }}"
-      hx-swap="none"
-      hx-target-4*="this">
+      hx-swap="outerHTML"
+      hx-target="this">
     <div id="shifu-json" style="all: initial;width: 100%;"></div>
     <input type="hidden" name="json" value="{{ .Data.JSON }}" id="shifu-json-content" />
     <div class="shifu-toolbelt">
@@ -14,18 +14,17 @@
 
         <input type="submit" value="{{ i18n .Data.Lang "refs_json_ref_submit" }}" />
     </div>
+    <script>
+        (function() {
+            try {
+                const hidden = document.getElementById("shifu-json-content");
+                const editor = new JSONEditor(document.getElementById("shifu-json"), {
+                    onChangeJSON: json => hidden.value = JSON.stringify(json)
+                });
+                editor.set(JSON.parse(`{{ .Data.JSON }}`));
+            } catch(e) {
+                console.error(e);
+            }
+        })();
+    </script>
 </form>
-
-<script>
-    (function() {
-        try {
-            const hidden = document.getElementById("shifu-json-content");
-            const editor = new JSONEditor(document.getElementById("shifu-json"), {
-                onChangeJSON: json => hidden.value = JSON.stringify(json)
-            });
-            editor.set(JSON.parse(`{{ .Data.JSON }}`));
-        } catch(e) {
-            console.error(e);
-        }
-    })();
-</script>
