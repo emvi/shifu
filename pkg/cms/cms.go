@@ -577,6 +577,19 @@ func (cms *CMS) updateContent() {
 		return 1
 	})
 
+	if len(pages) == 0 {
+		pages = append(pages, Route{
+			raw:    "/",
+			isRaw:  true,
+			length: 1,
+			content: Content{
+				Path: map[string]string{
+					"en": "/",
+				},
+			},
+		})
+	}
+
 	cms.m.Lock()
 	defer cms.m.Unlock()
 	cms.pages = pages
