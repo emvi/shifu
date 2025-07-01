@@ -1,0 +1,19 @@
+{{ define "refs-ref-delete-window-title" }}
+    <span>{{ i18n .Data.Lang "refs_delete_ref_window_title" }}</span>
+{{ end }}
+
+{{ define "refs-ref-delete-window-content" }}
+    <p>{{ fmt (i18n .Data.Lang "refs_delete_ref_confirm") .Data.Name }}</p>
+    <div class="shifu-toolbelt">
+        <button hx-delete="{{ config.UI.Path }}/refs/ref/delete?path={{ .Data.Path }}"
+                hx-target=".shifu-refs-tree"
+                data-window="#shifu-refs-ref-delete">
+            {{ i18n .Data.Lang "refs_delete_ref_submit" }}
+        </button>
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            {{ i18n .Data.Lang "cancel" }}
+        </button>
+    </div>
+{{ end }}
+
+{{ template "window.html" . }}

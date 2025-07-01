@@ -96,5 +96,5 @@ func sortEntries(entries []Entry) {
 
 func getReferenceName(filename string) string {
 	name, _, _ := strings.Cut(filename, ".")
-	return name
+	return strings.TrimPrefix(name, "/")
 }

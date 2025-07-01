@@ -15,7 +15,7 @@ import (
 // Reference renders the reference JSON editor.
 func Reference(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
-	fullPath := filepath.Join(cfg.Get().BaseDir, refsDir, path)
+	fullPath := getReferencePath(path)
 	saved := false
 	ref, err := os.ReadFile(fullPath)
 
@@ -57,4 +57,8 @@ func Reference(w http.ResponseWriter, r *http.Request) {
 		JSON:  string(ref),
 		Saved: saved,
 	})
+}
+
+func getReferencePath(path string) string {
+	return filepath.Join(cfg.Get().BaseDir, refsDir, path)
 }

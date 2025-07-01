@@ -179,6 +179,9 @@ var i18n = map[string]map[string]string{
 		"refs_window_title":                           "References",
 		"refs_select_ref":                             "Please select a reference to edit it.",
 		"refs_json_ref_submit":                        "Save",
+		"refs_delete_ref_window_title":                "Delete Reference",
+		"refs_delete_ref_confirm":                     "Are you sure you want to delete the reference \"%s\"?",
+		"refs_delete_ref_submit":                      "Delete",
 
 		// errors
 		"the reference does not exist":                            "The referenced element does not exist.",
@@ -383,6 +386,9 @@ var i18n = map[string]map[string]string{
 		"refs_window_title":                           "Referenzen",
 		"refs_select_ref":                             "Bitte wähle eine Referenz aus um sie zu bearbeiten.",
 		"refs_json_ref_submit":                        "Speichern",
+		"refs_delete_ref_window_title":                "Referenz löschen",
+		"refs_delete_ref_confirm":                     "Bist du sicher, dass du die Referenz \"%s\" löschen möchtest?",
+		"refs_delete_ref_submit":                      "Löschen",
 
 		// errors
 		"the reference does not exist":                            "Das referenzierte Element existiert nicht.",
