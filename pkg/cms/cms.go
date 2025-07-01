@@ -275,7 +275,8 @@ func (cms *CMS) renderElement(buffer *bytes.Buffer, args map[string]string, page
 		cms.m.RUnlock()
 
 		if !ok {
-			return errors.New("reference not found")
+			buffer.WriteString(fmt.Sprintf(`Reference "%s" not found!`, c.Ref))
+			return nil
 		}
 
 		ref = ref.copy()

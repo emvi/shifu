@@ -30,6 +30,7 @@ func DeleteReference(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		go content.Update()
 		tpl.Get().Execute(w, "refs-tree.html", struct {
 			Lang    string
 			Entries []Entry
