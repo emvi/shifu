@@ -3,6 +3,7 @@
 ## 1.0.0
 
 * added admin UI
+* added default page and markup when no content is present 
 * always use file system provider if dev mode is enabled
 * updated dependencies
 
