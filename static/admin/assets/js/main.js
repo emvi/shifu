@@ -1,6 +1,14 @@
 import {debounce} from "./debounce";
 
 (function() {
+    const save = debounce(target => {
+        localStorage.setItem(target.id, JSON.stringify({
+            top: target.style.top,
+            left: target.style.left
+        }));
+    });
+    let dragging = null;
+    let mouseX, mouseY, zIndex = 100_000;
     document.addEventListener("htmx:beforeRequest", e => {
         const id = e.target.getAttribute("data-window");
 
@@ -24,6 +32,8 @@ import {debounce} from "./debounce";
 
             document.querySelectorAll(".shifu-window").forEach(e => e.classList.remove("shifu-window-active"));
             target.classList.add("shifu-window-active");
+            zIndex++;
+            target.style.zIndex = zIndex;
             const title = target.querySelector(".shifu-window-title");
 
             if (title) {
@@ -58,14 +68,6 @@ import {debounce} from "./debounce";
         }
     });
     window.addEventListener("mousemove", drag);
-    const save = debounce(target => {
-        localStorage.setItem(target.id, JSON.stringify({
-            top: target.style.top,
-            left: target.style.left
-        }));
-    });
-    let dragging = null;
-    let mouseX, mouseY, zIndex = 0;
 
     function startDrag(e) {
         document.querySelectorAll(".shifu-window").forEach(e => e.classList.remove("shifu-window-active"));

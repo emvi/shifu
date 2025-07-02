@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+* fixed z-index for windows
+
 ## 1.0.0
 
 * added admin UI
