@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2
+
+* added distance between icons and label in tree view
+
 ## 1.0.1
 
 * fixed z-index for windows
