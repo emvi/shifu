@@ -32,7 +32,7 @@
     }
 
     input:not(.jsoneditor-frame > input),
-    button:not([class*="jsoneditor"]),
+    button:not([class*="jsoneditor"]):not([class*="trix"]),
     .button,
     select {
         width: 100%;
@@ -51,7 +51,7 @@
     }
 
     input[type~="submit"]:not(.jsoneditor-frame > input),
-    button:not([class*="jsoneditor"]),
+    button:not([class*="jsoneditor"]):not([class*="trix"]),
     .button {
         width: auto;
         background: var(--bg);
@@ -97,7 +97,7 @@
         display: flex;
         gap: 4px;
 
-        button:not([class*="jsoneditor"]),
+        button:not([class*="jsoneditor"]):not([class*="trix"]),
         .button {
             padding: 4px;
         }

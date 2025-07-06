@@ -3,6 +3,7 @@
 ## 1.0.2
 
 * added distance between icons and label in tree view
+* fixed text editor buttons
 
 ## 1.0.1
 
