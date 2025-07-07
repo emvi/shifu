@@ -43,8 +43,8 @@
                                   data-path="{{ $entry.Path }}"
                                   hx-get="{{ config.UI.Path }}/pages/page?path={{ $entry.Path }}"
                                   hx-target=".shifu-pages-page">
-                                        {{ $entry.Name }}
-                                    </span>
+                                {{ $entry.Name }}
+                            </span>
                             <span>
                                 <img src="{{ config.UI.Path }}/static/icons/delete.svg"
                                      alt=""
@@ -76,8 +76,7 @@
     <button title="{{ i18n .Data.Lang "pages_tree_add_page" }}"
             hx-get="{{ config.UI.Path }}/pages/page/save"
             hx-include="#shifu-pages-entry-selection-path"
-            hx-target="body"
-            hx-swap="beforeend">
+            hx-target=".shifu-pages-page">
         <img src="{{ config.UI.Path }}/static/icons/add.svg" alt="" />
     {{ i18n .Data.Lang "pages_tree_add_page" }}
     </button>

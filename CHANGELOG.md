@@ -4,6 +4,7 @@
 
 * added distance between icons and label in tree view
 * added opening route icon shortcut to page dialog
+* updated page management to use the inline form instead of a dialog for new pages
 * fixed text editor buttons
 
 ## 1.0.1

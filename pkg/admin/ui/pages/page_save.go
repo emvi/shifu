@@ -177,6 +177,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 					Header:  header,
 					Handler: handler,
 				}
+				path = filepath.Join(path, name+".json")
 			}
 
 			if err := shared.SavePage(page, outPath); err != nil {
@@ -229,28 +230,14 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lang := tpl.GetUILanguage(r)
-	tpl.Get().Execute(w, "pages-page-save.html", struct {
-		SavePageData
-		WindowOptions ui.WindowOptions
-	}{
-		WindowOptions: ui.WindowOptions{
-			ID:         "shifu-pages-page-save",
-			TitleTpl:   "pages-page-save-window-title",
-			ContentTpl: "pages-page-save-window-content",
-			Overlay:    true,
-			MinWidth:   520,
-			Lang:       lang,
-		},
-		SavePageData: SavePageData{
-			Admin:     middleware.IsAdmin(r),
-			Lang:      lang,
-			PagePath:  map[string]string{"de": "/"},
-			Path:      path,
-			Sitemap:   1,
-			New:       true,
-			Languages: iso6391.Languages,
-		},
+	tpl.Get().Execute(w, "pages-page-save-form.html", SavePageData{
+		Admin:     middleware.IsAdmin(r),
+		Lang:      tpl.GetUILanguage(r),
+		PagePath:  map[string]string{"de": "/"},
+		Path:      path,
+		Sitemap:   1,
+		New:       true,
+		Languages: iso6391.Languages,
 	})
 }
 
