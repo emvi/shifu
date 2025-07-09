@@ -25,7 +25,7 @@
             <label for="position">{{ i18n .Data.Lang "content_reference_position" }}</label>
             <select name="position" id="position">
                 {{ range $key, $value := .Data.Positions }}
-                    <option value="{{ $key }}" {{ if eq $key $position }}selected{{ end }}>{{ $value }}</option>
+                    <option value="{{ $key }}" {{ if eq $key $position }}selected{{ end }}>{{ $value.Label }}</option>
                 {{ end }}
             </select>
 

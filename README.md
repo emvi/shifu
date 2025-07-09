@@ -291,6 +291,22 @@ cms.SetHandler("blog", func(c *cms.CMS, page cms.Content, args map[string]string
 })
 ```
 
+## Build-in Variables
+
+When rendering a template, the following variables are always available. Click one of the links below to see the struct definitions.
+
+```
+CMS     *CMS
+Args    map[string]string
+Page    *Content
+Content *Content
+```
+
+* [CMS](pkg/cms/cms.go) is the CMS main struct that can be used to render elements and access general configuration
+* `Args` are the router parameters when using dynamic route matching
+* [Page](pkg/cms/model.go) is the page object, including the routes and other page attributes
+* [Content](pkg/cms/model.go) is the current element that is being rendered
+
 ## Template Functions
 
 Shifu comes with a number of template functions that can be used within templates.
@@ -335,9 +351,12 @@ Elements and references on the page can only be edited if you add a template con
     "label": "Label",
     "_layout": "Layout marks the element as structural, like for the head section, disabling certain actions.",
     "layout": false,
-    "_content": "The display name for the content areas.",
+    "_content": "The configuration for the content areas.",
     "content": {
-        "content": "Inhalt"
+        "content": {
+            "label": "Inhalt",
+            "tpl_filter": ["filter", "templates"]
+        }
     },
     "_copy": "The display name and field types for the copy section. The type can be html, img, file, boolean, or select.",
     "copy": {

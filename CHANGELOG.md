@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0
+
+* added template filter for child elements
+* improved docs
+* fixed page label styling
+* fixed creating a new page when another one was already selected
+* updated dependencies
+
 ## 1.0.2
 
 * added distance between icons and label in tree view

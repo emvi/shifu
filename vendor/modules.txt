@@ -25,7 +25,7 @@ github.com/emvi/iso-639-1
 # github.com/emvi/null v1.3.1
 ## explicit
 github.com/emvi/null
-# github.com/evanw/esbuild v0.25.5
+# github.com/evanw/esbuild v0.25.6
 ## explicit; go 1.13
 github.com/evanw/esbuild/internal/api_helpers
 github.com/evanw/esbuild/internal/ast

@@ -5,7 +5,7 @@ go 1.23.4
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/emvi/iso-639-1 v1.1.0
-	github.com/evanw/esbuild v0.25.5
+	github.com/evanw/esbuild v0.25.6
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/go-chi/chi/v5 v5.2.2
 	github.com/go-chi/cors v1.2.2

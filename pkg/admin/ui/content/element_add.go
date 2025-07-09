@@ -11,6 +11,19 @@ import (
 	"strings"
 )
 
+// AddElementData is the data required to render the element dialog.
+type AddElementData struct {
+	Language  string
+	Lang      string
+	Path      string
+	Element   string
+	Templates []TemplateConfig
+	Positions map[string]TemplateContent
+	Template  string
+	Position  string
+	Errors    map[string]string
+}
+
 // AddElement adds a new element to the page or to a parent element.
 func AddElement(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
@@ -25,7 +38,8 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 
 	var parent *cms.Content
 	var parentPath string
-	positions := make(map[string]string)
+	filter := make([]string, 0)
+	positions := make(map[string]TemplateContent)
 
 	if elementPath != "" {
 		var key string
@@ -49,6 +63,10 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 		}
 
 		positions = parentTpl.Content
+
+		for _, c := range parentTpl.Content {
+			filter = append(filter, c.TplFilter...)
+		}
 	} else {
 		parent = page
 	}
@@ -73,22 +91,12 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			tpl.Get().Execute(w, "page-element-add-form.html", struct {
-				Language  string
-				Lang      string
-				Path      string
-				Element   string
-				Templates []TemplateConfig
-				Positions map[string]string
-				Template  string
-				Position  string
-				Errors    map[string]string
-			}{
+			tpl.Get().Execute(w, "page-element-add-form.html", AddElementData{
 				Language:  shared.GetLanguage(r),
 				Lang:      tpl.GetUILanguage(r),
 				Path:      path,
 				Element:   elementPath,
-				Templates: tplCfgCache.List(),
+				Templates: tplCfgCache.List(filter),
 				Positions: positions,
 				Template:  template,
 				Position:  position,
@@ -137,15 +145,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "page-element-add.html", struct {
 		WindowOptions ui.WindowOptions
-		Language      string
-		Lang          string
-		Path          string
-		Element       string
-		Templates     []TemplateConfig
-		Positions     map[string]string
-		Template      string
-		Position      string
-		Errors        map[string]string
+		AddElementData
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-page-element-add",
@@ -155,11 +155,13 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 			Overlay:    true,
 			Lang:       lang,
 		},
-		Language:  shared.GetLanguage(r),
-		Lang:      lang,
-		Path:      path,
-		Element:   elementPath,
-		Templates: tplCfgCache.List(),
-		Positions: positions,
+		AddElementData: AddElementData{
+			Language:  shared.GetLanguage(r),
+			Lang:      lang,
+			Path:      path,
+			Element:   elementPath,
+			Templates: tplCfgCache.List(filter),
+			Positions: positions,
+		},
 	})
 }

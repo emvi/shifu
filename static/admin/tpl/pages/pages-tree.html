@@ -7,7 +7,9 @@
                 {{ if $entry.IsDir }}
                     <details data-entry="{{ $entry.Path }}" {{ if not (len $entry.Children) }}class="empty"{{ end }}>
                         <summary>
-                            <span class="shifu-pages-entry-name" data-path="{{ $entry.Path }}">
+                            <span class="shifu-pages-entry-name"
+                                  data-path="{{ $entry.Path }}"
+                                  data-dir>
                                 {{ $entry.Name }}
                             </span>
                             <span>
@@ -71,14 +73,15 @@
             hx-target="body"
             hx-swap="beforeend">
         <img src="{{ config.UI.Path }}/static/icons/add.svg" alt="" />
-    {{ i18n .Data.Lang "pages_tree_add_directory" }}
+        {{ i18n .Data.Lang "pages_tree_add_directory" }}
     </button>
     <button title="{{ i18n .Data.Lang "pages_tree_add_page" }}"
+            id="shifu-pages-add-page"
             hx-get="{{ config.UI.Path }}/pages/page/save"
             hx-include="#shifu-pages-entry-selection-path"
             hx-target=".shifu-pages-page">
         <img src="{{ config.UI.Path }}/static/icons/add.svg" alt="" />
-    {{ i18n .Data.Lang "pages_tree_add_page" }}
+        {{ i18n .Data.Lang "pages_tree_add_page" }}
     </button>
 </div>
 
@@ -86,6 +89,7 @@
     (function(){
         shifuTree("shifu-pages-tree");
         const input = document.getElementById("shifu-pages-entry-selection-path");
+        let isDir = false;
 
         document.querySelectorAll(".shifu-pages-entry-name").forEach(e => {
             e.addEventListener("click", e => {
@@ -95,11 +99,14 @@
                     e.classList.remove("shifu-pages-entry-selected");
                 });
                 e.target.classList.add("shifu-pages-entry-selected");
-
-                if (input) {
-                    input.value = e.target.getAttribute("data-path");
-                }
+                input.value = e.target.getAttribute("data-path");
+                isDir = e.target.hasAttribute("data-dir");
             });
+        });
+        document.getElementById("shifu-pages-add-page").addEventListener("click", () => {
+            if (!isDir) {
+                input.value = "";
+            }
         });
     })();
 </script>

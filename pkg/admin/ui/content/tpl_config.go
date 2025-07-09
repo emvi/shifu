@@ -2,12 +2,12 @@ package content
 
 // TemplateConfig is the configuration for a template.
 type TemplateConfig struct {
-	Name    string                  `json:"-"`
-	Label   string                  `json:"label"`
-	Layout  bool                    `json:"layout"`
-	Content map[string]string       `json:"content"`
-	Copy    map[string]TemplateCopy `json:"copy"`
-	Data    map[string]TemplateData `json:"data"`
+	Name    string                     `json:"-"`
+	Label   string                     `json:"label"`
+	Layout  bool                       `json:"layout"`
+	Content map[string]TemplateContent `json:"content"`
+	Copy    map[string]TemplateCopy    `json:"copy"`
+	Data    map[string]TemplateData    `json:"data"`
 }
 
 // Positions returns the available positions for the template.
@@ -19,6 +19,12 @@ func (c *TemplateConfig) Positions() []string {
 	}
 
 	return positions
+}
+
+// TemplateContent is the configuration for a template content area.
+type TemplateContent struct {
+	Label     string   `json:"label"`
+	TplFilter []string `json:"tpl_filter"`
 }
 
 // TemplateCopy is the configuration for a template copy entry.

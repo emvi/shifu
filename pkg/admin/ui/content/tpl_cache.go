@@ -62,7 +62,7 @@ func (c *TemplateCfgCache) Load() {
 			list = append(list, *tpl)
 
 			for k, v := range tpl.Content {
-				positions[k] = v
+				positions[k] = v.Label
 			}
 		}
 
@@ -99,10 +99,24 @@ func (c *TemplateCfgCache) Load() {
 }
 
 // List returns a list of all template configurations.
-func (c *TemplateCfgCache) List() []TemplateConfig {
+// The filter is optional.
+func (c *TemplateCfgCache) List(filter []string) []TemplateConfig {
 	c.m.RLock()
 	defer c.m.RUnlock()
-	return c.list
+
+	if len(filter) == 0 {
+		return c.list
+	}
+
+	list := make([]TemplateConfig, 0, len(c.list))
+
+	for _, tpl := range c.list {
+		if slices.Contains(filter, tpl.Name) {
+			list = append(list, tpl)
+		}
+	}
+
+	return list
 }
 
 // GetTemplate returns a template configuration by name.

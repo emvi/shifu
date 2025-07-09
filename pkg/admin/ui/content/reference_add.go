@@ -9,6 +9,7 @@ import (
 	htmlTpl "html/template"
 	"log/slog"
 	"net/http"
+	"slices"
 	"strings"
 )
 
@@ -16,6 +17,19 @@ import (
 type Ref struct {
 	Name  string
 	Label string
+}
+
+// AddReferenceData is the data required to render the reference dialog.
+type AddReferenceData struct {
+	Language   string
+	Lang       string
+	Path       string
+	Element    string
+	References []Ref
+	Positions  map[string]TemplateContent
+	Reference  string
+	Position   string
+	Errors     map[string]string
 }
 
 // AddReference adds an existing reference to the parent element.
@@ -32,7 +46,8 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 
 	var parent *cms.Content
 	var parentPath string
-	positions := make(map[string]string)
+	filter := make([]string, 0)
+	positions := make(map[string]TemplateContent)
 
 	if elementPath != "" {
 		var key string
@@ -56,6 +71,10 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 		}
 
 		positions = parentTpl.Content
+
+		for _, c := range parentTpl.Content {
+			filter = append(filter, c.TplFilter...)
+		}
 	} else {
 		parent = page
 	}
@@ -86,22 +105,12 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			tpl.Get().Execute(w, "page-reference-add-form.html", struct {
-				Language   string
-				Lang       string
-				Path       string
-				Element    string
-				References []Ref
-				Positions  map[string]string
-				Reference  string
-				Position   string
-				Errors     map[string]string
-			}{
+			tpl.Get().Execute(w, "page-reference-add-form.html", AddReferenceData{
 				Language:   shared.GetLanguage(r),
 				Lang:       tpl.GetUILanguage(r),
 				Path:       path,
 				Element:    elementPath,
-				References: getReferences(),
+				References: getReferences(filter),
 				Positions:  positions,
 				Reference:  reference,
 				Position:   position,
@@ -150,15 +159,7 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "page-element-add.html", struct {
 		WindowOptions ui.WindowOptions
-		Language      string
-		Lang          string
-		Path          string
-		Element       string
-		References    []Ref
-		Positions     map[string]string
-		Reference     string
-		Position      string
-		Errors        map[string]string
+		AddReferenceData
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-page-reference-add",
@@ -168,16 +169,18 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 			Overlay:    true,
 			Lang:       lang,
 		},
-		Language:   shared.GetLanguage(r),
-		Lang:       lang,
-		Path:       path,
-		Element:    elementPath,
-		References: getReferences(),
-		Positions:  positions,
+		AddReferenceData: AddReferenceData{
+			Language:   shared.GetLanguage(r),
+			Lang:       lang,
+			Path:       path,
+			Element:    elementPath,
+			References: getReferences(filter),
+			Positions:  positions,
+		},
 	})
 }
 
-func getReferences() []Ref {
+func getReferences(filter []string) []Ref {
 	rows, err := db.Get().Query(`SELECT "name" FROM "reference" ORDER BY "name"`)
 
 	if err != nil {
@@ -207,7 +210,9 @@ func getReferences() []Ref {
 			entity.Label = name.Label
 		}
 
-		references = append(references, entity)
+		if slices.Contains(filter, name.Name) {
+			references = append(references, entity)
+		}
 	}
 
 	return references
