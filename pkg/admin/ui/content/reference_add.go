@@ -210,7 +210,7 @@ func getReferences(filter []string) []Ref {
 			entity.Label = name.Label
 		}
 
-		if slices.Contains(filter, name.Name) {
+		if len(filter) == 0 || slices.Contains(filter, name.Name) {
 			references = append(references, entity)
 		}
 	}

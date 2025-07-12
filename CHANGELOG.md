@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1
+
+* fixed empty filter list filtering all references
+* updated dependencies
+
 ## 1.1.0
 
 * added template filter for child elements
