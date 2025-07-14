@@ -119,8 +119,15 @@ func (content *Content) copy() Content {
 		}
 	}
 
+	selectedExperiments := make(map[string]string)
+
+	for k, v := range content.SelectedExperiments {
+		selectedExperiments[k] = v
+	}
+
 	return Content{
-		Path: path,
+		DisableCache: content.DisableCache,
+		Path:         path,
 		Sitemap: Sitemap{
 			Priority: content.Sitemap.Priority,
 		},
@@ -130,13 +137,17 @@ func (content *Content) copy() Content {
 			Tags:       tags,
 			Experiment: content.Analytics.Experiment,
 		},
-		Ref:           content.Ref,
-		Tpl:           content.Tpl,
-		Data:          data,
-		Copy:          contentCopy,
-		Content:       c,
-		Language:      content.Language,
-		CanonicalLink: content.CanonicalLink,
-		Experiments:   experiments,
+		Ref:                    content.Ref,
+		Tpl:                    content.Tpl,
+		Data:                   data,
+		Copy:                   contentCopy,
+		Content:                c,
+		Request:                content.Request,
+		Language:               content.Language,
+		CanonicalLink:          content.CanonicalLink,
+		Experiments:            experiments,
+		SelectedExperiments:    selectedExperiments,
+		SelectedPageExperiment: content.SelectedPageExperiment,
+		Position:               content.Position,
 	}
 }

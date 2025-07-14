@@ -51,9 +51,9 @@ func (provider *FileSystem) Watch(ctx context.Context, update func()) {
 // Update implements the Provider interface.
 func (provider *FileSystem) Update(update func()) {
 	provider.m.Lock()
+	defer provider.m.Unlock()
 	update()
 	provider.lastUpdate = time.Now().UTC()
-	provider.m.Unlock()
 }
 
 // LastUpdate implements the Provider interface.

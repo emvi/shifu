@@ -4,6 +4,7 @@
 
 * improved synchronization mutexes
 * fixed constructor name
+* fixed copying content fields
 
 ## 1.1.1
 

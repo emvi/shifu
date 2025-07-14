@@ -272,14 +272,15 @@ func (cms *CMS) renderElement(buffer *bytes.Buffer, args map[string]string, page
 	if c.Ref != "" {
 		cms.m.RLock()
 		ref, ok := cms.refs[c.Ref]
-		cms.m.RUnlock()
 
 		if !ok {
+			cms.m.RUnlock()
 			buffer.WriteString(fmt.Sprintf(`Reference "%s" not found!`, c.Ref))
 			return nil
 		}
 
 		ref = ref.copy()
+		cms.m.RUnlock()
 
 		// overwrite data
 		if ref.Data == nil {
