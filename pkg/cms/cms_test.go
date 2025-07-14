@@ -2,7 +2,6 @@ package cms
 
 import (
 	"context"
-	"github.com/emvi/shifu/pkg/cfg"
 	"github.com/emvi/shifu/pkg/sitemap"
 	"github.com/emvi/shifu/pkg/source"
 	"net/http"
@@ -11,8 +10,34 @@ import (
 	"testing"
 )
 
+func TestCMS(t *testing.T) {
+	c := NewCMS(Options{
+		Ctx:       context.Background(),
+		BaseDir:   "../../demo",
+		HotReload: true,
+		FuncMap:   defaultFuncMap,
+		Source:    source.NewFileSystem("../../demo", 1),
+		Sitemap:   sitemap.New(),
+	})
+	n := 100
+	var wg sync.WaitGroup
+	wg.Add(n)
+
+	for i := 0; i < n; i++ {
+		go func() {
+			c.Update()
+			w := httptest.NewRecorder()
+			r := httptest.NewRequest(http.MethodGet, "/", nil)
+			c.Serve(w, r)
+			c.LastUpdate()
+			wg.Done()
+		}()
+	}
+
+	wg.Wait()
+}
+
 func BenchmarkCMS(b *testing.B) {
-	cfg.Get().BaseDir = "../../demo"
 	c := NewCMS(Options{
 		Ctx:       context.Background(),
 		BaseDir:   "../../demo",

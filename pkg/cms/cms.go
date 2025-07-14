@@ -611,7 +611,7 @@ func (cms *CMS) getContent(path string) (*Content, error) {
 		return nil, errors.New(fmt.Sprintf("error parsing website content file '%s': %s", path, err))
 	}
 
-	content.File = strings.TrimPrefix(path, cfg.Get().BaseDir)
+	content.File = strings.TrimPrefix(path, cms.baseDir)
 	return &content, nil
 }
 

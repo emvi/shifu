@@ -23,8 +23,8 @@ type TemplateCfgCache struct {
 	m         sync.RWMutex
 }
 
-// NewTemplateCache creates a new template cache.
-func NewTemplateCache() *TemplateCfgCache {
+// NewTemplateCfgCache creates a new TemplateCfgCache.
+func NewTemplateCfgCache() *TemplateCfgCache {
 	cache := &TemplateCfgCache{
 		templates: make(map[string]TemplateConfig),
 		positions: make(map[string]string),
@@ -42,8 +42,6 @@ func (c *TemplateCfgCache) Load() {
 		return
 	}
 
-	c.m.Lock()
-	defer c.m.Unlock()
 	templates := make(map[string]TemplateConfig)
 	positions := make(map[string]string)
 	list := make([]TemplateConfig, 0)
@@ -93,6 +91,8 @@ func (c *TemplateCfgCache) Load() {
 
 		return 0
 	})
+	c.m.Lock()
+	defer c.m.Unlock()
 	c.templates = templates
 	c.positions = positions
 	c.list = list
@@ -105,7 +105,9 @@ func (c *TemplateCfgCache) List(filter []string) []TemplateConfig {
 	defer c.m.RUnlock()
 
 	if len(filter) == 0 {
-		return c.list
+		list := make([]TemplateConfig, len(c.list))
+		copy(list, c.list)
+		return list
 	}
 
 	list := make([]TemplateConfig, 0, len(c.list))

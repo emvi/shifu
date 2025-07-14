@@ -1,0 +1,20 @@
+{
+    "label": "Text",
+    "content": {
+        "content": {
+            "label": "Content",
+            "tpl_filter": ["img"]
+        }
+    },
+    "copy": {
+        "headline": {
+            "label": "Headline",
+            "order": 2
+        },
+        "text": {
+            "label": "Text",
+            "type": "html",
+            "order": 1
+        }
+    }
+}

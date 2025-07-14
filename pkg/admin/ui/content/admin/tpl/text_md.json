@@ -1,0 +1,17 @@
+{
+    "label": "Markdown Text",
+    "content": {
+        "content": {
+            "label": "Content"
+        }
+    },
+    "copy": {
+        "headline": {
+            "label": "Headline"
+        },
+        "text": {
+            "label": "Text",
+            "type": "html"
+        }
+    }
+}

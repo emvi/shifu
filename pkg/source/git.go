@@ -61,9 +61,9 @@ func (provider *Git) Watch(ctx context.Context, update func()) {
 func (provider *Git) Update(update func()) {
 	provider.pullGitRepo()
 	provider.m.Lock()
+	defer provider.m.Unlock()
 	update()
 	provider.lastUpdate = time.Now().UTC()
-	provider.m.Unlock()
 }
 
 // LastUpdate implements the Provider interface.

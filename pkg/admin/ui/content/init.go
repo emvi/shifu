@@ -18,7 +18,7 @@ var (
 // Init initializes the template cache and watches for configuration changes.
 func Init(ctx context.Context, cms *cms.CMS) error {
 	content = cms
-	tplCfgCache = NewTemplateCache()
+	tplCfgCache = NewTemplateCfgCache()
 	watcher, err := fsnotify.NewWatcher()
 
 	if err != nil {

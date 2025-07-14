@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.2
+
+* improved synchronization mutexes
+* fixed constructor name
+
 ## 1.1.1
 
 * fixed empty filter list filtering all references
