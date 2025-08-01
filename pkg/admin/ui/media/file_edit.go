@@ -11,6 +11,15 @@ import (
 	"unicode"
 )
 
+// EditFileData is the data for the file editing form.
+type EditFileData struct {
+	Lang    string
+	Path    string
+	Name    string
+	NewName string
+	Errors  map[string]string
+}
+
 // EditFile renames a file.
 func EditFile(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimSpace(r.URL.Query().Get("path"))
@@ -45,16 +54,12 @@ func EditFile(w http.ResponseWriter, r *http.Request) {
 
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			tpl.Get().Execute(w, "media-file-edit-form.html", struct {
-				Lang   string
-				Path   string
-				Name   string
-				Errors map[string]string
-			}{
-				Lang:   tpl.GetUILanguage(r),
-				Path:   path,
-				Name:   newName,
-				Errors: errs,
+			tpl.Get().Execute(w, "media-file-edit-form.html", EditFileData{
+				Lang:    tpl.GetUILanguage(r),
+				Path:    path,
+				Name:    name,
+				NewName: newName,
+				Errors:  errs,
 			})
 			return
 		}
@@ -78,10 +83,7 @@ func EditFile(w http.ResponseWriter, r *http.Request) {
 	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "media-file-edit.html", struct {
 		WindowOptions ui.WindowOptions
-		Lang          string
-		Path          string
-		Name          string
-		Errors        map[string]string
+		EditFileData
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-media-file-edit",
@@ -91,9 +93,12 @@ func EditFile(w http.ResponseWriter, r *http.Request) {
 			MinWidth:   400,
 			Lang:       lang,
 		},
-		Lang: lang,
-		Path: path,
-		Name: name,
+		EditFileData: EditFileData{
+			Lang:    lang,
+			Path:    path,
+			Name:    name,
+			NewName: name,
+		},
 	})
 }
 

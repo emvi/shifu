@@ -3,10 +3,12 @@
 ## 1.2.0
 
 * added `Content.Clone()` method
+* added file name sanitization
 * changed `adminHead` and `loggedIn` parameters to use the page instead of the request directly
 * fixed checking if user is logged in for the admin UI
 * fixed data select fields when the key is different from the value
 * fixed tree state not being applied to individual pages
+* fixed editing media file names
 * updated dependencies
 
 ## 1.1.2
