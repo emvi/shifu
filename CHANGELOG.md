@@ -1,7 +1,10 @@
 # Changelog
 
-## 1.1.3
+## 1.2.0
 
+* added `Content.Clone()` method
+* changed `adminHead` and `loggedIn` parameters to use the page instead of the request directly
+* fixed checking if user is logged in for the admin UI
 * updated dependencies
 
 ## 1.1.2

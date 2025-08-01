@@ -279,7 +279,7 @@ func (cms *CMS) renderElement(buffer *bytes.Buffer, args map[string]string, page
 			return nil
 		}
 
-		ref = ref.copy()
+		ref = ref.Clone()
 		cms.m.RUnlock()
 
 		// overwrite data
