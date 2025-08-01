@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.3
+
+* updated dependencies
+
 ## 1.1.2
 
 * improved synchronization mutexes
