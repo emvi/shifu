@@ -30,7 +30,7 @@
         <label for="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">{{ $cfg.Label }}</label>
         <select id="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}" name="{{ $prefix }}{{ $language }}.{{ $field }}">
             {{ range $k, $v := $cfg.Options }}
-                <option value="{{ $k }}" {{ if eq $value $v }}selected{{ end }}>{{ $v }}</option>
+                <option value="{{ $k }}" {{ if eq $value $k }}selected{{ end }}>{{ $v }}</option>
             {{ end }}
         </select>
     {{ else }}

@@ -5,6 +5,7 @@
 * added `Content.Clone()` method
 * changed `adminHead` and `loggedIn` parameters to use the page instead of the request directly
 * fixed checking if user is logged in for the admin UI
+* fixed data select fields when the key is different from the value 
 * updated dependencies
 
 ## 1.1.2
