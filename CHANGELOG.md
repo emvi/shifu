@@ -9,6 +9,7 @@
 * fixed data select fields when the key is different from the value
 * fixed tree state not being applied to individual pages
 * fixed editing media file names
+* fixed URL encoding paths for file synchronization
 * updated dependencies
 
 ## 1.1.2
