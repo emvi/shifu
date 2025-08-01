@@ -9,11 +9,12 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
 const (
-	maxSize = 100_000_000
+	maxSize = 100_000_000 // 100 MB
 )
 
 // UploadFiles uploads one or more files.
@@ -24,7 +25,6 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 		overwrite := strings.ToLower(r.FormValue("overwrite")) == "on"
 		errs := make(map[string]string)
 
-		// 100 MB
 		if err := r.ParseMultipartForm(maxSize); err != nil {
 			errs["files"] = "files exceed the maximum size"
 		}
@@ -45,12 +45,13 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 
 		if len(errs) == 0 {
 			for _, file := range files {
-				p := filepath.Join(getDirectoryPath(path), file.Filename)
+				filename := sanitizeFilename(path, file.Filename, overwrite)
+				p := filepath.Join(getDirectoryPath(path), filename)
 
 				if !overwrite {
 					if _, err := os.Stat(p); !os.IsNotExist(err) {
 						errs["files"] = "file already exists"
-						existingFiles = append(existingFiles, file.Filename)
+						existingFiles = append(existingFiles, filename)
 						continue
 					}
 				}
@@ -137,4 +138,25 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 		Lang: lang,
 		Path: path,
 	})
+}
+
+func sanitizeFilename(path, filename string, overwrite bool) string {
+	validChars := regexp.MustCompile(`[^a-zA-Z0-9._-]`)
+	filename = validChars.ReplaceAllString(filename, "_")
+	filename = strings.Trim(filename, "._")
+
+	if filename == "" {
+		filename = "untitled"
+	}
+
+	if !overwrite {
+		_, err := os.Stat(filepath.Join(getDirectoryPath(path), filename))
+
+		for !os.IsNotExist(err) {
+			filename = "_" + filename
+			_, err = os.Stat(filepath.Join(getDirectoryPath(path), filename))
+		}
+	}
+
+	return filename
 }

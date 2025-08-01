@@ -80,7 +80,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			days = 7
 		}
 
-		expires := time.Now().Add(time.Hour * 24 * time.Duration(days))
+		expires := time.Now().UTC().Add(time.Hour * 24 * time.Duration(days))
 
 		if _, err := db.Get().Exec(`INSERT INTO "session" (user_id, session, expires) VALUES (?, ?, ?)`, user.ID, session, expires); err != nil {
 			slog.Error("Error storing session", "error", err)

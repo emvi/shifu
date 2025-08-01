@@ -64,7 +64,8 @@ type Content struct {
 	Position string `json:"-"`
 }
 
-func (content *Content) copy() Content {
+// Clone returns a copy of the Content.
+func (content *Content) Clone() Content {
 	path := make(map[string]string)
 
 	for k, v := range content.Path {
@@ -105,7 +106,7 @@ func (content *Content) copy() Content {
 		c[k] = make([]Content, len(v))
 
 		for i, j := range v {
-			c[k][i] = j.copy()
+			c[k][i] = j.Clone()
 		}
 	}
 

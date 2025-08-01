@@ -4,8 +4,8 @@ go 1.23.4
 
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
-	github.com/emvi/iso-639-1 v1.1.0
-	github.com/evanw/esbuild v0.25.6
+	github.com/emvi/iso-639-1 v1.1.1
+	github.com/evanw/esbuild v0.25.8
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/go-chi/chi/v5 v5.2.2
 	github.com/go-chi/cors v1.2.2
@@ -14,11 +14,11 @@ require (
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/klauspost/compress v1.18.0
 	github.com/lib/pq v1.10.9
-	github.com/mattn/go-sqlite3 v1.14.28
+	github.com/mattn/go-sqlite3 v1.14.30
 	github.com/minio/minio-go/v7 v7.0.85
 	github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.4.0
 	github.com/stretchr/testify v1.10.0
-	github.com/yuin/goldmark v1.7.12
+	github.com/yuin/goldmark v1.7.13
 	golang.org/x/crypto v0.40.0
 )
 

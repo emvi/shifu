@@ -9,6 +9,7 @@ import (
 	"github.com/emvi/shifu/pkg/static"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 )
@@ -88,7 +89,7 @@ func uploadContentFile(path string) error {
 		return err
 	}
 
-	req, _ := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/api/v1/content/file?path=%s", cfg.Get().Remote.URL, path), bytes.NewReader(body))
+	req, _ := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/api/v1/content/file?path=%s", cfg.Get().Remote.URL, url.QueryEscape(path)), bytes.NewReader(body))
 	req.Header.Set("Authorization", fmt.Sprintf("Key %s", cfg.Get().Remote.Secret))
 	resp, err := http.DefaultClient.Do(req)
 
@@ -156,7 +157,7 @@ func uploadStaticFile(path string) error {
 		return err
 	}
 
-	req, _ := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/api/v1/static?path=%s", cfg.Get().Remote.URL, path), bytes.NewReader(body))
+	req, _ := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/api/v1/static?path=%s", cfg.Get().Remote.URL, url.QueryEscape(path)), bytes.NewReader(body))
 	req.Header.Set("Authorization", fmt.Sprintf("Key %s", cfg.Get().Remote.Secret))
 	resp, err := http.DefaultClient.Do(req)
 

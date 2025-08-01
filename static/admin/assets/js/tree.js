@@ -1,3 +1,5 @@
+import {simpleHash} from "./hash";
+
 window.shifuTree = function(id) {
     const tree = document.getElementById(id);
 
@@ -7,7 +9,7 @@ window.shifuTree = function(id) {
     }
 
     let state = new Map;
-    const stateFromLocalStorage = localStorage.getItem(id);
+    const stateFromLocalStorage = localStorage.getItem(`${id}-${simpleHash(location.pathname)}`);
 
     if (stateFromLocalStorage) {
         state = new Map(JSON.parse(stateFromLocalStorage));
@@ -36,7 +38,7 @@ window.shifuTree = function(id) {
                 state.delete(entry);
             }
 
-            localStorage.setItem(id, JSON.stringify(Array.from(state.entries())));
+            localStorage.setItem(`${id}-${simpleHash(location.pathname)}`, JSON.stringify(Array.from(state.entries())));
         });
     });
 }

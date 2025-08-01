@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// SelectionField is the data for the media selection.
 type SelectionField struct {
 	Lang, Type, Label, Field, Language, Prefix, Value string
 }

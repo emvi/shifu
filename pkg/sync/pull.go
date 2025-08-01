@@ -10,6 +10,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -138,7 +139,7 @@ func getRemoteContentFiles() ([]content.File, error) {
 
 func downloadContentFile(path string) error {
 	slog.Info("Downloading remote file", "path", path)
-	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/v1/content/file?path=%s", cfg.Get().Remote.URL, path), nil)
+	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/v1/content/file?path=%s", cfg.Get().Remote.URL, url.QueryEscape(path)), nil)
 	req.Header.Set("Authorization", fmt.Sprintf("Key %s", cfg.Get().Remote.Secret))
 	resp, err := http.DefaultClient.Do(req)
 
