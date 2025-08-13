@@ -10,22 +10,16 @@ github.com/Masterminds/semver/v3
 # github.com/Masterminds/sprig/v3 v3.3.0
 ## explicit; go 1.21
 github.com/Masterminds/sprig/v3
-# github.com/beorn7/perks v1.0.1
-## explicit; go 1.11
-# github.com/cespare/xxhash/v2 v2.3.0
-## explicit; go 1.11
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
-# github.com/dustin/go-humanize v1.0.1
-## explicit; go 1.16
 # github.com/emvi/iso-639-1 v1.1.1
 ## explicit; go 1.17
 github.com/emvi/iso-639-1
 # github.com/emvi/null v1.3.1
 ## explicit
 github.com/emvi/null
-# github.com/evanw/esbuild v0.25.8
+# github.com/evanw/esbuild v0.25.9
 ## explicit; go 1.13
 github.com/evanw/esbuild/internal/api_helpers
 github.com/evanw/esbuild/internal/ast
@@ -62,22 +56,12 @@ github.com/go-chi/chi/v5
 # github.com/go-chi/cors v1.2.2
 ## explicit; go 1.14
 github.com/go-chi/cors
-# github.com/go-ini/ini v1.67.0
-## explicit
-# github.com/goccy/go-json v0.10.5
-## explicit; go 1.19
 # github.com/google/uuid v1.6.0
 ## explicit
 github.com/google/uuid
-# github.com/gorilla/mux v1.8.1
-## explicit; go 1.20
-# github.com/hetznercloud/hcloud-go/v2 v2.19.1
-## explicit; go 1.21
 # github.com/huandu/xstrings v1.5.0
 ## explicit; go 1.12
 github.com/huandu/xstrings
-# github.com/imdario/mergo v0.3.16
-## explicit; go 1.13
 # github.com/jmoiron/sqlx v1.4.0
 ## explicit; go 1.10
 github.com/jmoiron/sqlx
@@ -97,41 +81,23 @@ github.com/klauspost/compress/internal/le
 github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
-# github.com/klauspost/cpuid/v2 v2.2.9
-## explicit; go 1.20
-# github.com/lib/pq v1.10.9
-## explicit; go 1.13
-# github.com/mattn/go-sqlite3 v1.14.30
+# github.com/mattn/go-sqlite3 v1.14.31
 ## explicit; go 1.19
 github.com/mattn/go-sqlite3
-# github.com/minio/md5-simd v1.1.2
-## explicit; go 1.14
-# github.com/minio/minio-go/v7 v7.0.85
-## explicit; go 1.22
 # github.com/mitchellh/copystructure v1.2.0
 ## explicit; go 1.15
 github.com/mitchellh/copystructure
 # github.com/mitchellh/reflectwalk v1.0.2
 ## explicit
 github.com/mitchellh/reflectwalk
-# github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822
-## explicit
 # github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.4.0
 ## explicit; go 1.21
 github.com/pirsch-analytics/pirsch-go-sdk/v2/pkg
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
-# github.com/prometheus/client_golang v1.20.5
-## explicit; go 1.20
-# github.com/prometheus/client_model v0.6.1
+# github.com/rogpeppe/go-internal v1.11.0
 ## explicit; go 1.19
-# github.com/prometheus/common v0.62.0
-## explicit; go 1.21
-# github.com/prometheus/procfs v0.15.1
-## explicit; go 1.20
-# github.com/rs/xid v1.6.0
-## explicit; go 1.16
 # github.com/shopspring/decimal v1.4.0
 ## explicit; go 1.10
 github.com/shopspring/decimal
@@ -154,22 +120,18 @@ github.com/yuin/goldmark/renderer
 github.com/yuin/goldmark/renderer/html
 github.com/yuin/goldmark/text
 github.com/yuin/goldmark/util
-# golang.org/x/crypto v0.40.0
+# golang.org/x/crypto v0.41.0
 ## explicit; go 1.23.0
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/scrypt
-# golang.org/x/net v0.41.0
-## explicit; go 1.23.0
-# golang.org/x/sys v0.34.0
+# golang.org/x/sys v0.35.0
 ## explicit; go 1.23.0
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.27.0
-## explicit; go 1.23.0
-# google.golang.org/protobuf v1.36.4
-## explicit; go 1.21
+# gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
+## explicit; go 1.11
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3

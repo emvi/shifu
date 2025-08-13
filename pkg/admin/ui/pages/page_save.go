@@ -3,12 +3,12 @@ package pages
 import (
 	"fmt"
 	"github.com/emvi/iso-639-1"
-	"github.com/emvi/shifu/pkg/admin/middleware"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
 	"github.com/emvi/shifu/pkg/cfg"
 	"github.com/emvi/shifu/pkg/cms"
+	"github.com/emvi/shifu/pkg/middleware"
 	"io/fs"
 	"log/slog"
 	"net/http"

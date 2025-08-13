@@ -5,6 +5,7 @@ demo:
 
 deps:
 	go get -u -t ./...
+	go mod tidy
 	go mod vendor
 
 test:

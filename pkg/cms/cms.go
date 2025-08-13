@@ -140,7 +140,7 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 		w.Header().Add(k, v)
 	}
 
-	if !page.DisableCache {
+	if !page.DisableCache && !cms.isLoggedIn(r) {
 		cms.m.RLock()
 		data, ok := cms.pageCache[path]
 		cms.m.RUnlock()
@@ -179,7 +179,7 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 		slog.Debug("Error sending response", "path", path, "error", err)
 	}
 
-	if !page.DisableCache {
+	if !page.DisableCache && !cms.isLoggedIn(r) {
 		cms.m.Lock()
 		cms.pageCache[path] = data
 		cms.m.Unlock()
@@ -720,4 +720,9 @@ func (cms *CMS) isZeroValue(v any) bool {
 	}
 
 	return reflect.ValueOf(v).IsZero()
+}
+
+func (cms *CMS) isLoggedIn(r *http.Request) bool {
+	session, err := r.Cookie("session")
+	return err == nil && session.Value != ""
 }

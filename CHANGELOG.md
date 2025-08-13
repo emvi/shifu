@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+* fixed showing UI when cache is enabled
+* upgraded to Go version 1.25
+* updated dependencies
+
 ## 1.2.0
 
 * added `Content.Clone()` method

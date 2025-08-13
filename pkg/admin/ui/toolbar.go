@@ -1,9 +1,9 @@
 package ui
 
 import (
-	"github.com/emvi/shifu/pkg/admin/middleware"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
+	"github.com/emvi/shifu/pkg/middleware"
 	"net/http"
 )
 
