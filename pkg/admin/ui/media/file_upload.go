@@ -1,8 +1,7 @@
 package media
 
 import (
-	"github.com/emvi/shifu/pkg/admin/tpl"
-	"github.com/emvi/shifu/pkg/admin/ui"
+	"errors"
 	"io"
 	"log/slog"
 	"mime/multipart"
@@ -11,6 +10,9 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/emvi/shifu/pkg/admin/tpl"
+	"github.com/emvi/shifu/pkg/admin/ui"
 )
 
 const (
@@ -20,67 +22,37 @@ const (
 // UploadFiles uploads one or more files.
 func UploadFiles(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimSpace(r.URL.Query().Get("path"))
+	existingFiles := make([]string, 0)
 
 	if r.Method == http.MethodPost {
+		reader, err := r.MultipartReader()
 		overwrite := strings.ToLower(r.FormValue("overwrite")) == "on"
 		errs := make(map[string]string)
 
-		if err := r.ParseMultipartForm(maxSize); err != nil {
-			errs["files"] = "files exceed the maximum size"
-		}
-
-		var files []*multipart.FileHeader
-
-		if r.MultipartForm == nil {
-			errs["files"] = "multipart/form-data required"
+		if err != nil {
+			slog.Error("Error creating multipart reader", "error", err)
+			errs["files"] = "error reading multipart request"
 		} else {
-			files = r.MultipartForm.File["files"]
+			for {
+				part, err := reader.NextPart()
 
-			if len(files) == 0 {
-				errs["files"] = "no files selected"
-			}
-		}
-
-		existingFiles := make([]string, 0)
-
-		if len(errs) == 0 {
-			for _, file := range files {
-				filename := sanitizeFilename(path, file.Filename, overwrite)
-				p := filepath.Join(getDirectoryPath(path), filename)
-
-				if !overwrite {
-					if _, err := os.Stat(p); !os.IsNotExist(err) {
-						errs["files"] = "file already exists"
-						existingFiles = append(existingFiles, filename)
-						continue
-					}
+				if err == io.EOF {
+					break
 				}
-
-				f, err := file.Open()
 
 				if err != nil {
-					slog.Error("Error opening file to upload", "error", err, "path", p)
+					errs["files"] = "error reading multipart request part"
+					break
+				}
+
+				if err := uploadFile(part, path, overwrite, errs, existingFiles); err != nil {
 					errs["files"] = "error uploading file"
 					break
 				}
 
-				data, err := io.ReadAll(f)
-
-				if err != nil {
-					slog.Error("Error reading file to upload", "error", err, "path", p)
-					_ = f.Close()
-					errs["files"] = "error uploading file"
-					break
+				if err := part.Close(); err != nil {
+					slog.Warn("Error closing multipart file", "error", err)
 				}
-
-				if err := os.WriteFile(p, data, 0644); err != nil {
-					slog.Error("Error writing uploaded file", "error", err, "path", p)
-					_ = f.Close()
-					errs["files"] = "error uploading file"
-					break
-				}
-
-				_ = f.Close()
 			}
 		}
 
@@ -138,6 +110,50 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 		Lang: lang,
 		Path: path,
 	})
+}
+
+func uploadFile(part *multipart.Part, path string, overwrite bool, errs map[string]string, existingFiles []string) error {
+	filename := part.FileName()
+
+	if filename == "" {
+		return nil
+	}
+
+	filename = sanitizeFilename(path, filename, overwrite)
+	p := filepath.Join(getDirectoryPath(path), filename)
+
+	if !overwrite {
+		if _, err := os.Stat(p); !os.IsNotExist(err) {
+			errs["files"] = "file already exists"
+			existingFiles = append(existingFiles, filename)
+			return nil
+		}
+	}
+
+	f, err := os.Create(p)
+
+	if err != nil {
+		slog.Error("Error opening file to upload", "error", err, "path", p)
+		errs["files"] = "error uploading file"
+		return err
+	}
+
+	written, err := io.CopyN(f, part, maxSize+1)
+
+	if err != nil && err != io.EOF {
+		_ = f.Close()
+		_ = os.Remove(p)
+		return err
+	}
+
+	if written > maxSize {
+		_ = f.Close()
+		_ = os.Remove(p)
+		return errors.New("max file upload size exceeded")
+	}
+
+	_ = f.Close()
+	return nil
 }
 
 func sanitizeFilename(path, filename string, overwrite bool) string {

@@ -45,6 +45,7 @@ type Server struct {
 	ShutdownTimeout  int    `json:"shutdown_time"`
 	WriteTimeout     int    `json:"write_timeout"`
 	ReadTimeout      int    `json:"read_timeout"`
+	IdleTimeout      int    `json:"idle_timeout"`
 	TLSCertFile      string `json:"tls_cert_file"`
 	TLSKeyFile       string `json:"tls_key_file"`
 	Hostname         string `json:"hostname"`
@@ -144,11 +145,15 @@ func Load(dir string, funcMap template.FuncMap) error {
 	}
 
 	if cfg.Server.WriteTimeout == 0 {
-		cfg.Server.WriteTimeout = 5
+		cfg.Server.WriteTimeout = 60
 	}
 
 	if cfg.Server.ReadTimeout == 0 {
-		cfg.Server.ReadTimeout = 5
+		cfg.Server.ReadTimeout = 60
+	}
+
+	if cfg.Server.IdleTimeout == 0 {
+		cfg.Server.IdleTimeout = 60
 	}
 
 	if cfg.CORS.Origins == "" {

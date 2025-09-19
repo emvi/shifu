@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.2
+
+* added idle timeout configuration
+* fixed missing error message translations
+* updated dependencies
+
 ## 1.2.1
 
 * fixed showing UI when cache is enabled

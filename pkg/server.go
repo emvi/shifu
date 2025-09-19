@@ -4,6 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"html/template"
+	"log/slog"
+	"net/http"
+	"os"
+	"os/signal"
+	"path/filepath"
+	"strings"
+	"time"
+
 	"github.com/emvi/shifu/pkg/admin/db"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/ui/content"
@@ -23,14 +32,6 @@ import (
 	"github.com/emvi/shifu/static"
 	"github.com/go-chi/chi/v5"
 	"github.com/klauspost/compress/gzhttp"
-	"html/template"
-	"log/slog"
-	"net/http"
-	"os"
-	"os/signal"
-	"path/filepath"
-	"strings"
-	"time"
 )
 
 // ServerOptions are the options for the Shifu Server.
@@ -356,6 +357,7 @@ func (server *Server) startServer(handler http.Handler, cancel context.CancelFun
 		Addr:         addr,
 		WriteTimeout: time.Second * time.Duration(config.Server.WriteTimeout),
 		ReadTimeout:  time.Second * time.Duration(config.Server.ReadTimeout),
+		IdleTimeout:  time.Second * time.Duration(config.Server.IdleTimeout),
 	}
 
 	go func() {

@@ -1,30 +1,36 @@
 <form method="post"
       enctype="multipart/form-data"
+      id="shifu-upload-form"
       hx-post="{{ config.UI.Path }}/media/file/upload?path={{ .Data.Path }}"
       hx-swap="outerHTML"
       hx-target=".shifu-media-files"
       hx-target-4*="this"
       data-window="#shifu-media-file-upload">
-    <fieldset>
-        <label for="files">{{ i18n .Data.Lang "media_upload_file_files" }}</label>
-        <input type="file" name="files" id="files" multiple />
+    <div id="pirsch-upload-progress-fields">
+        <fieldset>
+            <label for="files">{{ i18n .Data.Lang "media_upload_file_files" }}</label>
+            <input type="file" name="files" id="files" multiple />
 
-        {{ if index .Data.Errors "files" }}
-            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "files") }}</span>
-        {{ end }}
+            {{ if index .Data.Errors "files" }}
+                <span class="error">{{ i18n .Data.Lang (index .Data.Errors "files") }}</span>
+            {{ end }}
 
-        {{ if len .Data.ExistingFiles }}
-            <p>{{ i18n .Data.Lang "media_upload_file_existing_files" }}</p>
-            <ul>
-                {{ range $filename := .Data.ExistingFiles }}
-                    <li>{{ $filename }}</li>
-                {{ end }}
-            </ul>
-        {{ end }}
-    </fieldset>
-    <fieldset>
-        <label for="overwrite">{{ i18n .Data.Lang "media_upload_file_overwrite" }}</label>
-        <input type="checkbox" name="overwrite" id="overwrite" {{ if .Data.Overwrite }}checked{{ end }} />
+            {{ if len .Data.ExistingFiles }}
+                <p>{{ i18n .Data.Lang "media_upload_file_existing_files" }}</p>
+                <ul>
+                    {{ range $filename := .Data.ExistingFiles }}
+                        <li>{{ $filename }}</li>
+                    {{ end }}
+                </ul>
+            {{ end }}
+        </fieldset>
+        <fieldset>
+            <label for="overwrite">{{ i18n .Data.Lang "media_upload_file_overwrite" }}</label>
+            <input type="checkbox" name="overwrite" id="overwrite" {{ if .Data.Overwrite }}checked{{ end }} />
+        </fieldset>
+    </div>
+    <fieldset id="pirsch-upload-progress-fieldset" style="display: none;width: 100%;">
+        <progress id="pirsch-upload-progress" value="0" max="100" style="width: 100%;"></progress>
     </fieldset>
     <div class="shifu-toolbelt">
         <input type="submit" value="{{ i18n .Data.Lang "media_upload_file_submit" }}" />
@@ -32,4 +38,11 @@
             {{ i18n .Data.Lang "cancel" }}
         </button>
     </div>
+    <script>
+        document.getElementById("shifu-upload-form").addEventListener("submit", () => {
+            document.getElementById("pirsch-upload-progress-fields").style.display = "none";
+            document.getElementById("pirsch-upload-progress-fieldset").style.display = "initial";
+        });
+        htmx.on("#shifu-upload-form", "htmx:xhr:progress", e => htmx.find("#pirsch-upload-progress").setAttribute("value", e.detail.loaded/e.detail.total * 100));
+    </script>
 </form>

@@ -1,8 +1,9 @@
 package tpl
 
 import (
-	"github.com/emvi/shifu/pkg/cms"
 	"net/http"
+
+	"github.com/emvi/shifu/pkg/cms"
 )
 
 var i18n = map[string]map[string]string{
@@ -213,6 +214,10 @@ var i18n = map[string]map[string]string{
 		"user not found":                                          "The user for the given email address and password was not found.",
 		"error creating session":                                  "Error creating session.",
 		"a template or reference with this name already exists":   "A template or reference with this name already exists.",
+		"error reading multipart request":                         "Error reading multipart request.",
+		"error reading multipart request part":                    "Error reading multipart request part.",
+		"error uploading file":                                    "Error during file upload.",
+		"file already exists":                                     "A file already exists.",
 	},
 	"de": {
 		// window
@@ -421,6 +426,10 @@ var i18n = map[string]map[string]string{
 		"user not found":                                          "Der Benutzer für die angegebene E-Mail-Adresse und das Passwort wurde nicht gefunden.",
 		"error creating session":                                  "Fehler beim Erstellen der Sitzung.",
 		"a template or reference with this name already exists":   "Es existiert bereits ein Template oder eine Referenz mit diesem Namen.",
+		"error reading multipart request":                         "Fehler beim Lesen der Multipart-Anfrage.",
+		"error reading multipart request part":                    "Fehler beim Lesen eines Multipart-Teils.",
+		"error uploading file":                                    "Fehler während des Uploads.",
+		"file already exists":                                     "Eine Datei existiert bereits.",
 	},
 }
 
