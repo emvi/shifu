@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.3
+
+* fixed media selection affecting media window
+* updated dependencies
+
 ## 1.2.2
 
 * added idle timeout configuration

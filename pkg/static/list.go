@@ -1,12 +1,13 @@
 package static
 
 import (
-	"github.com/emvi/shifu/pkg/cfg"
 	"io/fs"
 	"log/slog"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/emvi/shifu/pkg/cfg"
 )
 
 // File is a static file.

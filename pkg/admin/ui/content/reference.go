@@ -2,14 +2,15 @@ package content
 
 import (
 	"encoding/json"
-	"github.com/emvi/shifu/pkg/admin/tpl"
-	"github.com/emvi/shifu/pkg/admin/ui/shared"
-	"github.com/emvi/shifu/pkg/cfg"
-	"github.com/emvi/shifu/pkg/cms"
 	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/emvi/shifu/pkg/admin/tpl"
+	"github.com/emvi/shifu/pkg/admin/ui/shared"
+	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/emvi/shifu/pkg/cms"
 )
 
 // Reference renders the reference JSON editor.

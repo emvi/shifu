@@ -2,14 +2,15 @@ package pages
 
 import (
 	"encoding/json"
-	"github.com/emvi/shifu/pkg/admin/tpl"
-	"github.com/emvi/shifu/pkg/admin/ui"
-	"github.com/emvi/shifu/pkg/admin/ui/shared"
-	"github.com/emvi/shifu/pkg/cms"
 	"log/slog"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/emvi/shifu/pkg/admin/tpl"
+	"github.com/emvi/shifu/pkg/admin/ui"
+	"github.com/emvi/shifu/pkg/admin/ui/shared"
+	"github.com/emvi/shifu/pkg/cms"
 )
 
 // SaveJSON renders a JSON editor for the given page and saves it.

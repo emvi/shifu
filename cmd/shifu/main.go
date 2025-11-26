@@ -2,12 +2,13 @@ package main
 
 import (
 	"bufio"
-	shifu "github.com/emvi/shifu/pkg"
-	"github.com/emvi/shifu/pkg/sync"
 	"log"
 	"log/slog"
 	"os"
 	"strings"
+
+	shifu "github.com/emvi/shifu/pkg"
+	"github.com/emvi/shifu/pkg/sync"
 )
 
 const (

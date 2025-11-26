@@ -2,13 +2,14 @@ package content
 
 import (
 	"fmt"
+	"log/slog"
+	"net/http"
+	"strings"
+
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
 	"github.com/emvi/shifu/pkg/cms"
-	"log/slog"
-	"net/http"
-	"strings"
 )
 
 // EditElement updates the copy and data for an element.

@@ -2,10 +2,11 @@ package content
 
 import (
 	"errors"
-	"github.com/emvi/shifu/pkg/cfg"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/emvi/shifu/pkg/cfg"
 )
 
 // Get returns a content file.

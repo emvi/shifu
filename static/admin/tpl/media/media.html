@@ -7,7 +7,7 @@
         <div class="shifu-media-tree shifu-tree">
             {{ template "media-tree.html" . }}
         </div>
-        <div class="shifu-media-files">
+        <div class="{{ if .Data.Selection }}shifu-media-files-selection{{ else }}shifu-media-files{{ end }}">
             {{ template "media-files.html" . }}
         </div>
     </div>

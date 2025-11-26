@@ -6,10 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/emvi/shifu/pkg/analytics"
-	"github.com/emvi/shifu/pkg/cfg"
-	"github.com/emvi/shifu/pkg/sitemap"
-	"github.com/emvi/shifu/pkg/source"
 	"html/template"
 	"io/fs"
 	"log/slog"
@@ -22,6 +18,11 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/emvi/shifu/pkg/analytics"
+	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/emvi/shifu/pkg/sitemap"
+	"github.com/emvi/shifu/pkg/source"
 )
 
 const (
@@ -559,7 +560,7 @@ func (cms *CMS) updateContent() {
 						priority = "1.0"
 					}
 
-					cms.sitemap.Set(p, priority, info.ModTime().Format(sitemap.SitemapLastModFormat))
+					cms.sitemap.Set(p, priority, info.ModTime().Format(sitemap.LastModFormat))
 				}
 			}
 		}

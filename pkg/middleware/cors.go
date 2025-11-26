@@ -1,10 +1,11 @@
 package middleware
 
 import (
-	"github.com/emvi/shifu/pkg/cfg"
-	"github.com/go-chi/cors"
 	"net/http"
 	"strings"
+
+	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/go-chi/cors"
 )
 
 // Cors configures CORS log level and origins.

@@ -3,9 +3,10 @@ package util
 import (
 	"crypto/sha256"
 	"encoding/base64"
-	"golang.org/x/crypto/bcrypt"
 	"io"
 	"math/rand/v2"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (

@@ -3,13 +3,6 @@ package cms
 import (
 	"bytes"
 	"fmt"
-	"github.com/Masterminds/sprig/v3"
-	"github.com/emvi/shifu/pkg/admin/db"
-	"github.com/emvi/shifu/pkg/admin/model"
-	"github.com/emvi/shifu/pkg/cfg"
-	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/extension"
-	"github.com/yuin/goldmark/renderer/html"
 	"html/template"
 	"log/slog"
 	"math/rand/v2"
@@ -18,6 +11,14 @@ import (
 	"strconv"
 	tt "text/template"
 	"time"
+
+	"github.com/Masterminds/sprig/v3"
+	"github.com/emvi/shifu/pkg/admin/db"
+	"github.com/emvi/shifu/pkg/admin/model"
+	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
+	"github.com/yuin/goldmark/renderer/html"
 )
 
 var (

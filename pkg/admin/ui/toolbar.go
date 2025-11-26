@@ -1,10 +1,11 @@
 package ui
 
 import (
+	"net/http"
+
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
 	"github.com/emvi/shifu/pkg/middleware"
-	"net/http"
 )
 
 // Toolbar renders the CMS toolbar.

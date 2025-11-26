@@ -2,12 +2,13 @@ package cms
 
 import (
 	"context"
-	"github.com/emvi/shifu/pkg/sitemap"
-	"github.com/emvi/shifu/pkg/source"
 	"net/http"
 	"net/http/httptest"
 	"sync"
 	"testing"
+
+	"github.com/emvi/shifu/pkg/sitemap"
+	"github.com/emvi/shifu/pkg/source"
 )
 
 func TestCMS(t *testing.T) {

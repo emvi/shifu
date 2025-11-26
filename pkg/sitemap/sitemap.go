@@ -2,17 +2,18 @@ package sitemap
 
 import (
 	"encoding/xml"
-	"github.com/emvi/shifu/pkg/cfg"
-	chi "github.com/go-chi/chi/v5"
-	"github.com/klauspost/compress/gzhttp"
 	"log/slog"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/go-chi/chi/v5"
+	"github.com/klauspost/compress/gzhttp"
 )
 
 const (
-	SitemapLastModFormat = "2006-01-02"
+	LastModFormat = "2006-01-02"
 
 	header = `<?xml version="1.0" encoding="UTF-8"?>`
 	xmlns  = "http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -92,7 +93,7 @@ func (sitemap *Sitemap) Serve(router chi.Router) {
 }
 
 func (sitemap *Sitemap) generate(urls []URL) ([]byte, error) {
-	now := time.Now().Format(SitemapLastModFormat)
+	now := time.Now().Format(LastModFormat)
 
 	for i := range urls {
 		if urls[i].Lastmod == "" {

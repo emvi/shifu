@@ -2,12 +2,13 @@ package sass
 
 import (
 	"fmt"
-	"github.com/emvi/shifu/pkg/cfg"
 	"io/fs"
 	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/emvi/shifu/pkg/cfg"
 )
 
 // Compile compiles the entrypoint Sass for given base directory.

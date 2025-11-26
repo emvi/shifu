@@ -1,14 +1,15 @@
 package pages
 
 import (
-	iso6391 "github.com/emvi/iso-639-1"
-	"github.com/emvi/shifu/pkg/admin/tpl"
-	"github.com/emvi/shifu/pkg/admin/ui/shared"
-	"github.com/emvi/shifu/pkg/middleware"
 	"net/http"
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	iso6391 "github.com/emvi/iso-639-1"
+	"github.com/emvi/shifu/pkg/admin/tpl"
+	"github.com/emvi/shifu/pkg/admin/ui/shared"
+	"github.com/emvi/shifu/pkg/middleware"
 )
 
 // Page renders the page details.

@@ -2,12 +2,13 @@ package sass
 
 import (
 	"context"
-	"github.com/emvi/shifu/pkg/cfg"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/stretchr/testify/assert"
 )
 
 const (

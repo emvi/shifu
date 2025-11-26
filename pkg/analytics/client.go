@@ -3,11 +3,12 @@ package analytics
 import (
 	"errors"
 	"fmt"
-	"github.com/emvi/shifu/pkg/cfg"
 	"log/slog"
 	"net"
 	"net/http"
 	"strings"
+
+	"github.com/emvi/shifu/pkg/cfg"
 )
 
 var (

@@ -1,15 +1,16 @@
 package user
 
 import (
+	"log/slog"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/emvi/shifu/pkg/admin/db"
 	"github.com/emvi/shifu/pkg/admin/model"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/util"
 	"github.com/emvi/shifu/pkg/cfg"
-	"log/slog"
-	"net/http"
-	"strings"
-	"time"
 )
 
 // LoginForm is the login form data and errors.

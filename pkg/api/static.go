@@ -2,9 +2,10 @@ package api
 
 import (
 	"errors"
-	"github.com/emvi/shifu/pkg/static"
 	"io"
 	"net/http"
+
+	"github.com/emvi/shifu/pkg/static"
 )
 
 // ListStaticFiles lists all files in the static directory.

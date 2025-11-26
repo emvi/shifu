@@ -1,11 +1,12 @@
 package middleware
 
 import (
-	"github.com/emvi/shifu/pkg/admin/db"
-	"github.com/emvi/shifu/pkg/admin/model"
 	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/emvi/shifu/pkg/admin/db"
+	"github.com/emvi/shifu/pkg/admin/model"
 )
 
 // Auth authenticates the admin session.

@@ -1,9 +1,10 @@
 package middleware
 
 import (
-	"github.com/emvi/shifu/pkg/cfg"
 	"net/http"
 	"strings"
+
+	"github.com/emvi/shifu/pkg/cfg"
 )
 
 // APISecret checks the Authorization header against the configured API secret.

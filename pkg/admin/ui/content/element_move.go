@@ -1,11 +1,12 @@
 package content
 
 import (
-	"github.com/emvi/shifu/pkg/admin/tpl"
-	"github.com/emvi/shifu/pkg/admin/ui/shared"
 	"log/slog"
 	"net/http"
 	"strings"
+
+	"github.com/emvi/shifu/pkg/admin/tpl"
+	"github.com/emvi/shifu/pkg/admin/ui/shared"
 )
 
 // MoveElement moves an element to a new position.

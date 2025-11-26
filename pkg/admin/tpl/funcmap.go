@@ -2,10 +2,11 @@ package tpl
 
 import (
 	"fmt"
-	"github.com/emvi/shifu/pkg/cfg"
 	"html/template"
 	"strings"
 	"time"
+
+	"github.com/emvi/shifu/pkg/cfg"
 )
 
 var funcMap = template.FuncMap{

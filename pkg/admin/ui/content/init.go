@@ -2,12 +2,13 @@ package content
 
 import (
 	"context"
-	"github.com/emvi/shifu/pkg/cfg"
-	"github.com/emvi/shifu/pkg/cms"
-	"github.com/fsnotify/fsnotify"
 	"log/slog"
 	"path/filepath"
 	"strings"
+
+	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/emvi/shifu/pkg/cms"
+	"github.com/fsnotify/fsnotify"
 )
 
 var (

@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/emvi/shifu/pkg/cfg"
-	"github.com/emvi/shifu/pkg/content"
-	"github.com/emvi/shifu/pkg/static"
 	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+
+	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/emvi/shifu/pkg/content"
+	"github.com/emvi/shifu/pkg/static"
 )
 
 // Push pushes changed static and content files to a remote Shifu server.

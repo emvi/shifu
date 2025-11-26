@@ -1,8 +1,9 @@
 package user
 
 import (
-	"github.com/emvi/shifu/pkg/cfg"
 	"net/http"
+
+	"github.com/emvi/shifu/pkg/cfg"
 )
 
 // Logout signs out the user and redirects to the home page.

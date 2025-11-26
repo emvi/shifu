@@ -1,11 +1,12 @@
 package db
 
 import (
+	"log/slog"
+	"path/filepath"
+
 	"github.com/emvi/shifu/pkg/cfg"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
-	"log/slog"
-	"path/filepath"
 )
 
 var db *sqlx.DB

@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/emvi/shifu/pkg/cfg"
-	"github.com/emvi/shifu/pkg/cms"
 	"io/fs"
 	"log/slog"
 	"os"
@@ -13,6 +11,9 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+
+	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/emvi/shifu/pkg/cms"
 )
 
 const (

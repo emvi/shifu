@@ -4,9 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/emvi/shifu/pkg/cfg"
-	"github.com/emvi/shifu/pkg/content"
-	"github.com/emvi/shifu/pkg/static"
 	"io"
 	"log/slog"
 	"net/http"
@@ -14,6 +11,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/emvi/shifu/pkg/content"
+	"github.com/emvi/shifu/pkg/static"
 )
 
 // Pull pulls changed static and content files from a remote Shifu server.

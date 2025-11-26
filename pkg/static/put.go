@@ -2,11 +2,12 @@ package static
 
 import (
 	"errors"
-	"github.com/emvi/shifu/pkg/cfg"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/emvi/shifu/pkg/cfg"
 )
 
 // Put uploads a content file.

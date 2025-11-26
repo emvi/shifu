@@ -7,7 +7,7 @@
         padding: 0 8px 0 2px;
     }
 
-    &-files {
+    &-files, &-files-selection {
         flex: 1;
         white-space: nowrap;
         max-height: 75vh;

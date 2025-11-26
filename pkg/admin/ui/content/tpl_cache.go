@@ -2,13 +2,14 @@ package content
 
 import (
 	"encoding/json"
-	"github.com/emvi/shifu/pkg/cfg"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"slices"
 	"strings"
 	"sync"
+
+	"github.com/emvi/shifu/pkg/cfg"
 )
 
 const (

@@ -2,11 +2,12 @@ package sass
 
 import (
 	"context"
-	"github.com/emvi/shifu/pkg/cfg"
-	"github.com/fsnotify/fsnotify"
 	"log/slog"
 	"path/filepath"
 	"strings"
+
+	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/fsnotify/fsnotify"
 )
 
 // Watch watches the entrypoint Sass for changes and recompiles if required.

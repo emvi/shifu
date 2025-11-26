@@ -1,9 +1,10 @@
 package db
 
 import (
+	"log/slog"
+
 	"github.com/emvi/shifu/pkg/admin/util"
 	"github.com/emvi/shifu/pkg/cfg"
-	"log/slog"
 )
 
 var migrations = []string{

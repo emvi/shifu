@@ -1,9 +1,10 @@
 package content
 
 import (
-	"github.com/emvi/shifu/pkg/cfg"
 	"os"
 	"testing"
+
+	"github.com/emvi/shifu/pkg/cfg"
 )
 
 func TestMain(t *testing.M) {

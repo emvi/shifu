@@ -1,16 +1,17 @@
 package content
 
 import (
-	"github.com/emvi/shifu/pkg/admin/db"
-	"github.com/emvi/shifu/pkg/admin/tpl"
-	"github.com/emvi/shifu/pkg/admin/ui"
-	"github.com/emvi/shifu/pkg/admin/ui/shared"
-	"github.com/emvi/shifu/pkg/cms"
 	htmlTpl "html/template"
 	"log/slog"
 	"net/http"
 	"slices"
 	"strings"
+
+	"github.com/emvi/shifu/pkg/admin/db"
+	"github.com/emvi/shifu/pkg/admin/tpl"
+	"github.com/emvi/shifu/pkg/admin/ui"
+	"github.com/emvi/shifu/pkg/admin/ui/shared"
+	"github.com/emvi/shifu/pkg/cms"
 )
 
 // Ref is a referenced element to be displayed in the selection.

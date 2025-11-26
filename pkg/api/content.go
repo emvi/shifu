@@ -2,9 +2,10 @@ package api
 
 import (
 	"errors"
-	"github.com/emvi/shifu/pkg/content"
 	"io"
 	"net/http"
+
+	"github.com/emvi/shifu/pkg/content"
 )
 
 // ListContentFiles lists all files in the content directory.

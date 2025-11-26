@@ -1,8 +1,9 @@
 package analytics
 
 import (
-	pirsch "github.com/pirsch-analytics/pirsch-go-sdk/v2/pkg"
 	"net/http"
+
+	pirsch "github.com/pirsch-analytics/pirsch-go-sdk/v2/pkg"
 )
 
 // PirschAnalytics is the analytics provider for Pirsch (pirsch.io).

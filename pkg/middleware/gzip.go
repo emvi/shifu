@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"github.com/klauspost/compress/gzhttp"
 	"net/http"
+
+	"github.com/klauspost/compress/gzhttp"
 )
 
 // Gzip returns a gzip middleware.

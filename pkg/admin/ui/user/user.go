@@ -1,13 +1,14 @@
 package user
 
 import (
+	"log/slog"
+	"net/http"
+
 	"github.com/emvi/shifu/pkg/admin/db"
 	"github.com/emvi/shifu/pkg/admin/model"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/middleware"
-	"log/slog"
-	"net/http"
 )
 
 // User renders the user management dialog.

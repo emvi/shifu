@@ -1,9 +1,10 @@
 package database
 
 import (
+	"net/http"
+
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
-	"net/http"
 )
 
 // Database renders the database management dialog.

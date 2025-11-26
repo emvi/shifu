@@ -17,7 +17,7 @@
                         {{ if $interactive }}
                             <span class="shifu-media-directory-name"
                                   hx-get="{{ config.UI.Path }}/media/directory?path={{ $dir.Path }}"
-                                  hx-target=".shifu-media-files">
+                                  hx-target="{{ if $selection }}.shifu-media-files-selection{{ else }}.shifu-media-files{{ end }}">
                                 {{ $dir.Name }}
                             </span>
                             <span>
@@ -43,7 +43,7 @@
                         {{ else if $selection }}
                             <span class="shifu-media-directory-name shifu-media-directory-selection"
                                   hx-get="{{ config.UI.Path }}/media/directory?path={{ $dir.Path }}&selection=true&target={{ $target }}&type={{ $type }}&label={{ $label }}&field={{ $field }}&lang={{ $language }}&prefix={{ $prefix }}"
-                                  hx-target=".shifu-media-files">
+                                  hx-target="{{ if $selection }}.shifu-media-files-selection{{ else }}.shifu-media-files{{ end }}">
                                 {{ $dir.Name }}
                             </span>
                             <span></span>

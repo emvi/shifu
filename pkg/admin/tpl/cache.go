@@ -2,12 +2,13 @@ package tpl
 
 import (
 	"bytes"
-	"github.com/emvi/shifu/static"
 	"html/template"
 	"io/fs"
 	"log/slog"
 	"net/http"
 	"strings"
+
+	"github.com/emvi/shifu/static"
 )
 
 // Cache caches HTML templates.

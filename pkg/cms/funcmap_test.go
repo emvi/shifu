@@ -1,12 +1,13 @@
 package cms
 
 import (
-	"github.com/stretchr/testify/assert"
 	"html/template"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const (

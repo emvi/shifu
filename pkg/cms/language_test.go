@@ -1,10 +1,11 @@
 package cms
 
 import (
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAcceptedLanguages(t *testing.T) {

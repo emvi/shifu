@@ -1,11 +1,12 @@
 package js
 
 import (
-	"github.com/emvi/shifu/pkg/cfg"
-	esbuild "github.com/evanw/esbuild/pkg/api"
 	"log/slog"
 	"os"
 	"path/filepath"
+
+	"github.com/emvi/shifu/pkg/cfg"
+	esbuild "github.com/evanw/esbuild/pkg/api"
 )
 
 // Compile compiles the entrypoint JS/TS for given base directory.

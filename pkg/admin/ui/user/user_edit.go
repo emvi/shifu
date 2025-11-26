@@ -3,16 +3,17 @@ package user
 import (
 	"database/sql"
 	"errors"
+	"log/slog"
+	"net/http"
+	"strconv"
+	"strings"
+
 	"github.com/emvi/shifu/pkg/admin/db"
 	"github.com/emvi/shifu/pkg/admin/model"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/util"
 	"github.com/emvi/shifu/pkg/middleware"
-	"log/slog"
-	"net/http"
-	"strconv"
-	"strings"
 )
 
 // EditUser renders the user creation or change dialog.

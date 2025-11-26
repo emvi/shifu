@@ -3,9 +3,11 @@ package pkg
 import (
 	"encoding/json"
 	"errors"
-	"github.com/emvi/shifu/pkg/cfg"
+	"log/slog"
 	"os"
 	"path/filepath"
+
+	"github.com/emvi/shifu/pkg/cfg"
 )
 
 const (
@@ -96,7 +98,13 @@ func Init(path string) error {
 		return err
 	}
 
-	defer cfgFile.Close()
+	defer func(cfgFile *os.File) {
+		err := cfgFile.Close()
+
+		if err != nil {
+			slog.Error("Error closing config file", "error", err)
+		}
+	}(cfgFile)
 	configJson, err := json.MarshalIndent(cfg.Config{
 		Dev: true,
 		Server: cfg.Server{

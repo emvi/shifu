@@ -1,9 +1,10 @@
 package content
 
 import (
-	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTemplateCfgCache(t *testing.T) {

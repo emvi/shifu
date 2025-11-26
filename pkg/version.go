@@ -1,7 +1,7 @@
 package pkg
 
 const (
-	version = "1.2.2"
+	version = "1.2.3"
 )
 
 // Version returns the Shifu version number.
