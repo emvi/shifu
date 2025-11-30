@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"slices"
 	"strings"
 
 	"github.com/emvi/shifu/pkg/admin/tpl"
@@ -194,6 +195,7 @@ func getPageLanguages(page *cms.Content) []string {
 		keys = append(keys, k)
 	}
 
+	slices.Sort(keys)
 	return keys
 }
 

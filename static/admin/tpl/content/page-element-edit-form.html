@@ -28,8 +28,8 @@
             <div class="shifu-tabs-header">
                 {{ range $index, $lang := .Data.Languages }}
                     <div class="shifu-tabs-header-tab {{ if eq $index 0 }}shifu-tabs-header-tab-active{{ end }}">
-                    {{ $lang }}
-                </div>
+                        {{ $lang }}
+                    </div>
                 {{ end }}
             </div>
 
