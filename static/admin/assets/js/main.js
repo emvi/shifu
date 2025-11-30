@@ -48,6 +48,8 @@ import {debounce} from "./debounce";
                 title.addEventListener("mousedown", startDrag);
                 title.addEventListener("mouseup", endDrag);
             }
+
+            reposition(target);
         }
     });
     document.addEventListener("htmx:beforeCleanupElement", cleanup);
@@ -69,6 +71,7 @@ import {debounce} from "./debounce";
     });
     window.addEventListener("mousemove", drag);
     window.addEventListener("mouseup", endDrag);
+    window.addEventListener("resize", resize);
 
     function startDrag(e) {
         document.querySelectorAll(".shifu-window").forEach(e => e.classList.remove("shifu-window-active"));
@@ -131,6 +134,30 @@ import {debounce} from "./debounce";
                 title.removeEventListener("mouseup", endDrag);
             }
         }
+    }
+
+    function resize() {
+        document.querySelectorAll(".shifu-window").forEach(wnd => reposition(wnd));
+    }
+
+    function reposition(wnd) {
+        const rect = wnd.getBoundingClientRect();
+        let x = rect.left, y = rect.top;
+
+        if (x < 0) {
+            x = 0;
+        } else if (x + rect.width >= window.innerWidth) {
+            x = window.innerWidth - rect.width;
+        }
+
+        if (y < 0) {
+            y = 0;
+        } else if (y + rect.height >= window.innerHeight) {
+            y = window.innerHeight - rect.height;
+        }
+
+        wnd.style.top = y + "px";
+        wnd.style.left = x + "px";
     }
 
     document.addEventListener("htmx:afterRequest", e => {
