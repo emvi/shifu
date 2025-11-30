@@ -68,6 +68,7 @@ import {debounce} from "./debounce";
         }
     });
     window.addEventListener("mousemove", drag);
+    window.addEventListener("mouseup", endDrag);
 
     function startDrag(e) {
         document.querySelectorAll(".shifu-window").forEach(e => e.classList.remove("shifu-window-active"));
@@ -89,13 +90,34 @@ import {debounce} from "./debounce";
     }
 
     function drag(e) {
+        if (e.clientX < 0 || e.clientX > window.innerWidth || e.clientY < 0 || e.clientY > window.innerHeight) {
+            endDrag();
+            return;
+        }
+
         if (dragging) {
-            const x = mouseX - e.clientX;
-            const y = mouseY - e.clientY;
+            const deltaX = mouseX - e.clientX;
+            const deltaY = mouseY - e.clientY;
+            let x = dragging.offsetLeft - deltaX;
+            let y = dragging.offsetTop - deltaY;
             mouseX = e.clientX;
             mouseY = e.clientY;
-            dragging.style.top = (dragging.offsetTop - y) + "px";
-            dragging.style.left = (dragging.offsetLeft - x) + "px";
+            const rect = dragging.getBoundingClientRect();
+
+            if (deltaX > 0 && rect.left <= 0) {
+                x = 0;
+            } else if (deltaX < 0 && rect.right >= window.innerWidth) {
+                x = window.innerWidth - rect.width;
+            }
+
+            if (deltaY > 0 && rect.top <= 0) {
+                y = 0;
+            } else if (deltaY < 0 && rect.bottom >= window.innerHeight) {
+                y = window.innerHeight - rect.height;
+            }
+
+            dragging.style.top = y + "px";
+            dragging.style.left = x + "px";
             save(dragging);
         }
     }

@@ -1,7 +1,9 @@
 # Changelog
 
-## 1.2.3
+## 1.3.0
 
+* limit window positions to screen space
+* stop dragging if the cursor leaves the screen space or on mouse button up
 * fixed media selection affecting media window
 * updated dependencies
 
