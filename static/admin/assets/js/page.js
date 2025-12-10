@@ -23,7 +23,10 @@ window.shifuUpdateElement = function(position) {
 
     if (tpl) {
         const element = document.querySelector(`[data-shifu-element='${position}']`);
-        element.replaceWith(tpl.content);
+
+        if (element) {
+            element.replaceWith(tpl.content);
+        }
     } else {
         console.error("Updated element template not found");
         location.reload();
