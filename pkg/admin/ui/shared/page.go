@@ -5,7 +5,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/emvi/shifu/pkg/cms"
 )
@@ -65,9 +64,4 @@ func SavePage(page *cms.Content, path string) error {
 	}
 
 	return nil
-}
-
-// GetLanguage returns the language query parameter.
-func GetLanguage(r *http.Request) string {
-	return strings.ToLower(strings.TrimSpace(r.URL.Query().Get("language")))
 }

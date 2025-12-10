@@ -10,15 +10,26 @@ import (
 
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
+	"github.com/emvi/shifu/pkg/admin/ui/shared"
+	"github.com/emvi/shifu/pkg/cfg"
 )
+
+type AddDirectoryData struct {
+	Lang        string
+	Directories []string
+	Name        string
+	Path        string
+	Errors      map[string]string
+}
 
 // AddDirectory creates a new subdirectory.
 func AddDirectory(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimSpace(r.URL.Query().Get("path"))
+	path := strings.TrimSuffix(strings.TrimSpace(r.URL.Query().Get("path")), "/")
 
 	if r.Method == http.MethodPost {
+		parent := strings.TrimSpace(r.FormValue("parent"))
 		name := strings.TrimSpace(r.FormValue("name"))
-		fullPath := getPagePath(filepath.Join(path, name))
+		fullPath := getPagePath(filepath.Join(parent, name))
 		errs := make(map[string]string)
 
 		if name == "" {
@@ -36,16 +47,12 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			tpl.Get().Execute(w, "pages-directory-create-form.html", struct {
-				Lang   string
-				Name   string
-				Path   string
-				Errors map[string]string
-			}{
-				Lang:   tpl.GetUILanguage(r),
-				Name:   name,
-				Path:   path,
-				Errors: errs,
+			tpl.Get().Execute(w, "pages-directory-create-form.html", AddDirectoryData{
+				Lang:        tpl.GetUILanguage(r),
+				Directories: shared.GetDirectories(filepath.Join(cfg.Get().BaseDir, contentDir)),
+				Name:        name,
+				Path:        parent,
+				Errors:      errs,
 			})
 			return
 		}
@@ -64,10 +71,7 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "pages-directory-create.html", struct {
 		WindowOptions ui.WindowOptions
-		Lang          string
-		Name          string
-		Path          string
-		Errors        map[string]string
+		AddDirectoryData
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-pages-directory-create",
@@ -76,8 +80,11 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 			Overlay:    true,
 			Lang:       lang,
 		},
-		Lang: lang,
-		Path: path,
+		AddDirectoryData: AddDirectoryData{
+			Lang:        lang,
+			Directories: shared.GetDirectories(filepath.Join(cfg.Get().BaseDir, contentDir)),
+			Path:        path,
+		},
 	})
 }
 

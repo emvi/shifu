@@ -1,9 +1,26 @@
+{{ $path := .Data.Path }}
+{{ $parent := .Data.Parent }}
+
 <form method="post"
       hx-post="{{ config.UI.Path }}/pages/directory/edit?path={{ .Data.Path }}"
       hx-swap="outerHTML"
       hx-target=".shifu-pages-tree"
       hx-target-4*="this"
       data-window="#shifu-pages-directory-edit">
+    <fieldset>
+        <label for="parent">{{ i18n .Data.Lang "pages_create_directory_parent" }} {{$parent}}</label>
+        <select id="parent" name="parent">
+            {{ range $d := .Data.Directories }}
+                {{ if not (eq $d $path) }}
+                    <option {{ if eq $parent $d }}selected{{ end }}>{{ $d }}</option>
+                {{ end }}
+            {{ end }}
+        </select>
+
+        {{ if index .Data.Errors "parent" }}
+            <span class="error">{{ i18n .Data.Lang (index .Data.Errors "parent") }}</span>
+        {{ end }}
+    </fieldset>
     <fieldset>
         <label for="name">{{ i18n .Data.Lang "pages_edit_directory_name" }}</label>
         <input type="text" name="name" id="name" value="{{ .Data.Name }}" autofocus />

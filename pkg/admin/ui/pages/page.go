@@ -9,12 +9,13 @@ import (
 	iso6391 "github.com/emvi/iso-639-1"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
+	"github.com/emvi/shifu/pkg/cfg"
 	"github.com/emvi/shifu/pkg/middleware"
 )
 
 // Page renders the page details.
 func Page(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimSpace(r.URL.Query().Get("path"))
+	path := strings.TrimSuffix(strings.TrimSpace(r.URL.Query().Get("path")), "/")
 	fullPath := getPagePath(path)
 	page, err := shared.LoadPage(r, fullPath, "")
 
@@ -25,15 +26,25 @@ func Page(w http.ResponseWriter, r *http.Request) {
 
 	sitemapPriority, _ := strconv.ParseFloat(page.Sitemap.Priority, 64)
 	tpl.Get().Execute(w, "pages-page-save-form.html", SavePageData{
-		Admin:     middleware.IsAdmin(r),
-		Lang:      tpl.GetUILanguage(r),
-		Name:      strings.TrimSuffix(filepath.Base(path), ".json"),
-		PagePath:  page.Path,
-		Cache:     page.DisableCache,
-		Sitemap:   sitemapPriority,
-		Handler:   page.Handler,
-		Path:      path,
-		Header:    page.Header,
-		Languages: iso6391.Languages,
+		Admin:       middleware.IsAdmin(r),
+		Lang:        tpl.GetUILanguage(r),
+		Directories: shared.GetDirectories(filepath.Join(cfg.Get().BaseDir, contentDir)),
+		Name:        strings.TrimSuffix(filepath.Base(path), ".json"),
+		PagePath:    page.Path,
+		Cache:       page.DisableCache,
+		Sitemap:     sitemapPriority,
+		Handler:     page.Handler,
+		Directory:   getDirectory(filepath.Dir(path)),
+		Path:        path,
+		Header:      page.Header,
+		Languages:   iso6391.Languages,
 	})
+}
+
+func getDirectory(path string) string {
+	if path == "/" {
+		return ""
+	}
+
+	return path
 }

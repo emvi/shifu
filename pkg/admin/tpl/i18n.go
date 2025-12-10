@@ -114,6 +114,7 @@ var i18n = map[string]map[string]string{
 		"pages_tree_delete_page":              "Delete Page",
 		"pages_tree_open_page":                "Open Page",
 		"pages_create_directory_window_title": "Create Directory",
+		"pages_create_directory_parent":       "Directory",
 		"pages_create_directory_name":         "Name",
 		"pages_create_directory_submit":       "Create",
 		"pages_delete_directory_window_title": "Delete Directory",
@@ -127,6 +128,7 @@ var i18n = map[string]map[string]string{
 		"pages_delete_page_submit":            "Delete Page",
 		"pages_create_page_window_title":      "Create Page",
 		"pages_create_page_edit":              "Edit JSON",
+		"pages_create_page_parent":            "Directory",
 		"pages_create_page_name":              "Name",
 		"pages_create_page_language":          "Language",
 		"pages_create_page_path":              "Path",
@@ -219,6 +221,8 @@ var i18n = map[string]map[string]string{
 		"error reading multipart request part":                    "Error reading multipart request part.",
 		"error uploading file":                                    "Error during file upload.",
 		"file already exists":                                     "A file already exists.",
+		"a different page with this name exists already":          "A different page in the target directory with this name exists already.",
+		"a different directory with this name exists already":     "A different directory in the target directory with this name exists already.",
 	},
 	"de": {
 		// window
@@ -327,6 +331,7 @@ var i18n = map[string]map[string]string{
 		"pages_tree_delete_page":              "Seite löschen",
 		"pages_tree_open_page":                "Seite öffnen",
 		"pages_create_directory_window_title": "Ordner erstellen",
+		"pages_create_directory_parent":       "Ordner",
 		"pages_create_directory_name":         "Name",
 		"pages_create_directory_submit":       "Erstellen",
 		"pages_delete_directory_window_title": "Ordner löschen",
@@ -340,6 +345,7 @@ var i18n = map[string]map[string]string{
 		"pages_delete_page_submit":            "Seite löschen",
 		"pages_create_page_window_title":      "Seite anlegen",
 		"pages_create_page_edit":              "JSON bearbeiten",
+		"pages_create_page_parent":            "Ordner",
 		"pages_create_page_name":              "Name",
 		"pages_create_page_language":          "Sprache",
 		"pages_create_page_path":              "Pfad",
@@ -432,6 +438,8 @@ var i18n = map[string]map[string]string{
 		"error reading multipart request part":                    "Fehler beim Lesen eines Multipart-Teils.",
 		"error uploading file":                                    "Fehler während des Uploads.",
 		"file already exists":                                     "Eine Datei existiert bereits.",
+		"a different page with this name exists already":          "Eine andere Seite mit diesem Dateinamen existiert bereits im Zielordner.",
+		"a different directory with this name exists already":     "Ein anderer Ordner mit diesem Name existiert bereits im Zielordner.",
 	},
 }
 

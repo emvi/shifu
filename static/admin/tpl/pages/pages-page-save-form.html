@@ -1,5 +1,6 @@
 {{ $lang := .Data.Lang }}
 {{ $langs := .Data.Languages }}
+{{ $dir := .Data.Directory }}
 
 <div id="shifu-save-page-form">
     {{ if .Data.Admin }}
@@ -16,6 +17,18 @@
           hx-target=".shifu-pages-tree"
           hx-target-4*="#shifu-save-page-form"
           data-window="#shifu-pages-page-save">
+        <fieldset>
+            <label for="parent">{{ i18n .Data.Lang "pages_create_directory_parent" }}</label>
+            <select id="parent" name="parent">
+                {{ range $d := .Data.Directories }}
+                    <option {{ if eq $dir $d }}selected{{ end }}>{{ $d }}</option>
+                {{ end }}
+            </select>
+
+            {{ if index .Data.Errors "parent" }}
+                <span class="error">{{ i18n .Data.Lang (index .Data.Errors "parent") }}</span>
+            {{ end }}
+        </fieldset>
         <fieldset>
             <label for="name">{{ i18n .Data.Lang "pages_create_page_name" }}</label>
             <input type="text" name="name" id="name" value="{{ .Data.Name }}" autofocus />

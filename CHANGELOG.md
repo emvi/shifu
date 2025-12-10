@@ -6,6 +6,8 @@
 * added stop dragging if the cursor leaves the screen space or on mouse button up
 * added sorting languages when editing an element
 * added renaming elements
+* added directory selection to pages and media when creating child directories
+* improved design
 * fixed media selection affecting media window
 * updated dependencies
 
