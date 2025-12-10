@@ -5,6 +5,7 @@
 * added limiting window positions to screen space
 * added stop dragging if the cursor leaves the screen space or on mouse button up
 * added sorting languages when editing an element
+* added renaming elements
 * fixed media selection affecting media window
 * updated dependencies
 

@@ -18,6 +18,18 @@ window.shifuAddElement = function(parent, position) {
     }
 }
 
+window.shifuUpdateElement = function(position) {
+    const tpl = document.getElementById("shifu-update-element");
+
+    if (tpl) {
+        const element = document.querySelector(`[data-shifu-element='${position}']`);
+        element.replaceWith(tpl.content);
+    } else {
+        console.error("Updated element template not found");
+        location.reload();
+    }
+}
+
 window.shifuMoveElement = function(selector, direction) {
     const move = document.querySelector(`[data-shifu-element='${selector}']`);
 

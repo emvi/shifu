@@ -26,6 +26,7 @@ type PageTree struct {
 	ElementPosition  string
 	ElementDirection string
 	AddElement       template.HTML
+	UpdateElement    template.HTML
 	MoveElement      string
 	DeleteElement    string
 }

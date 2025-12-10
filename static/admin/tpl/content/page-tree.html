@@ -33,7 +33,9 @@
                                 {{ end }}>
 
                                 <span>
-                                    {{ if $element.Tpl }}
+                                    {{ if $element.DisplayName }}
+                                        {{ $element.DisplayName }}
+                                    {{ else if $element.Tpl }}
                                         {{ $element.Tpl }}
                                     {{ else }}
                                         {{ $element.Ref }}
@@ -147,6 +149,12 @@
     </template>
 {{ end }}
 
+{{ if .Data.UpdateElement }}
+    <template id="shifu-update-element">
+        {{ .Data.UpdateElement }}
+    </template>
+{{ end }}
+
 <script>
     (function(){
         shifuTree("page-element-tree");
@@ -164,6 +172,10 @@
 
         {{ if .Data.AddElement }}
             shifuAddElement("{{ .Data.ParentElement }}", "{{ .Data.ElementPosition }}");
+        {{ end }}
+
+        {{ if .Data.UpdateElement }}
+            shifuUpdateElement("{{ .Data.ElementPosition }}");
         {{ end }}
 
         {{ if .Data.MoveElement }}

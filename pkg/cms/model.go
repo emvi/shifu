@@ -27,6 +27,7 @@ type Analytics struct {
 
 // Content is a page or element for the CMS.
 type Content struct {
+	DisplayName  string               `json:"display_name"`
 	DisableCache bool                 `json:"disable_cache,omitempty"`
 	Path         map[string]string    `json:"path,omitempty"`
 	Sitemap      Sitemap              `json:"sitemap"`
@@ -127,6 +128,7 @@ func (content *Content) Clone() Content {
 	}
 
 	return Content{
+		DisplayName:  content.DisplayName,
 		DisableCache: content.DisableCache,
 		Path:         path,
 		Sitemap: Sitemap{

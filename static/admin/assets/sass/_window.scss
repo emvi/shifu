@@ -96,13 +96,7 @@
         &-title {
             cursor: grab;
             user-select: none;
-            background: repeating-linear-gradient(
-                -45deg,
-                var(--border5),
-                var(--border5) 4px,
-                var(--bg) 4px,
-                var(--bg) 8px
-            );
+            background: var(--border5);
         }
 
         &-active {

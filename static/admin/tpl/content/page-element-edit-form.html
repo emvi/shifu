@@ -19,8 +19,14 @@
 <form method="post"
       hx-post="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}{{ if $override }}&override=true{{end}}&language={{ .Data.Language }}"
       hx-swap="outerHTML"
+      hx-target=".shifu-page-tree"
       hx-target-4*="this"
       data-window="#shifu-page-element-edit{{ if $override }}-override{{end}}">
+    <fieldset>
+        <label for="display_name">{{ i18n .Data.Lang "content_element_display_name" }}</label>
+        <input id="display_name" name="display_name" value="{{ .Data.Element.DisplayName }}" />
+    </fieldset>
+
     {{ if len .Data.Config.Copy }}
         {{ $cfg := .Data.Config.Copy }}
 
