@@ -192,7 +192,8 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 					Header:  header,
 					Handler: handler,
 				}
-				path = filepath.Join(path, name+".json")
+				path = filepath.Join(parent, name+".json")
+				outPath = getPagePath(path)
 			}
 
 			if err := shared.SavePage(page, outPath); err != nil {
@@ -252,7 +253,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 		Lang:        tpl.GetUILanguage(r),
 		Directories: shared.GetDirectories(filepath.Join(cfg.Get().BaseDir, contentDir)),
 		PagePath:    map[string]string{"de": "/"},
-		Directory:   getDirectory(filepath.Dir(path)),
+		Directory:   getDirectory(path),
 		Path:        path,
 		Sitemap:     1,
 		New:         true,
