@@ -1,9 +1,19 @@
+{{ $path := .Data.Path }}
+
 <form method="post"
       hx-post="{{ config.UI.Path }}/media/directory/add?path={{ .Data.Path }}"
       hx-swap="outerHTML"
       hx-target=".shifu-media-tree"
       hx-target-4*="this"
       data-window="#shifu-media-directory-create">
+    <fieldset>
+        <label for="parent">{{ i18n .Data.Lang "media_create_directory_parent" }}</label>
+        <select id="parent" name="parent">
+            {{ range $dir := .Data.Directories }}
+                <option {{ if eq $path $dir.Path }}selected{{ end }}>{{ $dir.Path }}</option>
+            {{ end }}
+        </select>
+    </fieldset>
     <fieldset>
         <label for="name">{{ i18n .Data.Lang "media_create_dir_name" }}</label>
         <input type="text" name="name" id="name" value="{{ .Data.Name }}" autofocus />

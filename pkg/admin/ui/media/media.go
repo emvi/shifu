@@ -46,12 +46,12 @@ func Media(w http.ResponseWriter, r *http.Request) {
 			Lang:       lang,
 		},
 		Lang:        lang,
-		Directories: listDirectories(w),
+		Directories: listDirectories(w, false),
 		Interactive: true,
 	})
 }
 
-func listDirectories(w http.ResponseWriter) []Directory {
+func listDirectories(w http.ResponseWriter, includeRoot bool) []Directory {
 	dir := filepath.Join(cfg.Get().BaseDir, mediaDir)
 
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
@@ -62,7 +62,7 @@ func listDirectories(w http.ResponseWriter) []Directory {
 		}
 	}
 
-	tree, err := readDirectoryTree(dir, dir)
+	tree, err := readDirectoryTree(dir, dir, includeRoot)
 
 	if err != nil {
 		slog.Error("Error reading media directory", "error", err)
@@ -72,7 +72,7 @@ func listDirectories(w http.ResponseWriter) []Directory {
 	return tree
 }
 
-func readDirectoryTree(prefix, dir string) ([]Directory, error) {
+func readDirectoryTree(prefix, dir string, includeRoot bool) ([]Directory, error) {
 	files, err := os.ReadDir(dir)
 
 	if err != nil {
@@ -81,10 +81,16 @@ func readDirectoryTree(prefix, dir string) ([]Directory, error) {
 
 	dirs := make([]Directory, 0)
 
+	if includeRoot {
+		dirs = append(dirs, Directory{
+			Name: "/",
+		})
+	}
+
 	for _, file := range files {
 		if file.IsDir() {
 			path := filepath.Join(dir, file.Name())
-			children, err := readDirectoryTree(prefix, path)
+			children, err := readDirectoryTree(prefix, path, false)
 
 			if err != nil {
 				return nil, err

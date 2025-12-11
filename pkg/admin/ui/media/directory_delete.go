@@ -41,7 +41,7 @@ func DeleteDirectory(w http.ResponseWriter, r *http.Request) {
 			SelectionField  SelectionField
 		}{
 			Lang:        tpl.GetUILanguage(r),
-			Directories: listDirectories(w),
+			Directories: listDirectories(w, false),
 			Interactive: true,
 		})
 		return

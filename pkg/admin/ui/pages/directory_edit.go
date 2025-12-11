@@ -15,6 +15,7 @@ import (
 	"github.com/emvi/shifu/pkg/cfg"
 )
 
+// EditDirectoryData is the data for the directory form.
 type EditDirectoryData struct {
 	Lang        string
 	Directories []string
@@ -31,7 +32,7 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		parent := strings.TrimSpace(r.FormValue("parent"))
 		name := strings.TrimSpace(r.FormValue("name"))
-		parentChanged := getParentDirectory(path) != parent
+		parentChanged := shared.GetParentDirectory(path) != parent
 		errs := make(map[string]string)
 
 		if parentChanged {
@@ -57,11 +58,9 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 
 			if info, _ := os.Stat(p); info != nil {
 				errs["name"] = "the directory already exists"
-			} else {
-				if err := os.Rename(getPagePath(path), p); err != nil {
-					slog.Error("Error while creating directory", "error", err)
-					errs["name"] = "error renaming directory"
-				}
+			} else if err := os.Rename(getPagePath(path), p); err != nil {
+				slog.Error("Error while creating directory", "error", err)
+				errs["name"] = "error renaming directory"
 			}
 		}
 
@@ -71,7 +70,7 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 				Lang:        tpl.GetUILanguage(r),
 				Directories: shared.GetDirectories(filepath.Join(cfg.Get().BaseDir, contentDir)),
 				Name:        name,
-				Parent:      getParentDirectory(path),
+				Parent:      shared.GetParentDirectory(path),
 				Path:        path,
 				Errors:      errs,
 			})
@@ -105,18 +104,8 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 			Lang:        lang,
 			Directories: shared.GetDirectories(filepath.Join(cfg.Get().BaseDir, contentDir)),
 			Name:        filepath.Base(path),
-			Parent:      getParentDirectory(path),
+			Parent:      shared.GetParentDirectory(path),
 			Path:        path,
 		},
 	})
-}
-
-func getParentDirectory(path string) string {
-	parent := filepath.Dir(path)
-
-	if parent == "/" {
-		return ""
-	}
-
-	return parent
 }

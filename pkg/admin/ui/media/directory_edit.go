@@ -1,6 +1,8 @@
 package media
 
 import (
+	"errors"
+	"io/fs"
 	"log/slog"
 	"net/http"
 	"os"
@@ -9,15 +11,36 @@ import (
 
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
+	"github.com/emvi/shifu/pkg/admin/ui/shared"
 )
+
+// EditDirectoryData is the data for the directory form.
+type EditDirectoryData struct {
+	Lang        string
+	Directories []Directory
+	Name        string
+	Parent      string
+	Path        string
+	Errors      map[string]string
+}
 
 // EditDirectory changes the name of a directory.
 func EditDirectory(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimSpace(r.URL.Query().Get("path"))
+	path := strings.TrimSuffix(strings.TrimSpace(r.URL.Query().Get("path")), "/")
 
 	if r.Method == http.MethodPost {
+		parent := strings.TrimSpace(r.FormValue("parent"))
 		name := strings.TrimSpace(r.FormValue("name"))
+		parentChanged := shared.GetParentDirectory(path) != parent
 		errs := make(map[string]string)
+
+		if parentChanged {
+			p := getDirectoryPath(filepath.Join(parent, name))
+
+			if _, err := os.Stat(p); !errors.Is(err, fs.ErrNotExist) {
+				errs["parent"] = "a different directory with this name exists already"
+			}
+		}
 
 		if name == "" {
 			errs["name"] = "the name is required"
@@ -25,10 +48,16 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 			errs["name"] = "the name contains invalid characters"
 		} else if info, _ := os.Stat(getDirectoryPath(path)); info == nil {
 			errs["name"] = "the directory does not exist"
-		} else if info, _ := os.Stat(getDirectoryPath(filepath.Join(filepath.Dir(path), name))); info != nil {
-			errs["name"] = "the directory already exists"
 		} else {
-			if err := os.Rename(getDirectoryPath(path), getDirectoryPath(filepath.Join(filepath.Dir(path), name))); err != nil {
+			p := getDirectoryPath(filepath.Join(filepath.Dir(path), name))
+
+			if parentChanged {
+				p = getDirectoryPath(filepath.Join(parent, name))
+			}
+
+			if info, _ := os.Stat(p); info != nil {
+				errs["name"] = "the directory already exists"
+			} else if err := os.Rename(getDirectoryPath(path), p); err != nil {
 				slog.Error("Error while creating directory", "error", err)
 				errs["name"] = "error renaming directory"
 			}
@@ -36,16 +65,13 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			tpl.Get().Execute(w, "media-directory-edit-form.html", struct {
-				Lang   string
-				Name   string
-				Path   string
-				Errors map[string]string
-			}{
-				Lang:   tpl.GetUILanguage(r),
-				Name:   name,
-				Path:   path,
-				Errors: errs,
+			tpl.Get().Execute(w, "media-directory-edit-form.html", EditDirectoryData{
+				Lang:        tpl.GetUILanguage(r),
+				Directories: listDirectories(w, true),
+				Name:        name,
+				Parent:      shared.GetParentDirectory(path),
+				Path:        path,
+				Errors:      errs,
 			})
 			return
 		}
@@ -60,7 +86,7 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 			SelectionField  SelectionField
 		}{
 			Lang:        tpl.GetUILanguage(r),
-			Directories: listDirectories(w),
+			Directories: listDirectories(w, false),
 			Interactive: true,
 		})
 		return
@@ -69,10 +95,7 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "media-directory-edit.html", struct {
 		WindowOptions ui.WindowOptions
-		Lang          string
-		Name          string
-		Path          string
-		Errors        map[string]string
+		EditDirectoryData
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-media-directory-edit",
@@ -81,8 +104,12 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 			Overlay:    true,
 			Lang:       lang,
 		},
-		Lang: lang,
-		Name: filepath.Base(path),
-		Path: path,
+		EditDirectoryData: EditDirectoryData{
+			Lang:        lang,
+			Directories: listDirectories(w, true),
+			Name:        filepath.Base(path),
+			Parent:      shared.GetParentDirectory(path),
+			Path:        path,
+		},
 	})
 }

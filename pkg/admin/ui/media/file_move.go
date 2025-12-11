@@ -78,7 +78,7 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 				Errors      map[string]string
 			}{
 				Lang:        tpl.GetUILanguage(r),
-				Directories: listDirectories(w),
+				Directories: listDirectories(w, false),
 				Interactive: false,
 				Path:        path,
 				Name:        names,
@@ -125,7 +125,7 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 			Lang:       lang,
 		},
 		Lang:        lang,
-		Directories: listDirectories(w),
+		Directories: listDirectories(w, false),
 		Interactive: false,
 		Path:        path,
 		Name:        names,

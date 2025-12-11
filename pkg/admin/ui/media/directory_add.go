@@ -12,13 +12,21 @@ import (
 	"github.com/emvi/shifu/pkg/admin/ui"
 )
 
+// AddDirectoryData is the data for the directory form.
+type AddDirectoryData struct {
+	Lang        string
+	Directories []Directory
+	Name        string
+	Path        string
+	Errors      map[string]string
+}
+
 // AddDirectory creates a new subdirectory.
 func AddDirectory(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimSpace(r.URL.Query().Get("path"))
-
 	if r.Method == http.MethodPost {
+		parent := strings.TrimSpace(r.FormValue("parent"))
 		name := strings.TrimSpace(r.FormValue("name"))
-		fullPath := getDirectoryPath(filepath.Join(path, name))
+		fullPath := getDirectoryPath(filepath.Join(parent, name))
 		errs := make(map[string]string)
 
 		if name == "" {
@@ -36,16 +44,12 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			tpl.Get().Execute(w, "media-directory-create-form.html", struct {
-				Lang   string
-				Name   string
-				Path   string
-				Errors map[string]string
-			}{
-				Lang:   tpl.GetUILanguage(r),
-				Name:   name,
-				Path:   path,
-				Errors: errs,
+			tpl.Get().Execute(w, "media-directory-create-form.html", AddDirectoryData{
+				Lang:        tpl.GetUILanguage(r),
+				Directories: listDirectories(w, true),
+				Name:        name,
+				Path:        parent,
+				Errors:      errs,
 			})
 			return
 		}
@@ -60,7 +64,7 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 			SelectionField  SelectionField
 		}{
 			Lang:        tpl.GetUILanguage(r),
-			Directories: listDirectories(w),
+			Directories: listDirectories(w, false),
 			Interactive: true,
 		})
 		return
@@ -69,10 +73,7 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "media-directory-create.html", struct {
 		WindowOptions ui.WindowOptions
-		Lang          string
-		Name          string
-		Path          string
-		Errors        map[string]string
+		AddDirectoryData
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-media-directory-create",
@@ -81,8 +82,11 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 			Overlay:    true,
 			Lang:       lang,
 		},
-		Lang: lang,
-		Path: path,
+		AddDirectoryData: AddDirectoryData{
+			Lang:        lang,
+			Directories: listDirectories(w, true),
+			Path:        strings.TrimSuffix(strings.TrimSpace(r.URL.Query().Get("path")), "/"),
+		},
 	})
 }
 

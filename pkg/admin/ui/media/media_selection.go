@@ -82,7 +82,7 @@ func Selection(w http.ResponseWriter, r *http.Request) {
 			Lang:       lang,
 		},
 		Lang:            lang,
-		Directories:     listDirectories(w),
+		Directories:     listDirectories(w, false),
 		Selection:       true,
 		SelectionTarget: target,
 		SelectionField: SelectionField{

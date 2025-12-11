@@ -32,3 +32,14 @@ func GetDirectories(path string) []string {
 	})
 	return dirs
 }
+
+// GetParentDirectory returns the parent directory for given path or an empty string if it is root.
+func GetParentDirectory(path string) string {
+	parent := filepath.Dir(path)
+
+	if parent == "/" {
+		return ""
+	}
+
+	return parent
+}

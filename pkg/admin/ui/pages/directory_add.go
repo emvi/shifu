@@ -14,6 +14,7 @@ import (
 	"github.com/emvi/shifu/pkg/cfg"
 )
 
+// AddDirectoryData is the data for the directory form.
 type AddDirectoryData struct {
 	Lang        string
 	Directories []string
@@ -24,8 +25,6 @@ type AddDirectoryData struct {
 
 // AddDirectory creates a new subdirectory.
 func AddDirectory(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimSuffix(strings.TrimSpace(r.URL.Query().Get("path")), "/")
-
 	if r.Method == http.MethodPost {
 		parent := strings.TrimSpace(r.FormValue("parent"))
 		name := strings.TrimSpace(r.FormValue("name"))
@@ -83,7 +82,7 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 		AddDirectoryData: AddDirectoryData{
 			Lang:        lang,
 			Directories: shared.GetDirectories(filepath.Join(cfg.Get().BaseDir, contentDir)),
-			Path:        path,
+			Path:        strings.TrimSuffix(strings.TrimSpace(r.URL.Query().Get("path")), "/"),
 		},
 	})
 }
