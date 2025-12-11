@@ -1,21 +1,17 @@
 {{ $path := .Data.Path }}
-{{ $parent := .Data.Parent }}
+{{ $parent := .Data.Selected }}
 
 <form method="post"
-      hx-post="{{ config.UI.Path }}/media/directory/edit?path={{ .Data.Path }}"
+      hx-post="{{ config.UI.Path }}/media/directory/edit?path={{ $path }}"
       hx-swap="outerHTML"
       hx-target=".shifu-media-tree"
       hx-target-4*="this"
       data-window="#shifu-media-directory-edit">
     <fieldset>
-        <label for="parent">{{ i18n .Data.Lang "media_create_directory_parent" }} {{$parent}}</label>
-        <select id="parent" name="parent">
-            {{ range $d := .Data.Directories }}
-                {{ if not (eq $d.Path $path) }}
-                    <option {{ if eq $parent $d.Path }}selected{{ end }}>{{ $d.Path }}</option>
-                {{ end }}
-            {{ end }}
-        </select>
+        <label>{{ i18n .Data.Lang "media_create_directory_parent" }}</label>
+        <div class="shifu-fs-tree shifu-tree">
+            {{ template "fs-tree.html" . }}
+        </div>
 
         {{ if index .Data.Errors "parent" }}
             <span class="error">{{ i18n .Data.Lang (index .Data.Errors "parent") }}</span>

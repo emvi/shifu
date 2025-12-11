@@ -16,12 +16,13 @@ import (
 
 // EditDirectoryData is the data for the directory form.
 type EditDirectoryData struct {
-	Lang        string
-	Directories []Directory
-	Name        string
-	Parent      string
-	Path        string
-	Errors      map[string]string
+	Lang           string
+	Directories    []Directory
+	SelectionField string
+	Name           string
+	Selected       string
+	Path           string
+	Errors         map[string]string
 }
 
 // EditDirectory changes the name of a directory.
@@ -66,12 +67,13 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "media-directory-edit-form.html", EditDirectoryData{
-				Lang:        tpl.GetUILanguage(r),
-				Directories: listDirectories(w, true),
-				Name:        name,
-				Parent:      shared.GetParentDirectory(path),
-				Path:        path,
-				Errors:      errs,
+				Lang:           tpl.GetUILanguage(r),
+				Directories:    listDirectories(w, true),
+				SelectionField: "parent",
+				Name:           name,
+				Selected:       shared.GetParentDirectory(path),
+				Path:           path,
+				Errors:         errs,
 			})
 			return
 		}
@@ -105,11 +107,12 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 			Lang:       lang,
 		},
 		EditDirectoryData: EditDirectoryData{
-			Lang:        lang,
-			Directories: listDirectories(w, true),
-			Name:        filepath.Base(path),
-			Parent:      shared.GetParentDirectory(path),
-			Path:        path,
+			Lang:           lang,
+			Directories:    listDirectories(w, true),
+			SelectionField: "parent",
+			Name:           filepath.Base(path),
+			Selected:       shared.GetParentDirectory(path),
+			Path:           path,
 		},
 	})
 }

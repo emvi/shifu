@@ -1,0 +1,20 @@
+.shifu-fs {
+    &-tree {
+        min-width: 25%;
+        border: solid 1px var(--border-inner);
+        border-radius: 4px;
+        padding: 8px 8px 0 8px;
+    }
+
+    &-directory {
+        &-name {
+            padding: 0 2px;
+        }
+
+        &-selected {
+            background: var(--highlight);
+            color: var(--bg) !important;
+            border-radius: 4px;
+        }
+    }
+}

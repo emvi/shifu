@@ -14,11 +14,12 @@ import (
 
 // AddDirectoryData is the data for the directory form.
 type AddDirectoryData struct {
-	Lang        string
-	Directories []Directory
-	Name        string
-	Path        string
-	Errors      map[string]string
+	Lang           string
+	Directories    []Directory
+	SelectionField string
+	Name           string
+	Selected       string
+	Errors         map[string]string
 }
 
 // AddDirectory creates a new subdirectory.
@@ -45,11 +46,12 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "media-directory-create-form.html", AddDirectoryData{
-				Lang:        tpl.GetUILanguage(r),
-				Directories: listDirectories(w, true),
-				Name:        name,
-				Path:        parent,
-				Errors:      errs,
+				Lang:           tpl.GetUILanguage(r),
+				Directories:    listDirectories(w, true),
+				SelectionField: "parent",
+				Name:           name,
+				Selected:       parent,
+				Errors:         errs,
 			})
 			return
 		}
@@ -83,9 +85,10 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 			Lang:       lang,
 		},
 		AddDirectoryData: AddDirectoryData{
-			Lang:        lang,
-			Directories: listDirectories(w, true),
-			Path:        strings.TrimSuffix(strings.TrimSpace(r.URL.Query().Get("path")), "/"),
+			Lang:           lang,
+			Directories:    listDirectories(w, true),
+			SelectionField: "parent",
+			Selected:       strings.TrimSuffix(strings.TrimSpace(r.URL.Query().Get("path")), "/"),
 		},
 	})
 }
