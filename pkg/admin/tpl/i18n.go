@@ -189,6 +189,9 @@ var i18n = map[string]map[string]string{
 		"refs_delete_ref_confirm":                     "Are you sure you want to delete the reference \"%s\"?",
 		"refs_delete_ref_submit":                      "Delete",
 
+		// fs
+		"fs_tree_select_directory": "Select Directory",
+
 		// errors
 		"the reference does not exist":                            "The referenced element does not exist.",
 		"the position does not exist":                             "The position does not exist.",
@@ -406,6 +409,9 @@ var i18n = map[string]map[string]string{
 		"refs_delete_ref_window_title":                "Referenz löschen",
 		"refs_delete_ref_confirm":                     "Bist du sicher, dass du die Referenz \"%s\" löschen möchtest?",
 		"refs_delete_ref_submit":                      "Löschen",
+
+		// fs
+		"fs_tree_select_directory": "Ordner auswählen",
 
 		// errors
 		"the reference does not exist":                            "Das referenzierte Element existiert nicht.",

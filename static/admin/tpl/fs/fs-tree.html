@@ -19,9 +19,16 @@
     </ul>
 {{ end }}
 
-<div id="shifu-fs-tree" style="margin-bottom: 8px;">
-    {{ template "fs-tree-directories" dict "dirs" .Data.Directories }}
-</div>
+<details class="shifu-fs-select">
+    <summary>
+        {{ i18n .Data.Lang "fs_tree_select_directory" }}
+    </summary>
+    <div class="shifu-fs-tree shifu-tree">
+        <div id="shifu-fs-tree" style="margin-bottom: 8px;">
+            {{ template "fs-tree-directories" dict "dirs" .Data.Directories }}
+        </div>
+    </div>
+</details>
 <input type="hidden" name="{{ .Data.SelectionField }}" value="{{ .Data.Selected }}" id="shifu-fs-directory-selection-path" />
 
 <script>

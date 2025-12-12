@@ -1,13 +1,13 @@
 <form method="post"
-      hx-post="{{ config.UI.Path }}/media/file/move?path={{ .Data.Path }}{{ range .Data.Name }}&name[]={{ . }}{{ end }}"
+      hx-post="{{ config.UI.Path }}/media/file/move?path={{ .Data.Selected }}{{ range .Data.Name }}&name[]={{ . }}{{ end }}"
       hx-swap="outerHTML"
       hx-target=".shifu-media-files"
       hx-target-4*="this"
       data-window="#shifu-media-file-move">
-    <!-- TODO use fs-tree.html -->
-    <div class="shifu-media-tree shifu-tree">
-        {{ template "media-tree.html" . }}
-    </div>
+    <fieldset>
+        <label>{{ i18n .Data.Lang "media_create_directory_parent" }}</label>
+        {{ template "fs-tree.html" . }}
+    </fieldset>
 
     {{ if index .Data.Errors "path" }}
         <span class="error">{{ i18n .Data.Lang (index .Data.Errors "path") }}</span>

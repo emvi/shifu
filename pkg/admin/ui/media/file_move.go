@@ -11,6 +11,16 @@ import (
 	"github.com/emvi/shifu/pkg/admin/ui"
 )
 
+// MoveFileData is the data for the file moving form.
+type MoveFileData struct {
+	Lang           string
+	Directories    []Directory
+	SelectionField string
+	Selected       string
+	Name           []string
+	Errors         map[string]string
+}
+
 // MoveFile moves a file to a different directory.
 func MoveFile(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimSpace(r.URL.Query().Get("path"))
@@ -69,20 +79,13 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			tpl.Get().Execute(w, "media-file-move-form.html", struct {
-				Lang        string
-				Directories []Directory
-				Interactive bool
-				Path        string
-				Name        []string
-				Errors      map[string]string
-			}{
-				Lang:        tpl.GetUILanguage(r),
-				Directories: listDirectories(w, false),
-				Interactive: false,
-				Path:        path,
-				Name:        names,
-				Errors:      errs,
+			tpl.Get().Execute(w, "media-file-move-form.html", MoveFileData{
+				Lang:           tpl.GetUILanguage(r),
+				Directories:    listDirectories(w, false),
+				SelectionField: "path",
+				Selected:       path,
+				Name:           names,
+				Errors:         errs,
 			})
 			return
 		}
@@ -105,16 +108,8 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 
 	lang := tpl.GetUILanguage(r)
 	tpl.Get().Execute(w, "media-file-move.html", struct {
-		WindowOptions   ui.WindowOptions
-		Lang            string
-		Directories     []Directory
-		Interactive     bool
-		Selection       bool
-		SelectionTarget string
-		SelectionField  SelectionField
-		Path            string
-		Name            []string
-		Errors          map[string]string
+		WindowOptions ui.WindowOptions
+		MoveFileData
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-media-file-move",
@@ -124,10 +119,12 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 			MinWidth:   400,
 			Lang:       lang,
 		},
-		Lang:        lang,
-		Directories: listDirectories(w, false),
-		Interactive: false,
-		Path:        path,
-		Name:        names,
+		MoveFileData: MoveFileData{
+			Lang:           lang,
+			Directories:    listDirectories(w, false),
+			SelectionField: "path",
+			Selected:       path,
+			Name:           names,
+		},
 	})
 }

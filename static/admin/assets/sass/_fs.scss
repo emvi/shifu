@@ -1,9 +1,36 @@
 .shifu-fs {
+    &-select {
+        summary {
+            list-style: none;
+            cursor: pointer;
+            display: flex;
+            gap: 4px;
+            flex-direction: row;
+            align-items: center;
+
+            &::before {
+                content: "";
+                display: block;
+                width: 12px;
+                height: 12px;
+                background: url("/shifu-admin/static/icons/chevron.svg");
+            }
+        }
+
+        &[open] > summary {
+            &::before {
+                transform: rotate(180deg);
+            }
+        }
+    }
+
     &-tree {
         min-width: 25%;
         border: solid 1px var(--border-inner);
         border-radius: 4px;
         padding: 8px 8px 0 8px;
+        max-height: 100px;
+        overflow: scroll;
     }
 
     &-directory {

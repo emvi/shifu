@@ -8,9 +8,7 @@
       data-window="#shifu-media-directory-create">
     <fieldset>
         <label>{{ i18n .Data.Lang "media_create_directory_parent" }}</label>
-        <div class="shifu-fs-tree shifu-tree">
-            {{ template "fs-tree.html" . }}
-        </div>
+        {{ template "fs-tree.html" . }}
     </fieldset>
     <fieldset>
         <label for="name">{{ i18n .Data.Lang "media_create_dir_name" }}</label>

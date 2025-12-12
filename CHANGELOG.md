@@ -7,6 +7,7 @@
 * added sorting languages when editing an element
 * added renaming elements
 * added directory selection to pages and media when creating child directories
+* added moving media files and pages
 * improved design
 * fixed media selection affecting media window
 * updated dependencies
