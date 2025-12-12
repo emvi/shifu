@@ -210,7 +210,6 @@ func (server *Server) serveAPI(router chi.Router) {
 	slog.Info("Serving API", "path", "/api/v1")
 	router.Route("/api/v1", func(r chi.Router) {
 		r.Use(middleware.APISecret)
-		r.Get("/health", func(http.ResponseWriter, *http.Request) {})
 		r.Get("/static", api.ListStaticFiles)
 		r.Put("/static", api.PutStaticFile)
 		r.Get("/cms", func(http.ResponseWriter, *http.Request) { server.Content.Update() })
@@ -218,6 +217,7 @@ func (server *Server) serveAPI(router chi.Router) {
 		r.Get("/content/file", api.GetContentFile)
 		r.Put("/content/file", api.PutContentFile)
 	})
+	router.Get("/api/v1/health", func(http.ResponseWriter, *http.Request) {})
 }
 
 func (server *Server) serveUI(router chi.Router) {
