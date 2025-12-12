@@ -1,4 +1,4 @@
-.PHONY: demo deps test build_mac build_windows build_linux init
+.PHONY: demo deps test benchmark build_mac build_windows build_linux build_arm64 init
 
 demo:
 	modd
