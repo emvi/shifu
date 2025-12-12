@@ -9,13 +9,15 @@ import (
 
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
+	"github.com/emvi/shifu/pkg/admin/ui/shared"
 )
 
 // MoveFileData is the data for the file moving form.
 type MoveFileData struct {
 	Lang           string
-	Directories    []Directory
+	Directories    []shared.Directory
 	SelectionField string
+	SelectionID    string
 	Selected       string
 	Name           []string
 	Errors         map[string]string
@@ -81,8 +83,9 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "media-file-move-form.html", MoveFileData{
 				Lang:           tpl.GetUILanguage(r),
-				Directories:    listDirectories(w, false),
+				Directories:    shared.ListDirectories(w, mediaDir, false),
 				SelectionField: "path",
+				SelectionID:    "media-file-move",
 				Selected:       path,
 				Name:           names,
 				Errors:         errs,
@@ -121,8 +124,9 @@ func MoveFile(w http.ResponseWriter, r *http.Request) {
 		},
 		MoveFileData: MoveFileData{
 			Lang:           lang,
-			Directories:    listDirectories(w, false),
+			Directories:    shared.ListDirectories(w, mediaDir, false),
 			SelectionField: "path",
+			SelectionID:    "media-file-move",
 			Selected:       path,
 			Name:           names,
 		},

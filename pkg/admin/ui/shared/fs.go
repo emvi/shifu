@@ -1,36 +1,92 @@
 package shared
 
 import (
-	"io/fs"
+	"log/slog"
+	"net/http"
+	"os"
 	"path/filepath"
 	"slices"
 	"strings"
+
+	"github.com/emvi/shifu/pkg/cfg"
 )
 
-// GetDirectories returns all relative child directory paths for given path including the path itself.
-func GetDirectories(path string) []string {
-	dirs := make([]string, 0)
+// Directory is a file system directory.
+type Directory struct {
+	Name     string
+	Path     string
+	Children []Directory
+}
 
-	if err := filepath.WalkDir(path, func(p string, d fs.DirEntry, err error) error {
-		if d != nil && d.IsDir() {
-			dirs = append(dirs, strings.TrimPrefix(p, path))
+// ListDirectories returns the directory tree for given path.
+func ListDirectories(w http.ResponseWriter, path string, includeRoot bool) []Directory {
+	dir := filepath.Join(cfg.Get().BaseDir, path)
+
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+			slog.Error("Error creating directory", "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return nil
 		}
-
-		return err
-	}); err != nil {
-		return nil
 	}
 
-	slices.SortFunc(dirs, func(a, b string) int {
-		if a > b {
-			return -1
-		} else if a < b {
+	tree, err := readDirectoryTree(dir, dir, includeRoot)
+
+	if err != nil {
+		slog.Error("Error reading directory", "error", err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	return tree
+}
+
+func readDirectoryTree(prefix, dir string, includeRoot bool) ([]Directory, error) {
+	files, err := os.ReadDir(dir)
+
+	if err != nil {
+		return nil, err
+	}
+
+	dirs := make([]Directory, 0)
+
+	if includeRoot {
+		dirs = append(dirs, Directory{
+			Name: "/",
+		})
+	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			path := filepath.Join(dir, file.Name())
+			children, err := readDirectoryTree(prefix, path, false)
+
+			if err != nil {
+				return nil, err
+			}
+
+			dirs = append(dirs, Directory{
+				Name:     file.Name(),
+				Path:     strings.TrimPrefix(path, prefix),
+				Children: children,
+			})
+		}
+	}
+
+	sortDirectories(dirs)
+	return dirs, nil
+}
+
+func sortDirectories(dirs []Directory) {
+	slices.SortFunc(dirs, func(a, b Directory) int {
+		if strings.ToLower(a.Name) > strings.ToLower(b.Name) {
 			return 1
+
+		} else if strings.ToLower(a.Name) < strings.ToLower(b.Name) {
+			return -1
 		}
 
 		return 0
 	})
-	return dirs
 }
 
 // GetParentDirectory returns the parent directory for given path or an empty string if it is root.

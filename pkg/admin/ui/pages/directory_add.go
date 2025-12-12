@@ -11,16 +11,17 @@ import (
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
-	"github.com/emvi/shifu/pkg/cfg"
 )
 
 // AddDirectoryData is the data for the directory form.
 type AddDirectoryData struct {
-	Lang        string
-	Directories []string
-	Name        string
-	Path        string
-	Errors      map[string]string
+	Lang           string
+	Directories    []shared.Directory
+	SelectionField string
+	SelectionID    string
+	Name           string
+	Selected       string
+	Errors         map[string]string
 }
 
 // AddDirectory creates a new subdirectory.
@@ -47,11 +48,13 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "pages-directory-create-form.html", AddDirectoryData{
-				Lang:        tpl.GetUILanguage(r),
-				Directories: shared.GetDirectories(filepath.Join(cfg.Get().BaseDir, contentDir)),
-				Name:        name,
-				Path:        parent,
-				Errors:      errs,
+				Lang:           tpl.GetUILanguage(r),
+				Directories:    shared.ListDirectories(w, contentDir, true),
+				SelectionField: "parent",
+				SelectionID:    "page-directory-add",
+				Name:           name,
+				Selected:       parent,
+				Errors:         errs,
 			})
 			return
 		}
@@ -80,9 +83,11 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 			Lang:       lang,
 		},
 		AddDirectoryData: AddDirectoryData{
-			Lang:        lang,
-			Directories: shared.GetDirectories(filepath.Join(cfg.Get().BaseDir, contentDir)),
-			Path:        strings.TrimSuffix(strings.TrimSpace(r.URL.Query().Get("path")), "/"),
+			Lang:           lang,
+			Directories:    shared.ListDirectories(w, contentDir, true),
+			SelectionField: "parent",
+			SelectionID:    "page-directory-add",
+			Selected:       strings.TrimSuffix(strings.TrimSpace(r.URL.Query().Get("path")), "/"),
 		},
 	})
 }

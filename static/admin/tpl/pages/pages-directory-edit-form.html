@@ -1,21 +1,15 @@
 {{ $path := .Data.Path }}
-{{ $parent := .Data.Parent }}
+{{ $parent := .Data.Selected }}
 
 <form method="post"
-      hx-post="{{ config.UI.Path }}/pages/directory/edit?path={{ .Data.Path }}"
+      hx-post="{{ config.UI.Path }}/pages/directory/edit?path={{ $path }}"
       hx-swap="outerHTML"
       hx-target=".shifu-pages-tree"
       hx-target-4*="this"
       data-window="#shifu-pages-directory-edit">
     <fieldset>
-        <label for="parent">{{ i18n .Data.Lang "pages_create_directory_parent" }} {{$parent}}</label>
-        <select id="parent" name="parent">
-            {{ range $d := .Data.Directories }}
-                {{ if not (eq $d $path) }}
-                    <option {{ if eq $parent $d }}selected{{ end }}>{{ $d }}</option>
-                {{ end }}
-            {{ end }}
-        </select>
+        <label>{{ i18n .Data.Lang "pages_create_directory_parent" }} {{$parent}}</label>
+        {{ template "fs-tree.html" . }}
 
         {{ if index .Data.Errors "parent" }}
             <span class="error">{{ i18n .Data.Lang (index .Data.Errors "parent") }}</span>

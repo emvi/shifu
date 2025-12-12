@@ -17,8 +17,9 @@ import (
 // EditDirectoryData is the data for the directory form.
 type EditDirectoryData struct {
 	Lang           string
-	Directories    []Directory
+	Directories    []shared.Directory
 	SelectionField string
+	SelectionID    string
 	Name           string
 	Selected       string
 	Path           string
@@ -68,8 +69,9 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "media-directory-edit-form.html", EditDirectoryData{
 				Lang:           tpl.GetUILanguage(r),
-				Directories:    listDirectories(w, true),
+				Directories:    shared.ListDirectories(w, mediaDir, true),
 				SelectionField: "parent",
+				SelectionID:    "media-directory-edit",
 				Name:           name,
 				Selected:       shared.GetParentDirectory(path),
 				Path:           path,
@@ -81,14 +83,14 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "media-tree.html", struct {
 			Lang            string
-			Directories     []Directory
+			Directories     []shared.Directory
 			Interactive     bool
 			Selection       bool
 			SelectionTarget string
 			SelectionField  SelectionField
 		}{
 			Lang:        tpl.GetUILanguage(r),
-			Directories: listDirectories(w, false),
+			Directories: shared.ListDirectories(w, mediaDir, false),
 			Interactive: true,
 		})
 		return
@@ -108,8 +110,9 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 		},
 		EditDirectoryData: EditDirectoryData{
 			Lang:           lang,
-			Directories:    listDirectories(w, true),
+			Directories:    shared.ListDirectories(w, mediaDir, true),
 			SelectionField: "parent",
+			SelectionID:    "media-directory-edit",
 			Name:           filepath.Base(path),
 			Selected:       shared.GetParentDirectory(path),
 			Path:           path,

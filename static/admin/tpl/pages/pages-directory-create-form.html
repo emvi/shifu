@@ -1,4 +1,4 @@
-{{ $path := .Data.Path }}
+{{ $path := .Data.Selected }}
 
 <form method="post"
       hx-post="{{ config.UI.Path }}/pages/directory/add?path={{ $path }}"
@@ -7,12 +7,8 @@
       hx-target-4*="this"
       data-window="#shifu-pages-directory-create">
     <fieldset>
-        <label for="parent">{{ i18n .Data.Lang "pages_create_directory_parent" }}</label>
-        <select id="parent" name="parent">
-            {{ range $dir := .Data.Directories }}
-                <option {{ if eq $path $dir }}selected{{ end }}>{{ $dir }}</option>
-            {{ end }}
-        </select>
+        <label>{{ i18n .Data.Lang "pages_create_directory_parent" }}</label>
+        {{ template "fs-tree.html" . }}
     </fieldset>
     <fieldset>
         <label for="name">{{ i18n .Data.Lang "pages_create_directory_name" }}</label>

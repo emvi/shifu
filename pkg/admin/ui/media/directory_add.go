@@ -10,13 +10,15 @@ import (
 
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
+	"github.com/emvi/shifu/pkg/admin/ui/shared"
 )
 
 // AddDirectoryData is the data for the directory form.
 type AddDirectoryData struct {
 	Lang           string
-	Directories    []Directory
+	Directories    []shared.Directory
 	SelectionField string
+	SelectionID    string
 	Name           string
 	Selected       string
 	Errors         map[string]string
@@ -47,8 +49,9 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "media-directory-create-form.html", AddDirectoryData{
 				Lang:           tpl.GetUILanguage(r),
-				Directories:    listDirectories(w, true),
+				Directories:    shared.ListDirectories(w, mediaDir, true),
 				SelectionField: "parent",
+				SelectionID:    "media-directory-add",
 				Name:           name,
 				Selected:       parent,
 				Errors:         errs,
@@ -59,14 +62,14 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("HX-Reswap", "innerHTML")
 		tpl.Get().Execute(w, "media-tree.html", struct {
 			Lang            string
-			Directories     []Directory
+			Directories     []shared.Directory
 			Interactive     bool
 			Selection       bool
 			SelectionTarget string
 			SelectionField  SelectionField
 		}{
 			Lang:        tpl.GetUILanguage(r),
-			Directories: listDirectories(w, false),
+			Directories: shared.ListDirectories(w, mediaDir, false),
 			Interactive: true,
 		})
 		return
@@ -86,8 +89,9 @@ func AddDirectory(w http.ResponseWriter, r *http.Request) {
 		},
 		AddDirectoryData: AddDirectoryData{
 			Lang:           lang,
-			Directories:    listDirectories(w, true),
+			Directories:    shared.ListDirectories(w, mediaDir, true),
 			SelectionField: "parent",
+			SelectionID:    "media-directory-add",
 			Selected:       strings.TrimSuffix(strings.TrimSpace(r.URL.Query().Get("path")), "/"),
 		},
 	})

@@ -1,17 +1,19 @@
 {{ define "fs-tree-directories" }}
+    {{ $id := index . "id" }}
+
     <ul>
         {{ range $dir := index . "dirs" }}
             <li>
                 <details data-entry="{{ $dir.Path }}" {{ if not (len $dir.Children) }}class="empty"{{ end }}>
                     <summary>
-                        <span class="shifu-fs-directory-name shifu-fs-directory-selection" data-path="{{ $dir.Path }}">
+                        <span class="shifu-fs-directory-name shifu-fs-directory-selection-{{ $id }}" data-path="{{ $dir.Path }}">
                             {{ $dir.Name }}
                         </span>
                         <span></span>
                     </summary>
 
                     {{ if len $dir.Children }}
-                        {{ template "fs-tree-directories" dict "dirs" $dir.Children }}
+                        {{ template "fs-tree-directories" dict "dirs" $dir.Children "id" $id }}
                     {{ end }}
                 </details>
             </li>
@@ -19,33 +21,35 @@
     </ul>
 {{ end }}
 
+{{ $id := .Data.SelectionID }}
+
 <details class="shifu-fs-select">
     <summary>
         {{ i18n .Data.Lang "fs_tree_select_directory" }}
     </summary>
     <div class="shifu-fs-tree shifu-tree">
         <div id="shifu-fs-tree" style="margin-bottom: 8px;">
-            {{ template "fs-tree-directories" dict "dirs" .Data.Directories }}
+            {{ template "fs-tree-directories" dict "dirs" .Data.Directories "id" $id }}
         </div>
     </div>
 </details>
-<input type="hidden" name="{{ .Data.SelectionField }}" value="{{ .Data.Selected }}" id="shifu-fs-directory-selection-path" />
+<input type="hidden" name="{{ .Data.SelectionField }}" value="{{ .Data.Selected }}" id="shifu-fs-directory-selection-path-{{ $id }}" />
 
 <script>
     (function() {
         shifuTree("shifu-fs-tree");
-        const input = document.getElementById("shifu-fs-directory-selection-path");
+        const input = document.getElementById("shifu-fs-directory-selection-path-{{ $id }}");
 
-        document.querySelectorAll(".shifu-fs-directory-selection").forEach(e => {
+        document.querySelectorAll(".shifu-fs-directory-selection-{{ $id }}").forEach(e => {
             if (e.getAttribute("data-path") === input.value) {
                 e.classList.add("shifu-fs-directory-selected");
             }
         });
 
-        document.querySelectorAll(".shifu-fs-directory-selection").forEach(e => e.addEventListener("click", e => {
+        document.querySelectorAll(".shifu-fs-directory-selection-{{ $id }}").forEach(e => e.addEventListener("click", e => {
             e.preventDefault();
             e.stopPropagation();
-            document.querySelectorAll(".shifu-fs-directory-selection").forEach(e => e.classList.remove("shifu-fs-directory-selected"));
+            document.querySelectorAll(".shifu-fs-directory-selection-{{ $id }}").forEach(e => e.classList.remove("shifu-fs-directory-selected"));
             e.target.classList.add("shifu-fs-directory-selected");
 
             if (input) {

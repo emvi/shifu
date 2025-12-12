@@ -12,17 +12,18 @@ import (
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/admin/ui/shared"
-	"github.com/emvi/shifu/pkg/cfg"
 )
 
 // EditDirectoryData is the data for the directory form.
 type EditDirectoryData struct {
-	Lang        string
-	Directories []string
-	Name        string
-	Parent      string
-	Path        string
-	Errors      map[string]string
+	Lang           string
+	Directories    []shared.Directory
+	SelectionField string
+	SelectionID    string
+	Name           string
+	Selected       string
+	Path           string
+	Errors         map[string]string
 }
 
 // EditDirectory changes the name of a directory.
@@ -67,12 +68,14 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "pages-directory-edit-form.html", EditDirectoryData{
-				Lang:        tpl.GetUILanguage(r),
-				Directories: shared.GetDirectories(filepath.Join(cfg.Get().BaseDir, contentDir)),
-				Name:        name,
-				Parent:      shared.GetParentDirectory(path),
-				Path:        path,
-				Errors:      errs,
+				Lang:           tpl.GetUILanguage(r),
+				Directories:    shared.ListDirectories(w, contentDir, true),
+				SelectionField: "parent",
+				SelectionID:    "page-directory-edit",
+				Name:           name,
+				Selected:       shared.GetParentDirectory(path),
+				Path:           path,
+				Errors:         errs,
 			})
 			return
 		}
@@ -101,11 +104,13 @@ func EditDirectory(w http.ResponseWriter, r *http.Request) {
 			Lang:       lang,
 		},
 		EditDirectoryData: EditDirectoryData{
-			Lang:        lang,
-			Directories: shared.GetDirectories(filepath.Join(cfg.Get().BaseDir, contentDir)),
-			Name:        filepath.Base(path),
-			Parent:      shared.GetParentDirectory(path),
-			Path:        path,
+			Lang:           lang,
+			Directories:    shared.ListDirectories(w, contentDir, true),
+			SelectionField: "parent",
+			SelectionID:    "page-directory-edit",
+			Name:           filepath.Base(path),
+			Selected:       shared.GetParentDirectory(path),
+			Path:           path,
 		},
 	})
 }

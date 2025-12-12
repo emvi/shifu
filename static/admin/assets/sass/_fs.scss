@@ -1,6 +1,6 @@
 .shifu-fs {
     &-select {
-        summary {
+        & > summary {
             list-style: none;
             cursor: pointer;
             display: flex;
