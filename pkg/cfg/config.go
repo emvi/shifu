@@ -19,7 +19,7 @@ var (
 	cfg Config
 )
 
-// Config is the Oogway application config.
+// Config is the Shifu application config.
 type Config struct {
 	BaseDir string           `json:"-"`
 	FuncMap template.FuncMap `json:"-"`

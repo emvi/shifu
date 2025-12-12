@@ -315,7 +315,7 @@ Shifu comes with a number of template functions that can be used within template
 
 | Function      | Description                                                                                                        | Example                                                      |
 |---------------|--------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
-| config        | Exposes the Oogway configuration.                                                                                  | `{{ config.Server.Host }}`                                   |
+| config        | Exposes the Shifu configuration.                                                                                   | `{{ config.Server.Host }}`                                   |
 | hostname      | Returns the hostname from configuration.                                                                           | `{{ hostname }}`                                             |
 | copy          | Returns the copy (text) for given page, content, and key.                                                          | `{{ copy .Page .Content "meta_description" }}`               |
 | get           | Returns the variable for given content and key.                                                                    | `{{ get .Content "img" }}`                                   |
