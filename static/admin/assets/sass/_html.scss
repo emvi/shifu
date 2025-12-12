@@ -79,7 +79,7 @@
         li {
             position: relative;
 
-            &:before {
+            &::before {
                 content: "/";
                 display: block;
                 position: absolute;
@@ -100,7 +100,7 @@
             cursor: pointer;
             user-select: none;
 
-            &:before {
+            &::before {
                 content: "";
                 display: block;
                 width: 12px;
@@ -110,6 +110,12 @@
                 right: 0;
                 top: 8px;
                 transition: transform 0.1s;
+            }
+        }
+
+        &[open] > summary {
+            &::before {
+                transform: rotate(180deg);
             }
         }
     }
