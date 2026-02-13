@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"log/slog"
+	mapUtils "maps"
 	"math/rand/v2"
 	"os"
 	"path/filepath"
@@ -53,19 +54,12 @@ var (
 func Merge(maps ...template.FuncMap) template.FuncMap {
 	out := make(map[string]any)
 
-	for k, v := range sprig.FuncMap() {
-		out[k] = v
-	}
-
-	for k, v := range defaultFuncMap {
-		out[k] = v
-	}
+	mapUtils.Copy(out, sprig.FuncMap())
+	mapUtils.Copy(out, defaultFuncMap)
 
 	for _, m := range maps {
 		if m != nil {
-			for k, v := range m {
-				out[k] = v
-			}
+			mapUtils.Copy(out, m)
 		}
 	}
 
@@ -257,11 +251,7 @@ func formatInt(i int) string {
 	out := ""
 
 	for i := len(str); i > 0; i -= 3 {
-		start := i - 3
-
-		if start < 0 {
-			start = 0
-		}
+		start := max(i-3, 0)
 
 		out = str[start:i] + "," + out
 	}

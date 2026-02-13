@@ -9,6 +9,7 @@ import (
 	"html/template"
 	"io/fs"
 	"log/slog"
+	"maps"
 	"math/rand"
 	"net/http"
 	"os"
@@ -173,7 +174,7 @@ func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, 
 
 		data = buffer.Bytes()
 	} else {
-		data = []byte(fmt.Sprintf(defaultPageContent, adminBody(page)))
+		data = fmt.Appendf(nil, defaultPageContent, adminBody(page))
 	}
 
 	if _, err := w.Write(data); err != nil {
@@ -316,9 +317,7 @@ func (cms *CMS) renderElement(buffer *bytes.Buffer, args map[string]string, page
 			ref.Analytics.Tags = make(map[string]string)
 		}
 
-		for k, v := range c.Analytics.Tags {
-			ref.Analytics.Tags[k] = v
-		}
+		maps.Copy(ref.Analytics.Tags, c.Analytics.Tags)
 
 		if c.Analytics.Experiment.Name != "" {
 			ref.Analytics.Experiment.Name = c.Analytics.Experiment.Name
@@ -382,9 +381,9 @@ func (cms *CMS) selectExperiments(w http.ResponseWriter, r *http.Request, page *
 
 	if err == nil {
 		updateCookie = false
-		kv := strings.Split(cookie.Value, ",")
+		kv := strings.SplitSeq(cookie.Value, ",")
 
-		for _, v := range kv {
+		for v := range kv {
 			if v != "" {
 				left, right, ok := strings.Cut(v, ":")
 
@@ -473,10 +472,7 @@ func (cms *CMS) pageView(r *http.Request, page *Content) {
 		page.Analytics.Tags = make(map[string]string)
 	}
 
-	for k, v := range page.SelectedExperiments {
-		page.Analytics.Tags[k] = v
-	}
-
+	maps.Copy(page.Analytics.Tags, page.SelectedExperiments)
 	go analytics.PageView(r, page.Analytics.Tags)
 }
 

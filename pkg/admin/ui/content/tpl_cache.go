@@ -3,6 +3,7 @@ package content
 import (
 	"encoding/json"
 	"log/slog"
+	"maps"
 	"os"
 	"path/filepath"
 	"slices"
@@ -135,11 +136,7 @@ func (c *TemplateCfgCache) GetPositions() map[string]string {
 	c.m.RLock()
 	defer c.m.RUnlock()
 	m := make(map[string]string)
-
-	for k, v := range c.positions {
-		m[k] = v
-	}
-
+	maps.Copy(m, c.positions)
 	return m
 }
 

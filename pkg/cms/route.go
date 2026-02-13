@@ -36,9 +36,9 @@ func NewRoute(raw string, content Content) (*Route, error) {
 
 	if strings.Contains(raw, "{") || strings.Contains(raw, "}") {
 		isRaw = false
-		parts := strings.Split(raw, "/")
+		parts := strings.SplitSeq(raw, "/")
 
-		for _, part := range parts {
+		for part := range parts {
 			if strings.HasPrefix(part, "{") {
 				if !strings.HasSuffix(part, "}") {
 					return nil, fmt.Errorf(ErrMatcherBrackets, raw)

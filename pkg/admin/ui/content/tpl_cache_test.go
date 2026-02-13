@@ -13,7 +13,7 @@ func TestTemplateCfgCache(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(n)
 
-	for i := 0; i < n; i++ {
+	for range n {
 		go func() {
 			go cache.Load()
 			assert.Len(t, cache.List(nil), 5)
@@ -30,7 +30,7 @@ func TestTemplateCfgCacheFiltered(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(n)
 
-	for i := 0; i < n; i++ {
+	for range n {
 		go func() {
 			go cache.Load()
 			assert.Len(t, cache.List([]string{"head", "end"}), 2)

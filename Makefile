@@ -8,6 +8,9 @@ deps:
 	go mod tidy
 	go mod vendor
 
+fix:
+	go fix ./...
+
 test:
 	go test -cover ./pkg/cfg
 	go test -cover -race ./...

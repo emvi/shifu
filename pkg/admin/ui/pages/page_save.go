@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 	"unicode"
@@ -298,11 +299,5 @@ func pageExists(name string) bool {
 		return false
 	}
 
-	for _, file := range files {
-		if file == name {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(files, name)
 }
