@@ -374,6 +374,7 @@ Elements and references on the page can only be edited if you add a template con
     "data": {
         "headline_size": {
             "label": "Headline Size",
+            "_type": "The field type can be either html, img, file, boolean, select, color, or text.",
             "type": "select",
             "_options": "A list of options for a select field.",
             "options": {
@@ -451,7 +452,7 @@ func main() {
 	// Optional custom router. The routes will be merged with the Shifu router.
 	router := chi.NewRouter()
 	router.Get("/example", func(w http.ResponseWriter, _ *http.Request) {
-		w.Write([]byte("Hello World!"))
+		_, _ = w.Write([]byte("Hello World!"))
 	})
 
 	// Set up Shifu from the content/dir directory.

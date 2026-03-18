@@ -6,7 +6,7 @@
 
         label {
             display: inline-block;
-            font-size: 10px;
+            font-size: 12px;
             text-transform: uppercase;
             margin: 0 0 2px 0;
             line-height: 1;
@@ -38,7 +38,7 @@
     select {
         width: 100%;
         padding: 4px 8px;
-        font-size: 12px;
+        font-size: 16px;
         border: 1px solid var(--border-inner);
         outline: none;
         background: var(--bg);
@@ -59,7 +59,7 @@
         color: var(--border);
         text-transform: uppercase;
         font-weight: bold;
-        font-size: 10px;
+        font-size: 12px;
         border: 1px solid var(--border);
         cursor: pointer;
         padding: 4px 6px;
@@ -96,7 +96,7 @@
 
     .error {
         color: #f00;
-        font-size: 10px;
+        font-size: 12px;
     }
 
     .edit {
@@ -128,7 +128,7 @@
         color: var(--bg);
         text-transform: uppercase;
         font-weight: bold;
-        font-size: 10px;
+        font-size: 12px;
         border: 1px solid var(--highlight);
         border-radius: 4px;
         cursor: pointer;

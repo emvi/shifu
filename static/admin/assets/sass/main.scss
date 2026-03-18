@@ -16,7 +16,7 @@ html.shifu {
 body.shifu {
     margin: 0;
     padding: 0;
-    font-size: 12px;
+    font-size: 16px;
     min-height: 100vh;
     background: var(--bg);
     box-sizing: border-box;
@@ -28,7 +28,7 @@ body.shifu {
 .shifu {
     @extend html, .shifu;
 
-    font-size: 12px;
+    font-size: 16px;
     color: var(--text);
 
     *,

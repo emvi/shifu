@@ -19,7 +19,7 @@ github.com/emvi/iso-639-1
 # github.com/emvi/null v1.3.1
 ## explicit
 github.com/emvi/null
-# github.com/evanw/esbuild v0.27.3
+# github.com/evanw/esbuild v0.27.4
 ## explicit; go 1.13
 github.com/evanw/esbuild/internal/api_helpers
 github.com/evanw/esbuild/internal/ast
@@ -82,7 +82,7 @@ github.com/klauspost/compress/internal/le
 github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
-# github.com/mattn/go-sqlite3 v1.14.34
+# github.com/mattn/go-sqlite3 v1.14.37
 ## explicit; go 1.19
 github.com/mattn/go-sqlite3
 # github.com/mitchellh/copystructure v1.2.0
@@ -91,7 +91,7 @@ github.com/mitchellh/copystructure
 # github.com/mitchellh/reflectwalk v1.0.2
 ## explicit
 github.com/mitchellh/reflectwalk
-# github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.4.0
+# github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.5.0
 ## explicit; go 1.21
 github.com/pirsch-analytics/pirsch-go-sdk/v2/pkg
 # github.com/pmezard/go-difflib v1.0.0
@@ -121,14 +121,14 @@ github.com/yuin/goldmark/renderer
 github.com/yuin/goldmark/renderer/html
 github.com/yuin/goldmark/text
 github.com/yuin/goldmark/util
-# golang.org/x/crypto v0.48.0
-## explicit; go 1.24.0
+# golang.org/x/crypto v0.49.0
+## explicit; go 1.25.0
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/scrypt
-# golang.org/x/sys v0.41.0
-## explicit; go 1.24.0
+# golang.org/x/sys v0.42.0
+## explicit; go 1.25.0
 golang.org/x/sys/unix
 golang.org/x/sys/windows
 # gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c

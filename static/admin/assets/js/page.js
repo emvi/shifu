@@ -102,6 +102,16 @@ window.shifuDeleteElement = function(selector) {
     }
 }
 
+window.shifuResetField = function(selector) {
+    const input = document.getElementById(selector);
+
+    if (input) {
+        input.value = "";
+    }
+
+    return false;
+}
+
 function decrementElementPathIndex(path) {
     const parts = path.split(".");
     parts[parts.length-1] = parseInt(parts[parts.length-1]) - 1;

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.2
+
+* added color field type
+* increased font size of admin UI
+* updated dependencies
+
 ## 1.3.1
 
 * applied go fix command

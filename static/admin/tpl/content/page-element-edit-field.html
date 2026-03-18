@@ -33,6 +33,10 @@
                 <option value="{{ $k }}" {{ if eq $value $k }}selected{{ end }}>{{ $v }}</option>
             {{ end }}
         </select>
+    {{ else if eq $cfg.Type "color" }}
+        <label for="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">{{ $cfg.Label }}</label>
+        <input id="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}" type="color" name="{{ $prefix }}{{ $language }}.{{ $field }}" value="{{ $value }}" />
+        <button onclick="return shifuResetField('{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}')">{{ i18n $lang "content_element_edit_reset_color" }}</button>
     {{ else }}
         <label for="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}">{{ $cfg.Label }}</label>
         <input id="{{ $idPrefix }}{{ $prefix }}{{ $language }}.{{ $field }}" type="text" name="{{ $prefix }}{{ $language }}.{{ $field }}" value="{{ $value }}" />

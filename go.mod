@@ -5,17 +5,17 @@ go 1.25.0
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/emvi/iso-639-1 v1.1.1
-	github.com/evanw/esbuild v0.27.3
+	github.com/evanw/esbuild v0.27.4
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/go-chi/chi/v5 v5.2.5
 	github.com/go-chi/cors v1.2.2
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/klauspost/compress v1.18.4
-	github.com/mattn/go-sqlite3 v1.14.34
-	github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.4.0
+	github.com/mattn/go-sqlite3 v1.14.37
+	github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.5.0
 	github.com/stretchr/testify v1.11.1
 	github.com/yuin/goldmark v1.7.16
-	golang.org/x/crypto v0.48.0
+	golang.org/x/crypto v0.49.0
 )
 
 require (
@@ -32,7 +32,7 @@ require (
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
-	golang.org/x/sys v0.41.0 // indirect
+	golang.org/x/sys v0.42.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
