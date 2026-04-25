@@ -2,6 +2,8 @@
 
 ## 1.4.0
 
+* added copying pages
+* fixed saving pages
 * updated dependencies
 
 ## 1.3.2

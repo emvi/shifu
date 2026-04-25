@@ -1,0 +1,9 @@
+{{ define "pages-page-copy-window-title" }}
+    <span>{{ i18n .Data.Lang "pages_copy_page_window_title" }}</span>
+{{ end }}
+
+{{ define "pages-page-copy-window-content" }}
+    {{ template "pages-page-copy-form.html" . }}
+{{ end }}
+
+{{ template "window.html" . }}
