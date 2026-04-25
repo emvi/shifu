@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0
+
+* updated dependencies
+
 ## 1.3.2
 
 * added color field type
