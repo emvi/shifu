@@ -1,0 +1,19 @@
+{{ define "page-reference-remove-window-title" }}
+    <span>{{ i18n .Data.Lang "content_reference_remove_window_title" }}</span>
+{{ end }}
+
+{{ define "page-reference-remove-window-content" }}
+    <p>{{ i18n .Data.Lang "content_reference_remove_confirm" }}</p>
+    <div class="shifu-toolbelt">
+        <button hx-post="{{ config.UI.Path }}/content/reference/remove?path={{ .Data.Path }}&element={{ .Data.Element }}&language={{ .Data.Language }}"
+                hx-target=".shifu-page-tree"
+                data-window="#shifu-page-reference-remove">
+            {{ i18n .Data.Lang "content_reference_remove_submit" }}
+        </button>
+        <button class="secondary shifu-window-close" hx-trigger="click">
+            {{ i18n .Data.Lang "cancel" }}
+        </button>
+    </div>
+{{ end }}
+
+{{ template "window.html" . }}

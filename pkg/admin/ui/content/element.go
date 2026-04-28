@@ -185,6 +185,17 @@ func deleteElement(content *cms.Content, path string) bool {
 	return false
 }
 
+func replaceElement(content *cms.Content, path string, element *cms.Content) bool {
+	parentElement, _, key, index := findParentElement(content, path)
+
+	if parentElement != nil {
+		parentElement.Content[key][index] = *element
+		return true
+	}
+
+	return false
+}
+
 func findParentElement(content *cms.Content, path string) (*cms.Content, string, string, int) {
 	if path == "" {
 		return nil, "", "", 0

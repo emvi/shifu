@@ -3,7 +3,9 @@
 ## 1.4.0
 
 * added copying pages
+* added dereferencing elements
 * fixed saving pages
+* increased icon and button sizes
 * updated dependencies
 
 ## 1.3.2

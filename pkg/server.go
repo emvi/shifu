@@ -293,6 +293,8 @@ func (server *Server) serveUI(router chi.Router) {
 			r.Route("/reference", func(r chi.Router) {
 				r.Get("/add", content.AddReference)
 				r.Post("/add", content.AddReference)
+				r.Get("/remove", content.RemoveReference)
+				r.Post("/remove", content.RemoveReference)
 			})
 			r.Get("/media", media.Selection)
 			r.Post("/media", media.Selection)
