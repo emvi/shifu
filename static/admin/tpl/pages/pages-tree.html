@@ -48,6 +48,12 @@
                                 {{ $entry.Name }}
                             </span>
                             <span>
+                                <img src="{{ config.UI.Path }}/static/icons/copy.svg"
+                                     alt=""
+                                     title="{{ i18n $lang "pages_tree_copy_page" }}"
+                                     hx-get="{{ config.UI.Path }}/pages/page/copy?path={{ $entry.Path }}"
+                                     hx-target="body"
+                                     hx-swap="beforeend" />
                                 <img src="{{ config.UI.Path }}/static/icons/delete.svg"
                                      alt=""
                                      title="{{ i18n $lang "pages_tree_delete_page" }}"

@@ -5,7 +5,7 @@
     }
 
     details > div {
-        margin-left: 14px;
+        margin-left: 16px;
     }
 
     &-element, &-container, &-ref {
@@ -13,7 +13,7 @@
 
         &::before {
             background-image: url("/shifu-admin/static/icons/cube.svg") !important;
-            background-size: 10px;
+            background-size: 12px;
 
             details {
                 &[open] > summary {

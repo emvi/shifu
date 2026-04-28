@@ -1,6 +1,7 @@
 package content
 
 import (
+	"errors"
 	htmlTpl "html/template"
 	"log/slog"
 	"net/http"
@@ -37,39 +38,11 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var parent *cms.Content
-	var parentPath string
-	filter := make([]string, 0)
-	positions := make(map[string]TemplateContent)
+	parent, parentPath, filter, positions, err := getParentAndPositions(page, elementPath)
 
-	if elementPath != "" {
-		var key string
-		var index int
-		parent, parentPath, key, index = findParentElement(page, elementPath)
-
-		if parent == nil {
-			slog.Debug("Parent element not found", "element", elementPath)
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		parent = &parent.Content[key][index]
-		parentName := parent.Tpl
-		parentTpl, found := tplCfgCache.GetTemplate(parentName)
-
-		if !found {
-			slog.Debug("Parent template not found", "name", parentName)
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		positions = parentTpl.Content
-
-		for _, c := range parentTpl.Content {
-			filter = append(filter, c.TplFilter...)
-		}
-	} else {
-		parent = page
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	if r.Method == http.MethodPost {
@@ -165,4 +138,41 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 			Positions: positions,
 		},
 	})
+}
+
+func getParentAndPositions(page *cms.Content, elementPath string) (*cms.Content, string, []string, map[string]TemplateContent, error) {
+	var parent *cms.Content
+	var parentPath string
+	filter := make([]string, 0)
+	positions := make(map[string]TemplateContent)
+
+	if elementPath != "" {
+		var key string
+		var index int
+		parent, parentPath, key, index = findParentElement(page, elementPath)
+
+		if parent == nil {
+			slog.Debug("Parent element not found", "element", elementPath)
+			return nil, "", nil, nil, errors.New("parent element not found")
+		}
+
+		parent = &parent.Content[key][index]
+		parentName := parent.Tpl
+		parentTpl, found := tplCfgCache.GetTemplate(parentName)
+
+		if !found {
+			slog.Debug("Parent template not found", "name", parentName)
+			return nil, "", nil, nil, errors.New("parent template not found")
+		}
+
+		positions = parentTpl.Content
+
+		for _, c := range parentTpl.Content {
+			filter = append(filter, c.TplFilter...)
+		}
+	} else {
+		parent = page
+	}
+
+	return parent, parentPath, filter, positions, nil
 }

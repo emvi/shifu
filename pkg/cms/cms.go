@@ -250,6 +250,20 @@ func (cms *CMS) LastUpdate() string {
 	return cms.source.LastUpdate().Format(time.RFC3339)
 }
 
+// GetReference returns the reference for given name.
+func (cms *CMS) GetReference(name string) *Content {
+	cms.m.RLock()
+	defer cms.m.RUnlock()
+	content, found := cms.refs[name]
+
+	if found {
+		c := content.Clone()
+		return &c
+	}
+
+	return nil
+}
+
 func (cms *CMS) renderContent(args map[string]string, page *Content, position string, content []Content) ([]byte, error) {
 	var buffer bytes.Buffer
 

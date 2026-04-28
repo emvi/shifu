@@ -269,6 +269,8 @@ func (server *Server) serveUI(router chi.Router) {
 				r.Get("/", pages.Page)
 				r.Get("/save", pages.SavePage)
 				r.Post("/save", pages.SavePage)
+				r.Get("/copy", pages.CopyPage)
+				r.Post("/copy", pages.CopyPage)
 				r.Get("/delete", pages.DeletePage)
 				r.Delete("/delete", pages.DeletePage)
 				r.Get("/json", pages.SaveJSON)
@@ -291,6 +293,8 @@ func (server *Server) serveUI(router chi.Router) {
 			r.Route("/reference", func(r chi.Router) {
 				r.Get("/add", content.AddReference)
 				r.Post("/add", content.AddReference)
+				r.Get("/remove", content.RemoveReference)
+				r.Post("/remove", content.RemoveReference)
 			})
 			r.Get("/media", media.Selection)
 			r.Post("/media", media.Selection)

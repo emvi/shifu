@@ -4,7 +4,10 @@
 
 <div id="{{ .Data.WindowOptions.ID }}"
      class="shifu shifu-window"
-     {{ if .Data.WindowOptions.MinWidth }}style="min-width: {{ .Data.WindowOptions.MinWidth }}px;"{{ end }}
+     {{ if or .Data.WindowOptions.MinWidth .Data.WindowOptions.MaxWidth }}
+        style="{{ if or .Data.WindowOptions.MinWidth }}min-width: {{ .Data.WindowOptions.MinWidth }}px;{{ end }}
+            {{ if or .Data.WindowOptions.MaxWidth }}max-width: {{ .Data.WindowOptions.MaxWidth }}px;{{ end }}"
+     {{ end }}
      hx-ext="response-targets">
     <div class="shifu-window-title">
         <div class="shifu-window-title-label">

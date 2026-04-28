@@ -85,6 +85,13 @@
                                              hx-get="{{ config.UI.Path }}/content/element/reference?path={{ $path }}&element={{ $p }}&language={{ $language }}"
                                              hx-target="body"
                                              hx-swap="beforeend" />
+                                    {{ else }}
+                                        <img src="{{ config.UI.Path }}/static/icons/frame-remove.svg"
+                                             alt=""
+                                             title="{{ i18n $lang "content_page_element_reference_remove" }}"
+                                             hx-get="{{ config.UI.Path }}/content/reference/remove?path={{ $path }}&element={{ $p }}&language={{ $language }}"
+                                             hx-target="body"
+                                             hx-swap="beforeend" />
                                     {{ end }}
 
                                     <img src="{{ config.UI.Path }}/static/icons/delete.svg"
