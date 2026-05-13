@@ -1,4 +1,4 @@
-.PHONY: demo deps test benchmark build_mac build_windows build_linux build_arm64 init
+.PHONY: demo deps fix pull test benchmark build_mac build_windows build_linux build_arm64 init
 
 demo:
 	modd
@@ -10,6 +10,9 @@ deps:
 
 fix:
 	go fix ./...
+
+pull:
+	git submodule update --init --recursive
 
 test:
 	go test -cover ./pkg/cfg
