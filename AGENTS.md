@@ -140,7 +140,7 @@ Minimal configuration for local development:
 `.secrets.env` (one `KEY=value` per line, referenced as `${KEY}` in `config.json`):
 
 ```env
-ADMIN_PASSWORD=change-me
+ADMIN_PASSWORD=admin
 ```
 
 Notes:
@@ -762,4 +762,3 @@ Before finishing, confirm:
 - [ ] JSON files are valid (e.g. `python3 -m json.tool file.json`).
 - [ ] `shifu run .` starts without "Error compiling sass", "Error compiling js", "Error rendering template" or "Error parsing website content file" in the log; no page shows `Reference "…" not found!` or `<nil>`.
 - [ ] Logged in at `/admin`, each element can be selected, edited, and new children can be added to every content area.
-- 
