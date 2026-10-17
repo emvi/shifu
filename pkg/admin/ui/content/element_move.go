@@ -41,8 +41,8 @@ func MoveElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if moveElement(target.Root, target.Path, d) {
-		if err := target.Save(); err != nil {
+	if moveElement(target.root, target.path, d) {
+		if err := target.save(); err != nil {
 			slog.Error("Error while saving page", "error", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return

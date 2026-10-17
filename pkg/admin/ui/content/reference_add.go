@@ -91,7 +91,7 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if target.IsRef() && refContains(reference, target.Ref) {
+		if target.isRef() && refContains(reference, target.ref) {
 			errs["reference"] = "a reference cannot contain itself"
 		}
 
@@ -114,7 +114,7 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 		element := addReference(parent, parentPath, position, reference)
 
 		if element != nil {
-			if err := target.Save(); err != nil {
+			if err := target.save(); err != nil {
 				slog.Error("Error while saving page", "error", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return

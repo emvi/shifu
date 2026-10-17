@@ -82,7 +82,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 		element := addElement(parent, parentPath, position, template, t.Positions())
 
 		if element != nil {
-			if err := target.Save(); err != nil {
+			if err := target.save(); err != nil {
 				slog.Error("Error while saving page", "error", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -148,7 +148,7 @@ func getParentAndPositions(page *cms.Content, elementPath string) (*elementTarge
 		return nil, nil, "", nil, nil, err
 	}
 
-	parent := target.Element()
+	parent := target.element()
 
 	if parent == nil {
 		slog.Debug("Parent element not found", "element", elementPath)

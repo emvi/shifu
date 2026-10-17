@@ -36,7 +36,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	element := target.Element()
+	element := target.element()
 
 	if element == nil {
 		slog.Error("Element not found", "path", elementPath)
@@ -47,10 +47,10 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 	// for references, the reference element on the page (or the parent reference) can override the copy and data
 	var refElement *elementTarget
 
-	if target.Path == "" && target.IsRef() {
+	if target.path == "" && target.isRef() {
 		refElement, err = resolveElementTarget(page, elementPath, false)
 
-		if err != nil || refElement.Element() == nil {
+		if err != nil || refElement.element() == nil {
 			slog.Error("Reference element not found", "error", err, "path", elementPath)
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -58,7 +58,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// when editing a reference directly (references window), there is no page to override the reference on
-	if refElement != nil && refElement.File == "" {
+	if refElement != nil && refElement.file == "" {
 		refElement = nil
 	}
 
@@ -81,8 +81,8 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		element.Copy = getCopyFromRequest(r, "copy.")
 		element.Data = getDataFromRequest(r, "data.")
 
-		if err := target.Save(); err != nil {
-			slog.Error("Error saving element", "error", err, "file", target.File)
+		if err := target.save(); err != nil {
+			slog.Error("Error saving element", "error", err, "file", target.file)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -91,12 +91,12 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		renderElement := element
 
 		if refElement != nil {
-			renderElement = refElement.Element()
+			renderElement = refElement.element()
 			renderElement.Copy = removeEmptyCopy(getCopyFromRequest(r, "override.copy."))
 			renderElement.Data = removeEmptyData(getDataFromRequest(r, "override.data."))
 
-			if err := refElement.Save(); err != nil {
-				slog.Error("Error saving reference overrides", "error", err, "file", refElement.File)
+			if err := refElement.save(); err != nil {
+				slog.Error("Error saving reference overrides", "error", err, "file", refElement.file)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
@@ -128,13 +128,13 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 	var overrideCopy, overrideData map[string]any
 
 	if refElement != nil {
-		overrideCopy = getCopy(refElement.Element(), "override.copy.")
-		overrideData = getData(refElement.Element(), "override.data.")
+		overrideCopy = getCopy(refElement.element(), "override.copy.")
+		overrideData = getData(refElement.element(), "override.data.")
 	}
 
 	windowTitleTpl := "page-element-edit-window-title"
 
-	if target.IsRef() {
+	if target.isRef() {
 		windowTitleTpl = "page-element-edit-window-title-override"
 	}
 
@@ -172,7 +172,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 		Languages:    getPageLanguages(page),
 		Copy:         getCopy(element, "copy."),
 		Data:         getData(element, "data."),
-		Override:     target.IsRef(),
+		Override:     target.isRef(),
 		ShowOverride: refElement != nil,
 		OverrideCopy: overrideCopy,
 		OverrideData: overrideData,

@@ -29,10 +29,10 @@ func TestReferenceTree(t *testing.T) {
 	// the reference can be edited, the virtual page cannot be saved
 	target, err := resolveElementTarget(page, "content.0", true)
 	assert.NoError(t, err)
-	assert.Equal(t, "slider", target.Ref)
+	assert.Equal(t, "slider", target.ref)
 	target, err = resolveElementTarget(page, "content.0", false)
 	assert.NoError(t, err)
-	assert.Error(t, target.Save())
+	assert.Error(t, target.save())
 
 	w := httptest.NewRecorder()
 	Reference(w, httptest.NewRequest("GET", "/refs/ref?path=/slider.json", nil))
