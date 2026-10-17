@@ -224,6 +224,7 @@ Every editable element template must:
    ```
    The `<area>` string must be identical in all three places (position suffix,
    `index` key, slot name) and in the admin config's `content` keys.
+   Only render `<slot>` if the visitor is signed in.
 3. Read every editable value through `copy` (translatable text) or `get` (data), and
    handle missing values — new elements added in the admin start **empty**.
 
@@ -251,7 +252,10 @@ Container with child elements — `tpl/sections/cards.html`:
     {{ with $headline }}<h2 class="cards__headline">{{ . }}</h2>{{ end }}
     <div class="cards__grid">
         {{ .CMS.Render .Args .Page (fmt "%s.items" .Content.Position) (index .Content.Content "items") }}
-        <slot name="{{ .Content.Position }}/items"></slot>
+
+        {{ if loggedIn }}
+            <slot name="{{ .Content.Position }}/items"></slot>
+        {{ end }}
     </div>
 </section>
 ```
@@ -278,11 +282,17 @@ Multiple content areas (e.g. two columns) — `tpl/sections/columns.html`:
 <section class="columns" data-shifu-element="{{ .Content.Position }}">
     <div class="columns__col">
         {{ .CMS.Render .Args .Page (fmt "%s.left" .Content.Position) (index .Content.Content "left") }}
-        <slot name="{{ .Content.Position }}/left"></slot>
+
+        {{ if loggedIn }}
+            <slot name="{{ .Content.Position }}/left"></slot>
+        {{ end }}
     </div>
     <div class="columns__col">
         {{ .CMS.Render .Args .Page (fmt "%s.right" .Content.Position) (index .Content.Content "right") }}
-        <slot name="{{ .Content.Position }}/right"></slot>
+
+        {{ if loggedIn }}
+            <slot name="{{ .Content.Position }}/right"></slot>
+        {{ end }}
     </div>
 </section>
 ```
