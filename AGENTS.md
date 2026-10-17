@@ -102,37 +102,53 @@ Minimal configuration for local development:
 
 ```json
 {
-    "dev": true,
+    "dev": ${DEV},
     "log_level": "info",
     "server": {
-        "host": "localhost",
-        "port": 8080,
-        "hostname": "http://localhost:8080"
+        "host": "${HOST}",
+        "port": ${PORT},
+        "secure_cookies": true,
+        "hostname": "${HOSTNAME}"
+    },
+    "api": {
+        "secret": "${API_SECRET}"
+    },
+    "remote": {
+        "url": "https://sika.emvi.com",
+        "secret": "${API_SECRET}"
+    },
+    "git": {
+        "update_seconds": 600,
+        "repository": "${GITHUB_REPO}"
     },
     "content": {
-        "provider": "fs",
+        "provider": "git",
         "not_found": {
-            "en": "/not-found",
-            "de": "/de/nicht-gefunden"
+            "en": "/not-found"
         }
     },
     "sass": {
         "dir": "assets/scss",
         "entrypoint": "main.scss",
-        "out": "static/main.css",
-        "out_source_map": "static/main.css.map",
-        "watch": true
+        "out": "static/bundle.css",
+        "out_source_map": "static/bundle.css.map",
+        "watch": true,
+        "compiler": "sass"
     },
     "js": {
         "dir": "assets/js",
         "entrypoint": "main.js",
-        "out": "static/main.js",
+        "out": "static/bundle.js",
         "source_map": true,
         "watch": true
     },
     "ui": {
         "path": "/admin",
         "admin_password": "${ADMIN_PASSWORD}"
+    },
+    "_analytics": {
+        "provider": "pirsch",
+        "client_secret": "${PIRSCH_CLIENT_SECRET}"
     }
 }
 ```
@@ -140,7 +156,14 @@ Minimal configuration for local development:
 `.secrets.env` (one `KEY=value` per line, referenced as `${KEY}` in `config.json`):
 
 ```env
+DEV=true
+HOST=localhost
+PORT=8080
+HOSTNAME=localost:8080
+API_SECRET=
+GITHUB_REPO=
 ADMIN_PASSWORD=admin
+PIRSCH_CLIENT_SECRET=
 ```
 
 Notes:
@@ -151,7 +174,7 @@ Notes:
   `secure_cookies: true`.
 * Keys starting with `_` are treated as comments by convention (they are ignored).
 * Optional sections (`api`, `remote`, `git`, `analytics`, `cors`) are documented in
-  the Shifu README — only add them when asked.
+  the Shifu README — only modify them when asked.
 * Run with `shifu run .` (requires the `sass` CLI: `npm i -g sass`). JS needs no
   Node.js, esbuild is built in.
 

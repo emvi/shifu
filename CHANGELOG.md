@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.0
+
+* added AGENTS.md
+* updated dependencies
+
 ## 1.4.0
 
 * added copying pages
