@@ -2,6 +2,7 @@
 
 ## 1.5.0
 
+* improved admin UI design
 * added AGENTS.md
 * updated dependencies
 
