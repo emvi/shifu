@@ -39,9 +39,16 @@ func RemoveReference(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		element := findElement(page, elementPath)
+		target, err := resolveElementTarget(page, elementPath, false)
 
-		if element == nil || element.Ref == "" {
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		element := target.Element()
+
+		if element == nil || element.Ref == "" || target.Path == "" {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -100,12 +107,12 @@ func RemoveReference(w http.ResponseWriter, r *http.Request) {
 		ref.Position = elementPath
 
 		// replace element and save page
-		if !replaceElement(page, elementPath, ref) {
+		if !replaceElement(target.Root, target.Path, ref) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
-		if err := shared.SavePage(page, fullPath); err != nil {
+		if err := target.Save(); err != nil {
 			slog.Error("Error saving page while replacing reference", "error", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return

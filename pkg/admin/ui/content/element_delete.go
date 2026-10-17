@@ -24,8 +24,16 @@ func DeleteElement(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if deleteElement(page, elementPath) {
-			if err := shared.SavePage(page, fullPath); err != nil {
+		target, err := resolveElementTarget(page, elementPath, false)
+
+		if err != nil {
+			slog.Debug("Error resolving element", "error", err, "path", elementPath)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		if deleteElement(target.Root, target.Path) {
+			if err := target.Save(); err != nil {
 				slog.Error("Error saving page while removing element", "error", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return

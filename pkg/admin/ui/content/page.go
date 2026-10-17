@@ -55,13 +55,11 @@ func Page(w http.ResponseWriter, r *http.Request) {
 			MinWidth:   300,
 			Lang:       lang,
 		},
-		PageTree: PageTree{
-			Language:  shared.GetLanguage(r),
-			Lang:      lang,
-			Path:      path,
-			Page:      page,
-			Positions: tplCfgCache.GetPositions(),
-		},
+		Language:  shared.GetLanguage(r),
+		Lang:      lang,
+		Path:      path,
+		Page:      page,
+		Positions: tplCfgCache.GetPositions(),
 	})
 }
 
@@ -70,34 +68,49 @@ func getPagePath(path string) string {
 }
 
 func setTemplateNames(content *cms.Content) {
+	setTemplateNamesDepth(content, 0)
+}
+
+func setTemplateNamesDepth(content *cms.Content, depth int) {
 	for k, v := range content.Content {
 		for i := range v {
-			var name TemplateConfig
-			var found bool
+			element := &content.Content[k][i]
 
-			if content.Content[k][i].Tpl != "" {
-				name, found = tplCfgCache.GetTemplate(content.Content[k][i].Tpl)
-
-				if found {
-					content.Content[k][i].Tpl = name.Label
-				}
-			} else {
-				// FIXME optimize
-				ref, err := loadRef(content.Content[k][i].Ref)
+			if element.Ref != "" {
+				ref, err := loadRef(element.Ref)
 
 				if err != nil {
-					slog.Error("Error loading reference file", "error", err)
+					slog.Error("Error loading reference file", "error", err, "ref", element.Ref)
 					continue
 				}
 
-				name, found = tplCfgCache.GetTemplate(ref.Tpl)
+				name, found := tplCfgCache.GetTemplate(ref.Tpl)
 
 				if found {
-					content.Content[k][i].Tpl = fmt.Sprintf("%s (%s)", name.Label, name.Name)
+					element.Tpl = fmt.Sprintf("%s (%s)", name.Label, element.Ref)
 				}
-			}
 
-			setTemplateNames(&content.Content[k][i])
+				if element.DisplayName == "" {
+					element.DisplayName = ref.DisplayName
+				}
+
+				// show the children of the reference
+				if depth < maxRefDepth {
+					element.Content = ref.Content
+				} else {
+					element.Content = nil
+				}
+
+				setTemplateNamesDepth(element, depth+1)
+			} else {
+				name, found := tplCfgCache.GetTemplate(element.Tpl)
+
+				if found {
+					element.Tpl = name.Label
+				}
+
+				setTemplateNamesDepth(element, depth)
+			}
 		}
 	}
 }

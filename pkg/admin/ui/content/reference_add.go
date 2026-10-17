@@ -44,7 +44,7 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	parent, parentPath, filter, positions, err := getParentAndPositions(page, elementPath)
+	target, parent, parentPath, filter, positions, err := getParentAndPositions(page, elementPath)
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -91,10 +91,30 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		if target.IsRef() && refContains(reference, target.Ref) {
+			errs["reference"] = "a reference cannot contain itself"
+		}
+
+		if len(errs) > 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			tpl.Get().Execute(w, "page-reference-add-form.html", AddReferenceData{
+				Language:   shared.GetLanguage(r),
+				Lang:       tpl.GetUILanguage(r),
+				Path:       path,
+				Element:    elementPath,
+				References: getReferences(filter),
+				Positions:  positions,
+				Reference:  reference,
+				Position:   position,
+				Errors:     errs,
+			})
+			return
+		}
+
 		element := addReference(parent, parentPath, position, reference)
 
 		if element != nil {
-			if err := shared.SavePage(page, fullPath); err != nil {
+			if err := target.Save(); err != nil {
 				slog.Error("Error while saving page", "error", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -141,14 +161,12 @@ func AddReference(w http.ResponseWriter, r *http.Request) {
 			Overlay:    true,
 			Lang:       lang,
 		},
-		AddReferenceData: AddReferenceData{
-			Language:   shared.GetLanguage(r),
-			Lang:       lang,
-			Path:       path,
-			Element:    elementPath,
-			References: getReferences(filter),
-			Positions:  positions,
-		},
+		Language:   shared.GetLanguage(r),
+		Lang:       lang,
+		Path:       path,
+		Element:    elementPath,
+		References: getReferences(filter),
+		Positions:  positions,
 	})
 }
 
@@ -168,7 +186,6 @@ func getReferences(filter []string) []Ref {
 			slog.Error("Error reading reference", "error", err)
 		}
 
-		// FIXME optimize
 		ref, err := loadRef(entity.Name)
 
 		if err != nil {

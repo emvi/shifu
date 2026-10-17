@@ -111,6 +111,7 @@
             list-style: none;
             border-bottom: 1px solid var(--shifu-border);
             padding: 6px 24px 6px 0;
+            margin: 0 0 12px;
             cursor: pointer;
             user-select: none;
             font-weight: 500;
@@ -140,6 +141,24 @@
         &[open] > summary::after {
             transform: translateY(-50%);
         }
+
+        &:not([open]) > summary {
+            margin-bottom: 0;
+        }
+    }
+
+    details.shifu-override {
+        margin-top: 24px;
+
+        & > summary,
+        & > summary:hover {
+            color: var(--shifu-highlight);
+        }
+    }
+
+    .shifu-override-hint {
+        display: block;
+        margin: 0 0 12px;
     }
 
     figure {

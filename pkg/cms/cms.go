@@ -264,6 +264,18 @@ func (cms *CMS) GetReference(name string) *Content {
 	return nil
 }
 
+// SetReference updates the in-memory reference for given name.
+// This is used by the admin UI to render changes to a reference immediately, before the content has been reloaded.
+func (cms *CMS) SetReference(name string, ref *Content) {
+	if ref == nil {
+		return
+	}
+
+	cms.m.Lock()
+	defer cms.m.Unlock()
+	cms.refs[strings.ToLower(name)] = ref.Clone()
+}
+
 func (cms *CMS) renderContent(args map[string]string, page *Content, position string, content []Content) ([]byte, error) {
 	var buffer bytes.Buffer
 

@@ -38,7 +38,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	parent, parentPath, filter, positions, err := getParentAndPositions(page, elementPath)
+	target, parent, parentPath, filter, positions, err := getParentAndPositions(page, elementPath)
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -82,7 +82,7 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 		element := addElement(parent, parentPath, position, template, t.Positions())
 
 		if element != nil {
-			if err := shared.SavePage(page, fullPath); err != nil {
+			if err := target.Save(); err != nil {
 				slog.Error("Error while saving page", "error", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -129,40 +129,38 @@ func AddElement(w http.ResponseWriter, r *http.Request) {
 			Overlay:    true,
 			Lang:       lang,
 		},
-		AddElementData: AddElementData{
-			Language:  shared.GetLanguage(r),
-			Lang:      lang,
-			Path:      path,
-			Element:   elementPath,
-			Templates: tplCfgCache.List(filter),
-			Positions: positions,
-		},
+		Language:  shared.GetLanguage(r),
+		Lang:      lang,
+		Path:      path,
+		Element:   elementPath,
+		Templates: tplCfgCache.List(filter),
+		Positions: positions,
 	})
 }
 
-func getParentAndPositions(page *cms.Content, elementPath string) (*cms.Content, string, []string, map[string]TemplateContent, error) {
-	var parent *cms.Content
-	var parentPath string
+func getParentAndPositions(page *cms.Content, elementPath string) (*elementTarget, *cms.Content, string, []string, map[string]TemplateContent, error) {
 	filter := make([]string, 0)
 	positions := make(map[string]TemplateContent)
+	target, err := resolveElementTarget(page, elementPath, true)
+
+	if err != nil {
+		slog.Debug("Error resolving parent element", "element", elementPath, "error", err)
+		return nil, nil, "", nil, nil, err
+	}
+
+	parent := target.Element()
+
+	if parent == nil {
+		slog.Debug("Parent element not found", "element", elementPath)
+		return nil, nil, "", nil, nil, errors.New("parent element not found")
+	}
 
 	if elementPath != "" {
-		var key string
-		var index int
-		parent, parentPath, key, index = findParentElement(page, elementPath)
-
-		if parent == nil {
-			slog.Debug("Parent element not found", "element", elementPath)
-			return nil, "", nil, nil, errors.New("parent element not found")
-		}
-
-		parent = &parent.Content[key][index]
-		parentName := parent.Tpl
-		parentTpl, found := tplCfgCache.GetTemplate(parentName)
+		parentTpl, found := tplCfgCache.GetTemplate(parent.Tpl)
 
 		if !found {
-			slog.Debug("Parent template not found", "name", parentName)
-			return nil, "", nil, nil, errors.New("parent template not found")
+			slog.Debug("Parent template not found", "name", parent.Tpl)
+			return nil, nil, "", nil, nil, errors.New("parent template not found")
 		}
 
 		positions = parentTpl.Content
@@ -170,9 +168,7 @@ func getParentAndPositions(page *cms.Content, elementPath string) (*cms.Content,
 		for _, c := range parentTpl.Content {
 			filter = append(filter, c.TplFilter...)
 		}
-	} else {
-		parent = page
 	}
 
-	return parent, parentPath, filter, positions, nil
+	return target, parent, elementPath, filter, positions, nil
 }

@@ -36,9 +36,16 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	element := findElement(page, elementPath)
+	target, err := resolveElementTarget(page, elementPath, false)
 
-	if element == nil {
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	element := target.Element()
+
+	if element == nil || target.Path == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -81,8 +88,8 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if setElement(page, elementPath, &cms.Content{Ref: name}) {
-			if err := shared.SavePage(page, fullPath); err != nil {
+		if setElement(target.Root, target.Path, &cms.Content{Ref: name}) {
+			if err := target.Save(); err != nil {
 				slog.Error("Error while saving page", "error", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
