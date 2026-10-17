@@ -12,6 +12,7 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/emvi/shifu/pkg/admin"
 	"github.com/emvi/shifu/pkg/admin/db"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
@@ -20,16 +21,12 @@ import (
 	"github.com/emvi/shifu/pkg/cms"
 )
 
-const (
-	refsDir = "content/refs"
-)
-
 // CreateReference creates a new reference for the given element.
 func CreateReference(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
 	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
 	fullPath := getPagePath(path)
-	page, err := shared.LoadPage(r, fullPath, "")
+	page, err := loadDocument(r, fullPath, "")
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
@@ -172,8 +169,8 @@ func templateExists(name string) bool {
 }
 
 func createReference(element *cms.Content, name string) error {
-	if _, err := os.Stat(filepath.Join(cfg.Get().BaseDir, refsDir)); os.IsNotExist(err) {
-		if err := os.MkdirAll(filepath.Join(cfg.Get().BaseDir, refsDir), os.ModePerm); err != nil {
+	if _, err := os.Stat(filepath.Join(cfg.Get().BaseDir, admin.RefsDir)); os.IsNotExist(err) {
+		if err := os.MkdirAll(filepath.Join(cfg.Get().BaseDir, admin.RefsDir), os.ModePerm); err != nil {
 			return err
 		}
 	}
@@ -184,7 +181,7 @@ func createReference(element *cms.Content, name string) error {
 		return err
 	}
 
-	if err := os.WriteFile(filepath.Join(cfg.Get().BaseDir, refsDir, fmt.Sprintf("%s.json", name)), out, 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(cfg.Get().BaseDir, admin.RefsDir, fmt.Sprintf("%s.json", name)), out, 0644); err != nil {
 		return err
 	}
 

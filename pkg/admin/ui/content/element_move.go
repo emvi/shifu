@@ -15,7 +15,7 @@ func MoveElement(w http.ResponseWriter, r *http.Request) {
 	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
 	direction := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("direction")))
 	fullPath := getPagePath(path)
-	page, err := shared.LoadPage(r, fullPath, shared.GetLanguage(r))
+	page, err := loadDocument(r, fullPath, shared.GetLanguage(r))
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)

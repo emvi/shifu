@@ -8,6 +8,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/emvi/shifu/pkg/admin"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 	"github.com/emvi/shifu/pkg/cfg"
@@ -40,7 +41,7 @@ func References(w http.ResponseWriter, r *http.Request) {
 }
 
 func listReferences(w http.ResponseWriter) []Entry {
-	dir := filepath.Join(cfg.Get().BaseDir, refsDir)
+	dir := filepath.Join(cfg.Get().BaseDir, admin.RefsDir)
 
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		if err := os.MkdirAll(dir, os.ModePerm); err != nil {

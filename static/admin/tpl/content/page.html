@@ -3,7 +3,7 @@
 {{ end }}
 
 {{ define "page-window-content" }}
-    <div class="shifu-tree shifu-page-tree">
+    <div class="shifu-tree shifu-page-tree" id="{{ treeID .Data.Path }}">
         {{ template "page-tree.html" . }}
     </div>
 {{ end }}

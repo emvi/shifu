@@ -20,7 +20,7 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
 	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
 	fullPath := getPagePath(path)
-	page, err := shared.LoadPage(r, fullPath, shared.GetLanguage(r))
+	page, err := loadDocument(r, fullPath, shared.GetLanguage(r))
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
@@ -55,6 +55,11 @@ func EditElement(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
+	}
+
+	// when editing a reference directly (references window), there is no page to override the reference on
+	if refElement != nil && refElement.File == "" {
+		refElement = nil
 	}
 
 	config, found := tplCfgCache.GetTemplate(element.Tpl)

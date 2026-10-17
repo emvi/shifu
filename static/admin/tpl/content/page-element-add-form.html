@@ -4,7 +4,7 @@
 <form method="post"
       hx-post="{{ config.UI.Path }}/content/element/add?path={{ .Data.Path }}&element={{ .Data.Element }}&language={{ .Data.Language }}"
       hx-swap="outerHTML"
-      hx-target=".shifu-page-tree"
+      hx-target="#{{ treeID .Data.Path }}"
       hx-target-4*="this"
       data-window="#shifu-page-element-add">
     <fieldset>

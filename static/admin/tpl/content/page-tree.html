@@ -5,10 +5,12 @@
     {{ $parentPath := index . "p" }}
     {{ $lang := index . "lang" }}
     {{ $pos := index . "pos" }}
+    {{/* when editing a reference, the reference itself is the only root element and cannot be moved or removed */}}
+    {{ $locked := and (isRefPath $path) (eq $parentPath "") }}
 
     {{ range $content, $elements := $content }}
         <div>
-            <small>
+            <small {{ if $locked }}hidden{{ end }}>
                 {{ $posLabel := index $pos $content }}
                 
                 {{ if $posLabel }}
@@ -64,18 +66,19 @@
                                              hx-swap="beforeend" />
                                     {{ end }}
 
+                                    {{ if not $locked }}
                                     <img src="{{ config.UI.Path }}/static/icons/chevron.svg"
                                          alt=""
                                          title="{{ i18n $lang "content_page_element_move_up" }}"
                                          hx-post="{{ config.UI.Path }}/content/element/move?path={{ $path }}&element={{ $p }}&direction=up&language={{ $language }}"
-                                         hx-target=".shifu-page-tree"
+                                         hx-target="#{{ treeID $path }}"
                                          hx-swap="innerHTML" />
                                     <img src="{{ config.UI.Path }}/static/icons/chevron.svg"
                                          alt=""
                                          title="{{ i18n $lang "content_page_element_move_down" }}"
                                          style="transform: rotate(180deg);"
                                          hx-post="{{ config.UI.Path }}/content/element/move?path={{ $path }}&element={{ $p }}&direction=down&language={{ $language }}"
-                                         hx-target=".shifu-page-tree"
+                                         hx-target="#{{ treeID $path }}"
                                          hx-swap="innerHTML" />
 
                                     {{ if not $element.Ref }}
@@ -100,6 +103,7 @@
                                          hx-get="{{ config.UI.Path }}/content/element/delete?path={{ $path }}&element={{ $p }}&language={{ $language }}"
                                          hx-target="body"
                                          hx-swap="beforeend" />
+                                    {{ end }}
                                 </span>
                             </summary>
 
@@ -122,7 +126,7 @@
     {{ end }}
 {{ end }}
 
-<div id="page-element-tree" style="margin-bottom: 8px;">
+<div id="{{ treeID .Data.Path }}-elements" style="margin-bottom: 8px;">
     {{
         template "page-element-tree"
             dict "language" .Data.Language
@@ -133,30 +137,33 @@
                 "pos" .Data.Positions
     }}
 </div>
-<div class="shifu-toolbelt" style="flex-direction: column;align-items: flex-start;">
-    <button title="{{ i18n .Data.Lang "content_page_element_add" }}"
-            hx-get="{{ config.UI.Path }}/content/element/add?path={{ .Data.Path }}&language={{ .Data.Language }}"
-            hx-target="body"
-            hx-swap="beforeend">
-        <img src="{{ config.UI.Path }}/static/icons/cube.svg" alt="" />
-        {{ i18n .Data.Lang "content_page_element_add" }}
-    </button>
-    <button title="{{ i18n .Data.Lang "content_page_reference_add" }}"
-            hx-get="{{ config.UI.Path }}/content/reference/add?path={{ .Data.Path }}&language={{ .Data.Language }}"
-            hx-target="body"
-            hx-swap="beforeend">
-        <img src="{{ config.UI.Path }}/static/icons/frame.svg" alt="" />
-        {{ i18n .Data.Lang "content_page_reference_add" }}
-    </button>
-</div>
 
-{{ if .Data.AddElement }}
+{{ if not (isRefPath .Data.Path) }}
+    <div class="shifu-toolbelt" style="flex-direction: column;align-items: flex-start;">
+        <button title="{{ i18n .Data.Lang "content_page_element_add" }}"
+                hx-get="{{ config.UI.Path }}/content/element/add?path={{ .Data.Path }}&language={{ .Data.Language }}"
+                hx-target="body"
+                hx-swap="beforeend">
+            <img src="{{ config.UI.Path }}/static/icons/cube.svg" alt="" />
+            {{ i18n .Data.Lang "content_page_element_add" }}
+        </button>
+        <button title="{{ i18n .Data.Lang "content_page_reference_add" }}"
+                hx-get="{{ config.UI.Path }}/content/reference/add?path={{ .Data.Path }}&language={{ .Data.Language }}"
+                hx-target="body"
+                hx-swap="beforeend">
+            <img src="{{ config.UI.Path }}/static/icons/frame.svg" alt="" />
+            {{ i18n .Data.Lang "content_page_reference_add" }}
+        </button>
+    </div>
+{{ end }}
+
+{{ if and .Data.AddElement (not (isRefPath .Data.Path)) }}
     <template id="shifu-new-element">
         {{ .Data.AddElement }}
     </template>
 {{ end }}
 
-{{ if .Data.UpdateElement }}
+{{ if and .Data.UpdateElement (not (isRefPath .Data.Path)) }}
     <template id="shifu-update-element">
         {{ .Data.UpdateElement }}
     </template>
@@ -164,29 +171,32 @@
 
 <script>
     (function(){
-        shifuTree("page-element-tree");
+        shifuTree("{{ treeID .Data.Path }}-elements");
 
-        document.querySelectorAll(".shifu-page-tree img").forEach(e => {
+        document.querySelectorAll("#{{ treeID .Data.Path }} img").forEach(e => {
             e.addEventListener("click", e => {
                 e.preventDefault();
                 e.stopPropagation();
             });
         });
 
-        {{ if .Data.DeleteElement }}
-            shifuDeleteElement("{{ .Data.DeleteElement }}");
-        {{ end }}
+        {{/* update the website when editing a page (not when editing a reference in the references window) */}}
+        {{ if not (isRefPath .Data.Path) }}
+            {{ if .Data.DeleteElement }}
+                shifuDeleteElement("{{ .Data.DeleteElement }}");
+            {{ end }}
 
-        {{ if .Data.AddElement }}
-            shifuAddElement("{{ .Data.ParentElement }}", "{{ .Data.ElementPosition }}");
-        {{ end }}
+            {{ if .Data.AddElement }}
+                shifuAddElement("{{ .Data.ParentElement }}", "{{ .Data.ElementPosition }}");
+            {{ end }}
 
-        {{ if .Data.UpdateElement }}
-            shifuUpdateElement("{{ .Data.ElementPosition }}");
-        {{ end }}
+            {{ if .Data.UpdateElement }}
+                shifuUpdateElement("{{ .Data.ElementPosition }}");
+            {{ end }}
 
-        {{ if .Data.MoveElement }}
-            shifuMoveElement("{{ .Data.MoveElement }}", "{{ .Data.ElementDirection }}");
+            {{ if .Data.MoveElement }}
+                shifuMoveElement("{{ .Data.MoveElement }}", "{{ .Data.ElementDirection }}");
+            {{ end }}
         {{ end }}
     })();
 </script>

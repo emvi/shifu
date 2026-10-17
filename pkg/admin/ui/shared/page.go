@@ -26,27 +26,29 @@ func LoadPage(r *http.Request, path, language string) (*cms.Content, error) {
 	}
 
 	page.File = path
+	SetLanguage(r, &page, language)
+	return &page, nil
+}
 
-	// The language must set when adding or updating an element to response in the displayed language.
-	// Otherwise, setting the language explicitly isn't required. Extracting it from the request is just a "fallback".
-	if language == "" {
-		languages := cms.GetAcceptedLanguages(r)
-
-		for _, lang := range languages {
-			if _, ok := page.Path[lang]; ok {
-				page.Language = lang
-				break
-			}
-		}
-
-		if page.Language == "" {
-			page.Language = "en"
-		}
-	} else {
+// SetLanguage sets the language of the page.
+// The language must set when adding or updating an element to response in the displayed language.
+// Otherwise, setting the language explicitly isn't required. Extracting it from the request is just a "fallback".
+func SetLanguage(r *http.Request, page *cms.Content, language string) {
+	if language != "" {
 		page.Language = language
+		return
 	}
 
-	return &page, nil
+	page.Language = ""
+
+	for _, lang := range cms.GetAcceptedLanguages(r) {
+		if _, ok := page.Path[lang]; ok {
+			page.Language = lang
+			return
+		}
+	}
+
+	page.Language = "en"
 }
 
 // SavePage saves a page to the given path.

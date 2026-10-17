@@ -6,7 +6,7 @@
     <p>{{ i18n .Data.Lang "content_element_delete_confirm" }}</p>
     <div class="shifu-toolbelt">
         <button hx-delete="{{ config.UI.Path }}/content/element/delete?path={{ .Data.Path }}&element={{ .Data.Element }}&language={{ .Data.Language }}"
-                hx-target=".shifu-page-tree"
+                hx-target="#{{ treeID .Data.Path }}"
                 data-window="#shifu-page-element-delete">
             {{ i18n .Data.Lang "content_element_delete_submit" }}
         </button>

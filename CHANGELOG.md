@@ -6,6 +6,7 @@
 * referenced elements can now be directly edited from the page tree
 * referenced elements now show fields to overwrite copy and variables
 * referenced element children can now be edited from the page tree
+* references can now be edited from the references window without using JSON
 * added AGENTS.md
 * updated dependencies
 

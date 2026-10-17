@@ -303,7 +303,6 @@ func (server *Server) serveUI(router chi.Router) {
 		r.Route("/refs", func(r chi.Router) {
 			r.Route("/ref", func(r chi.Router) {
 				r.Get("/", content.Reference)
-				r.Post("/", content.Reference)
 				r.Get("/delete", content.DeleteReference)
 				r.Delete("/delete", content.DeleteReference)
 			})

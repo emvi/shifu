@@ -52,12 +52,16 @@ func (t *elementTarget) IsRef() bool {
 // References are updated in memory as well, so that they can be rendered right away.
 func (t *elementTarget) Save() error {
 	if t.IsRef() {
-		if err := saveRef(t.Root, t.File); err != nil {
+		if err := shared.SavePage(t.Root, t.File); err != nil {
 			return err
 		}
 
 		content.SetReference(t.Ref, t.Root)
 		return nil
+	}
+
+	if t.File == "" {
+		return errors.New("the document cannot be saved")
 	}
 
 	return shared.SavePage(t.Root, t.File)
