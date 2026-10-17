@@ -1,72 +1,83 @@
+@use "vars" as *;
+
 .shifu {
     p {
-        margin: 0 0 12px 0;
+        margin: 0 0 12px;
         padding: 0;
+    }
+
+    small {
+        font-size: $font-size-small;
+        color: var(--shifu-text-muted);
+    }
+
+    strong, b {
+        font-weight: 600;
     }
 
     hr {
         height: 1px;
-        background: var(--border-inner);
-        margin: 12px -12px 8px -12px;
-        border-width: 0;
+        background: var(--shifu-border);
+        margin: 12px -12px 10px;
+        border: 0;
     }
 
     a {
-        color: var(--border);
-        opacity: 0.7;
+        color: var(--shifu-accent);
         text-decoration: none;
+        cursor: pointer;
+        transition: color $transition, opacity $transition;
 
-        &:hover {
-            opacity: 1;
+        &:hover,
+        &:focus-visible {
+            color: var(--shifu-text);
+            text-decoration: underline;
+            text-underline-offset: 2px;
         }
+    }
+
+    img {
+        display: inline-block;
+        height: auto;
+        border: 0;
     }
 
     table {
         width: 100%;
         border-collapse: separate;
         border-spacing: 0;
+        border: 1px solid var(--shifu-border);
+        border-radius: $radius;
+        overflow: hidden;
+        font-size: 13px;
 
-        tr:hover td {
-            background: var(--highlight);
-            color: var(--bg);
+        td, th {
+            padding: 4px 8px;
+            text-align: left;
+            vertical-align: middle;
+            border: 0;
+            border-bottom: 1px solid var(--shifu-border);
+            background: transparent;
+            color: inherit;
+            transition: background-color $transition;
         }
 
-        td {
-            padding: 4px;
-            border-style: solid;
-            border-color: var(--border-inner);
-            border-width: 0 0 1px 1px;
+        tbody tr:last-child td {
+            border-bottom: 0;
         }
 
-        td:last-child {
-            border-width: 0 1px 1px 1px;
-        }
-
-        tbody {
-            tr:last-child td:first-child {
-                border-radius: 0 0 0 4px;
-            }
-
-            tr:last-child td:last-child {
-                border-radius: 0 0 4px 0;
-            }
+        tbody tr:hover td {
+            background: var(--shifu-surface-hover);
         }
 
         thead tr {
-            text-transform: uppercase;
-            font-size: 12px;
-            font-weight: bold;
-
-            td {
-                background: var(--border-inner);
-            }
-
-            td:first-child {
-                border-radius: 4px 0 0 0;
-            }
-
-            td:last-child {
-                border-radius: 0 4px 0 0;
+            td, th {
+                background: var(--shifu-surface-raised);
+                color: var(--shifu-text-muted);
+                font-size: $font-size-tiny;
+                font-weight: 600;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
             }
         }
     }
@@ -78,46 +89,76 @@
 
         li {
             position: relative;
+            margin: 0;
+            padding: 0;
 
             &::before {
                 content: "/";
                 display: block;
                 position: absolute;
                 left: -8px;
+                color: var(--shifu-text-muted);
             }
         }
     }
 
     details.collapsible {
-        summary {
+        margin: 8px 0;
+
+        & > summary {
             position: relative;
+            display: block;
             list-style: none;
-            border-style: solid;
-            border-color: var(--border-inner);
-            border-width: 0 0 1px 0;
-            padding: 4px 0;
-            margin: 8px 0;
+            border-bottom: 1px solid var(--shifu-border);
+            padding: 6px 24px 6px 0;
+            margin: 0 0 12px;
             cursor: pointer;
             user-select: none;
+            font-weight: 500;
 
-            &::before {
+            &::-webkit-details-marker {
+                display: none;
+            }
+
+            &::after {
                 content: "";
                 display: block;
-                width: 12px;
-                height: 12px;
-                background-image: url("/shifu-admin/static/icons/chevron.svg");
+                width: 14px;
+                height: 14px;
+                background: url("icons/chevron.svg") center / contain no-repeat;
                 position: absolute;
-                right: 0;
-                top: 8px;
-                transition: transform 0.1s;
+                right: 2px;
+                top: 50%;
+                transform: translateY(-50%) rotate(180deg);
+                transition: transform $transition;
+            }
+
+            &:hover {
+                color: var(--shifu-accent);
             }
         }
 
-        &[open] > summary {
-            &::before {
-                transform: rotate(180deg);
-            }
+        &[open] > summary::after {
+            transform: translateY(-50%);
         }
+
+        &:not([open]) > summary {
+            margin-bottom: 0;
+        }
+    }
+
+    details.shifu-override {
+        margin-top: 24px;
+
+        & > summary,
+        & > summary:hover {
+            color: var(--shifu-highlight);
+        }
+    }
+
+    .shifu-override-hint {
+        display: block;
+        margin: 0 0 12px;
     }
 
     figure {
@@ -125,7 +166,8 @@
         padding: 0;
 
         figcaption {
-            font-size: 12px;
+            font-size: $font-size-small;
+            color: var(--shifu-text-muted);
         }
     }
 }

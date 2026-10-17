@@ -1,55 +1,31 @@
+@use "vars" as *;
+
 .shifu-page-tree {
     small {
-        margin: 0 0 0 -2px;
-        color: var(--border);
+        display: block;
+        margin: 2px 0 2px -2px;
+        font-size: $font-size-tiny;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--shifu-text-muted);
     }
 
     details > div {
         margin-left: 16px;
     }
 
-    &-element, &-container, &-ref {
-        padding: 0 2px;
+    // element icons replace the folder icons of the generic tree, also when open
+    $icons: (
+        "element": "cube.svg",
+        "container": "cube-box.svg",
+        "ref": "frame.svg",
+    );
 
-        &::before {
-            background-image: url("/shifu-admin/static/icons/cube.svg") !important;
-            background-size: 12px;
-
-            details {
-                &[open] > summary {
-                    &::before {
-                        background-image: url("/shifu-admin/static/icons/cube.svg") !important;
-                    }
-                }
-            }
-        }
-    }
-
-    &-container {
-        &::before {
-            background-image: url("/shifu-admin/static/icons/cube-box.svg") !important;
-
-            details {
-                &[open] > summary {
-                    &::before {
-                        background-image: url("/shifu-admin/static/icons/cube-box.svg") !important;
-                    }
-                }
-            }
-        }
-    }
-
-    &-ref {
-        &::before {
-            background-image: url("/shifu-admin/static/icons/frame.svg") !important;
-
-            details {
-                &[open] > summary {
-                    &::before {
-                        background-image: url("/shifu-admin/static/icons/frame.svg") !important;
-                    }
-                }
-            }
+    @each $type, $icon in $icons {
+        details > summary.shifu-page-tree-#{$type}::before,
+        details[open] > summary.shifu-page-tree-#{$type}::before {
+            background-image: url("icons/#{$icon}");
         }
     }
 }

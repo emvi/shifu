@@ -40,7 +40,7 @@ window.shifuMoveElement = function(selector, direction) {
         if (direction === "up") {
             let previous = move.previousElementSibling;
 
-            while (!previous.hasAttribute("data-shifu-element")) {
+            while (previous && !previous.hasAttribute("data-shifu-element")) {
                 previous = previous.previousElementSibling;
             }
 
@@ -57,7 +57,7 @@ window.shifuMoveElement = function(selector, direction) {
         } else {
             let next = move.nextElementSibling;
 
-            while (!next.hasAttribute("data-shifu-element")) {
+            while (next && !next.hasAttribute("data-shifu-element")) {
                 next = next.nextElementSibling;
             }
 

@@ -102,37 +102,53 @@ Minimal configuration for local development:
 
 ```json
 {
-    "dev": true,
+    "dev": ${DEV},
     "log_level": "info",
     "server": {
-        "host": "localhost",
-        "port": 8080,
-        "hostname": "http://localhost:8080"
+        "host": "${HOST}",
+        "port": ${PORT},
+        "secure_cookies": true,
+        "hostname": "${HOSTNAME}"
+    },
+    "api": {
+        "secret": "${API_SECRET}"
+    },
+    "remote": {
+        "url": "https://sika.emvi.com",
+        "secret": "${API_SECRET}"
+    },
+    "git": {
+        "update_seconds": 600,
+        "repository": "${GITHUB_REPO}"
     },
     "content": {
-        "provider": "fs",
+        "provider": "git",
         "not_found": {
-            "en": "/not-found",
-            "de": "/de/nicht-gefunden"
+            "en": "/not-found"
         }
     },
     "sass": {
         "dir": "assets/scss",
         "entrypoint": "main.scss",
-        "out": "static/main.css",
-        "out_source_map": "static/main.css.map",
-        "watch": true
+        "out": "static/bundle.css",
+        "out_source_map": "static/bundle.css.map",
+        "watch": true,
+        "compiler": "sass"
     },
     "js": {
         "dir": "assets/js",
         "entrypoint": "main.js",
-        "out": "static/main.js",
+        "out": "static/bundle.js",
         "source_map": true,
         "watch": true
     },
     "ui": {
         "path": "/admin",
         "admin_password": "${ADMIN_PASSWORD}"
+    },
+    "_analytics": {
+        "provider": "pirsch",
+        "client_secret": "${PIRSCH_CLIENT_SECRET}"
     }
 }
 ```
@@ -140,7 +156,14 @@ Minimal configuration for local development:
 `.secrets.env` (one `KEY=value` per line, referenced as `${KEY}` in `config.json`):
 
 ```env
+DEV=true
+HOST=localhost
+PORT=8080
+HOSTNAME=localost:8080
+API_SECRET=
+GITHUB_REPO=
 ADMIN_PASSWORD=admin
+PIRSCH_CLIENT_SECRET=
 ```
 
 Notes:
@@ -151,7 +174,7 @@ Notes:
   `secure_cookies: true`.
 * Keys starting with `_` are treated as comments by convention (they are ignored).
 * Optional sections (`api`, `remote`, `git`, `analytics`, `cors`) are documented in
-  the Shifu README — only add them when asked.
+  the Shifu README — only modify them when asked.
 * Run with `shifu run .` (requires the `sass` CLI: `npm i -g sass`). JS needs no
   Node.js, esbuild is built in.
 
@@ -201,6 +224,7 @@ Every editable element template must:
    ```
    The `<area>` string must be identical in all three places (position suffix,
    `index` key, slot name) and in the admin config's `content` keys.
+   Only render `<slot>` if the visitor is signed in.
 3. Read every editable value through `copy` (translatable text) or `get` (data), and
    handle missing values — new elements added in the admin start **empty**.
 
@@ -228,7 +252,10 @@ Container with child elements — `tpl/sections/cards.html`:
     {{ with $headline }}<h2 class="cards__headline">{{ . }}</h2>{{ end }}
     <div class="cards__grid">
         {{ .CMS.Render .Args .Page (fmt "%s.items" .Content.Position) (index .Content.Content "items") }}
-        <slot name="{{ .Content.Position }}/items"></slot>
+
+        {{ if loggedIn }}
+            <slot name="{{ .Content.Position }}/items"></slot>
+        {{ end }}
     </div>
 </section>
 ```
@@ -255,11 +282,17 @@ Multiple content areas (e.g. two columns) — `tpl/sections/columns.html`:
 <section class="columns" data-shifu-element="{{ .Content.Position }}">
     <div class="columns__col">
         {{ .CMS.Render .Args .Page (fmt "%s.left" .Content.Position) (index .Content.Content "left") }}
-        <slot name="{{ .Content.Position }}/left"></slot>
+
+        {{ if loggedIn }}
+            <slot name="{{ .Content.Position }}/left"></slot>
+        {{ end }}
     </div>
     <div class="columns__col">
         {{ .CMS.Render .Args .Page (fmt "%s.right" .Content.Position) (index .Content.Content "right") }}
-        <slot name="{{ .Content.Position }}/right"></slot>
+
+        {{ if loggedIn }}
+            <slot name="{{ .Content.Position }}/right"></slot>
+        {{ end }}
     </div>
 </section>
 ```

@@ -1,58 +1,38 @@
-{{ $copy := .Data.Copy }}
-{{ $data := .Data.Data }}
-{{ $lang := .Data.Lang }}
-{{ $override := .Data.Override }}
+{{ define "page-element-edit-section" }}
+    {{ $lang := index . "lang" }}
+    {{ $config := index . "config" }}
+    {{ $languages := index . "languages" }}
+    {{ $copy := index . "copy" }}
+    {{ $data := index . "data" }}
+    {{ $copyPrefix := index . "copyPrefix" }}
+    {{ $dataPrefix := index . "dataPrefix" }}
 
-{{ if and (not $override) .Data.Element.Ref }}
-    <p style="color: var(--highlight);">
-        {{ i18n .Data.Lang "content_element_reference_warn" }}
-    </p>
-    <p>
-        <button hx-get="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}&override=true"
-                hx-target="body"
-                hx-swap="beforeend">
-            {{ i18n .Data.Lang "content_element_reference_original" }}
-        </button>
-    </p>
-{{ end }}
-
-<form method="post"
-      hx-post="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}{{ if $override }}&override=true{{end}}&language={{ .Data.Language }}"
-      hx-swap="outerHTML"
-      hx-target=".shifu-page-tree"
-      hx-target-4*="this"
-      data-window="#shifu-page-element-edit{{ if $override }}-override{{end}}">
-    <fieldset>
-        <label for="display_name">{{ i18n .Data.Lang "content_element_display_name" }}</label>
-        <input id="display_name" name="display_name" value="{{ .Data.Element.DisplayName }}" />
-    </fieldset>
-
-    {{ if len .Data.Config.Copy }}
-        {{ $cfg := .Data.Config.Copy }}
+    {{ if len $config.Copy }}
+        {{ $cfg := $config.Copy }}
 
         <div class="shifu-tabs">
             <div class="shifu-tabs-header">
-                {{ range $index, $lang := .Data.Languages }}
+                {{ range $index, $language := $languages }}
                     <div class="shifu-tabs-header-tab {{ if eq $index 0 }}shifu-tabs-header-tab-active{{ end }}">
-                        {{ $lang }}
+                        {{ $language }}
                     </div>
                 {{ end }}
             </div>
 
-            {{ range $language := .Data.Languages }}
+            {{ range $language := $languages }}
                 <div class="shifu-tabs-content">
                     <details class="collapsible" open>
                         <summary>{{ i18n $lang "content_element_reference_content" }}</summary>
 
-                        {{ range $field, $config := index $cfg }}
+                        {{ range $field, $fieldConfig := $cfg }}
                             {{
                                 template "page-element-edit-fields.html"
                                 dict "lang" $lang
                                      "field" $field
-                                     "cfg" $config
+                                     "cfg" $fieldConfig
                                      "language" $language
                                      "copy" $copy
-                                     "override" $override
+                                     "prefix" $copyPrefix
                             }}
                         {{ end }}
                     </details>
@@ -61,20 +41,72 @@
         </div>
     {{ end }}
 
-    {{ if len .Data.Config.Data }}
+    {{ if len $config.Data }}
         <details class="collapsible">
-            <summary>{{ i18n .Data.Lang "content_element_reference_data" }}</summary>
+            <summary>{{ i18n $lang "content_element_reference_data" }}</summary>
 
-            {{ range $field, $cfg := .Data.Config.Data }}
+            {{ range $field, $fieldConfig := $config.Data }}
                 {{
                     template "page-element-edit-fields.html"
                     dict "lang" $lang
                          "field" $field
-                         "cfg" $cfg
+                         "cfg" $fieldConfig
                          "data" $data
-                         "override" $override
+                         "prefix" $dataPrefix
                 }}
             {{ end }}
+        </details>
+    {{ end }}
+{{ end }}
+
+{{ $copy := .Data.Copy }}
+{{ $data := .Data.Data }}
+{{ $lang := .Data.Lang }}
+{{ $override := .Data.Override }}
+
+{{ if $override }}
+    <p style="color: var(--shifu-highlight);">
+        {{ i18n .Data.Lang "content_element_reference_warn" }}
+    </p>
+{{ end }}
+
+<form method="post"
+      hx-post="{{ config.UI.Path }}/content/element/edit?path={{ .Data.Path }}&element={{ .Data.ElementPath }}&language={{ .Data.Language }}"
+      hx-swap="outerHTML"
+      hx-target="#{{ treeID .Data.Path }}"
+      hx-target-4*="this"
+      data-window="#shifu-page-element-edit">
+    <fieldset>
+        <label for="display_name">{{ i18n .Data.Lang "content_element_display_name" }}</label>
+        <input id="display_name" name="display_name" value="{{ .Data.Element.DisplayName }}" />
+    </fieldset>
+
+    {{
+        template "page-element-edit-section"
+        dict "lang" $lang
+             "config" .Data.Config
+             "languages" .Data.Languages
+             "copy" $copy
+             "data" $data
+             "copyPrefix" "copy."
+             "dataPrefix" "data"
+    }}
+
+    {{ if .Data.ShowOverride }}
+        <details class="collapsible shifu-override" {{ if or (len .Data.OverrideCopy) (len .Data.OverrideData) }}open{{ end }}>
+            <summary>{{ i18n $lang "content_element_override_headline" }}</summary>
+            <small class="shifu-override-hint">{{ i18n $lang "content_element_override_hint" }}</small>
+
+            {{
+                template "page-element-edit-section"
+                dict "lang" $lang
+                     "config" .Data.Config
+                     "languages" .Data.Languages
+                     "copy" .Data.OverrideCopy
+                     "data" .Data.OverrideData
+                     "copyPrefix" "override.copy."
+                     "dataPrefix" "override.data"
+            }}
         </details>
     {{ end }}
 

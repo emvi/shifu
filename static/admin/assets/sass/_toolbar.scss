@@ -1,21 +1,57 @@
-.shifu {
-    &-toolbar {
-        &-icons {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+@use "vars" as *;
+
+.shifu-toolbar {
+    .shifu-window-title {
+        justify-content: center;
+        min-height: 24px;
+        padding: 3px 4px;
+        font-size: 10px;
+    }
+
+    &-icons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        padding: 4px;
+    }
+
+    a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: $radius;
+        cursor: pointer;
+        transition: background-color $transition, transform $transition;
+
+        &:hover,
+        &:focus-visible {
+            background: var(--shifu-accent-soft);
+            text-decoration: none;
         }
 
-        a {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            aspect-ratio: 1;
-            cursor: pointer;
+        &:active {
+            transform: scale(0.94);
+        }
 
-            img {
-                width: 14px;
-                height: 14px;
+        img {
+            @include icon(16px);
+        }
+
+        &:last-child {
+            margin-top: 3px;
+            position: relative;
+
+            &::before {
+                content: "";
+                position: absolute;
+                top: -3px;
+                left: 6px;
+                right: 6px;
+                height: 1px;
+                background: var(--shifu-border);
             }
         }
     }

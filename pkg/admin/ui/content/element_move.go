@@ -15,7 +15,7 @@ func MoveElement(w http.ResponseWriter, r *http.Request) {
 	elementPath := strings.TrimSpace(r.URL.Query().Get("element"))
 	direction := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("direction")))
 	fullPath := getPagePath(path)
-	page, err := shared.LoadPage(r, fullPath, shared.GetLanguage(r))
+	page, err := loadDocument(r, fullPath, shared.GetLanguage(r))
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
@@ -33,8 +33,16 @@ func MoveElement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if moveElement(page, elementPath, d) {
-		if err := shared.SavePage(page, fullPath); err != nil {
+	target, err := resolveElementTarget(page, elementPath, false)
+
+	if err != nil {
+		slog.Debug("Error resolving element", "error", err, "path", elementPath)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if moveElement(target.Root, target.Path, d) {
+		if err := target.Save(); err != nil {
 			slog.Error("Error while saving page", "error", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return

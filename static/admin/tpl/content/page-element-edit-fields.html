@@ -2,11 +2,7 @@
 {{ $cfg := index . "cfg" }}
 {{ $lang := index . "lang" }}
 {{ $language := index . "language" }}
-{{ $idPrefix := "" }}
-
-{{ if index . "override" }}
-    {{ $idPrefix = "ref-" }}
-{{ end }}
+{{ $prefix := index . "prefix" }}
 
 {{ if $language }}
     {{ $copy := index . "copy" }}
@@ -16,9 +12,9 @@
              "cfg" $cfg
              "field" $field
              "language" $language
-             "prefix" "copy."
-             "idPrefix" $idPrefix
-             "value" (index $copy (fmt "copy.%s.%s" $language $field))
+             "prefix" $prefix
+             "idPrefix" ""
+             "value" (index $copy (fmt "%s%s.%s" $prefix $language $field))
     }}
 {{ else }}
     {{ $data := index . "data" }}
@@ -27,8 +23,8 @@
         dict "lang" $lang
              "cfg" $cfg
              "field" $field
-             "prefix" "data"
-             "idPrefix" $idPrefix
-             "value" (index $data (fmt "data.%s" $field))
+             "prefix" $prefix
+             "idPrefix" ""
+             "value" (index $data (fmt "%s.%s" $prefix $field))
     }}
 {{ end }}

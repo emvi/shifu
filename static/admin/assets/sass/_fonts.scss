@@ -1,20 +1,27 @@
+// Fonts use a private family name so a website that ships its own "Inter"
+// (with different weights/files) can't replace or be replaced by ours.
+// URLs are relative to admin.css, so they work for any configured UI path.
+
 @font-face {
-  font-family: "Inter";
-  src: url("/shifu-admin/static/fonts/Inter-Medium.woff2");
-  font-weight: 500;
-  font-display: swap;
+    font-family: "Shifu Inter";
+    src: url("fonts/Inter-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
-  font-family: "Inter";
-  src: url("/shifu-admin/static/fonts/Inter-Regular.woff2");
-  font-weight: 400;
-  font-display: swap;
+    font-family: "Shifu Inter";
+    src: url("fonts/Inter-Medium.woff2") format("woff2");
+    font-weight: 500 700;
+    font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
-  font-family: "Inter Display";
-  src: url("/shifu-admin/static/fonts/InterDisplay-Medium.woff2");
-  font-weight: 500;
-  font-display: swap;
+    font-family: "Shifu Inter Display";
+    src: url("fonts/InterDisplay-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
 }

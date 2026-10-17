@@ -6,7 +6,7 @@
     <p>{{ i18n .Data.Lang "content_reference_remove_confirm" }}</p>
     <div class="shifu-toolbelt">
         <button hx-post="{{ config.UI.Path }}/content/reference/remove?path={{ .Data.Path }}&element={{ .Data.Element }}&language={{ .Data.Language }}"
-                hx-target=".shifu-page-tree"
+                hx-target="#{{ treeID .Data.Path }}"
                 data-window="#shifu-page-reference-remove">
             {{ i18n .Data.Lang "content_reference_remove_submit" }}
         </button>

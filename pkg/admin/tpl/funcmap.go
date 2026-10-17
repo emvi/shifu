@@ -3,9 +3,11 @@ package tpl
 import (
 	"fmt"
 	"html/template"
+	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/emvi/shifu/pkg/admin"
 	"github.com/emvi/shifu/pkg/cfg"
 )
 
@@ -18,6 +20,8 @@ var funcMap = template.FuncMap{
 	"fmt":            fmt.Sprintf,
 	"replace":        strings.ReplaceAll,
 	"i18n":           getTranslation,
+	"isRefPath":      isRefPath,
+	"treeID":         treeID,
 }
 
 func formatFileSize(size int64) string {
@@ -65,4 +69,17 @@ func strval(v any) string {
 	default:
 		return fmt.Sprintf("%v", v)
 	}
+}
+
+func isRefPath(path string) bool {
+	path = strings.TrimPrefix(filepath.ToSlash(filepath.Clean(path)), "/")
+	return strings.HasPrefix(path, admin.RefsDir+"/")
+}
+
+func treeID(path string) string {
+	if isRefPath(path) {
+		return "shifu-ref-tree"
+	}
+
+	return "shifu-page-tree"
 }

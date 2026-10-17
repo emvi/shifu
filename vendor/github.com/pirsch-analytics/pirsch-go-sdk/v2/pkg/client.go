@@ -47,6 +47,7 @@ const (
 	timeOfDayEndpoint       = "/api/v1/statistics/hours"
 	languageEndpoint        = "/api/v1/statistics/language"
 	referrerEndpoint        = "/api/v1/statistics/referrer"
+	channelEndpoint         = "/api/v1/statistics/channel"
 	osEndpoint              = "/api/v1/statistics/os"
 	osVersionEndpoint       = "/api/v1/statistics/os/version"
 	browserEndpoint         = "/api/v1/statistics/browser"
@@ -464,6 +465,17 @@ func (client *Client) Referrer(filter *Filter) ([]ReferrerStats, error) {
 	return stats, nil
 }
 
+// Channel returns channel statistics.
+func (client *Client) Channel(filter *Filter) ([]ChannelStats, error) {
+	stats := make([]ChannelStats, 0)
+
+	if err := client.performGet(client.getStatsRequestURL(channelEndpoint, filter), client.requestRetries, &stats); err != nil {
+		return nil, err
+	}
+
+	return stats, nil
+}
+
 // OS returns operating system statistics.
 func (client *Client) OS(filter *Filter) ([]OSStats, error) {
 	stats := make([]OSStats, 0)
@@ -871,6 +883,7 @@ func (client *Client) getStatsRequestURL(endpoint string, filter *Filter) string
 	client.setURLParams(v, "utm_campaign", filter.UTMCampaign)
 	client.setURLParams(v, "utm_content", filter.UTMContent)
 	client.setURLParams(v, "utm_term", filter.UTMTerm)
+	client.setURLParams(v, "channel", filter.Channel)
 	v.Add("custom_metric_key", filter.CustomMetricKey)
 	v.Add("custom_metric_type", string(filter.CustomMetricType))
 	v.Add("offset", strconv.Itoa(filter.Offset))
