@@ -2,7 +2,8 @@
 
 ## 1.5.1
 
-* fixed editing child-elements if they are not part of a reference
+* fixed editing nested references
+* fixed editing nested elements if they are not part of a reference
 
 ## 1.5.0
 

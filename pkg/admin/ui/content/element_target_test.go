@@ -26,6 +26,12 @@ func TestResolveElementTarget(t *testing.T) {
 			"content": {
 				{Tpl: "head"},
 				{Ref: "slider"},
+				{Tpl: "columns", Content: map[string][]cms.Content{
+					"left": {
+						{Tpl: "text", Content: map[string][]cms.Content{"content": {{Tpl: "img"}}}},
+						{Ref: "inner"},
+					},
+				}},
 			},
 		},
 	}
@@ -61,6 +67,35 @@ func TestResolveElementTarget(t *testing.T) {
 
 	// child of a nested reference
 	target, err = resolveElementTarget(page, "content.1.slides.1.content.0", true)
+	assert.NoError(t, err)
+	assert.Equal(t, "inner", target.ref)
+	assert.Equal(t, "content.0", target.path)
+	assert.Equal(t, "img", target.element().Tpl)
+
+	// the nested reference itself (as an element inside the outer reference)
+	target, err = resolveElementTarget(page, "content.1.slides.1", false)
+	assert.NoError(t, err)
+	assert.Equal(t, "slider", target.ref)
+	assert.Equal(t, "slides.1", target.path)
+	assert.Equal(t, "inner", target.element().Ref)
+
+	// the nested reference root
+	target, err = resolveElementTarget(page, "content.1.slides.1", true)
+	assert.NoError(t, err)
+	assert.Equal(t, "inner", target.ref)
+	assert.Empty(t, target.path)
+	assert.Equal(t, "content.1.slides.1", target.prefix)
+
+	// regular nested elements stay on the page
+	target, err = resolveElementTarget(page, "content.2.left.0.content.0", true)
+	assert.NoError(t, err)
+	assert.False(t, target.isRef())
+	assert.Equal(t, "content.2.left.0.content.0", target.path)
+	assert.Equal(t, page, target.root)
+	assert.Equal(t, "img", target.element().Tpl)
+
+	// reference inside a regular element
+	target, err = resolveElementTarget(page, "content.2.left.1.content.0", false)
 	assert.NoError(t, err)
 	assert.Equal(t, "inner", target.ref)
 	assert.Equal(t, "content.0", target.path)

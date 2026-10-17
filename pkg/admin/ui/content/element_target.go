@@ -70,6 +70,7 @@ func resolveElementTarget(page *cms.Content, elementPath string, refRoot bool) (
 		return nil, errors.New("invalid element path")
 	}
 
+	current := page
 	start := 0
 	depth := 0
 
@@ -80,13 +81,13 @@ func resolveElementTarget(page *cms.Content, elementPath string, refRoot bool) (
 			return nil, err
 		}
 
-		elements, found := target.root.Content[parts[i]]
+		elements, found := current.Content[parts[i]]
 
 		if !found || index < 0 || index >= len(elements) {
 			return nil, errors.New("element not found")
 		}
 
-		element := elements[index]
+		element := &elements[index]
 		last := i+2 == len(parts)
 
 		if element.Ref != "" && (!last || refRoot) {
@@ -107,19 +108,10 @@ func resolveElementTarget(page *cms.Content, elementPath string, refRoot bool) (
 			target.ref = element.Ref
 			start = i + 2
 			target.prefix = strings.Join(parts[:start], ".")
-			break
+			current = ref
 		} else {
-			target.root = &element
+			current = element
 		}
-	}
-
-	// reset target if we couldn't find a reference
-	if target.ref == "" {
-		return &elementTarget{
-			root: page,
-			file: page.File,
-			path: elementPath,
-		}, nil
 	}
 
 	target.path = strings.Join(parts[start:], ".")
