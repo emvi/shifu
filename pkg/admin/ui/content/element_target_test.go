@@ -33,38 +33,38 @@ func TestResolveElementTarget(t *testing.T) {
 	// regular element on the page
 	target, err := resolveElementTarget(page, "content.0", true)
 	assert.NoError(t, err)
-	assert.False(t, target.IsRef())
-	assert.Equal(t, "content.0", target.Path)
-	assert.Equal(t, "head", target.Element().Tpl)
+	assert.False(t, target.isRef())
+	assert.Equal(t, "content.0", target.path)
+	assert.Equal(t, "head", target.element().Tpl)
 
 	// the reference element itself (container on the page)
 	target, err = resolveElementTarget(page, "content.1", false)
 	assert.NoError(t, err)
-	assert.False(t, target.IsRef())
-	assert.Equal(t, "slider", target.Element().Ref)
+	assert.False(t, target.isRef())
+	assert.Equal(t, "slider", target.element().Ref)
 
 	// the reference root
 	target, err = resolveElementTarget(page, "content.1", true)
 	assert.NoError(t, err)
-	assert.Equal(t, "slider", target.Ref)
-	assert.Empty(t, target.Path)
-	assert.Equal(t, "content.1", target.Prefix)
-	assert.Equal(t, "slider", target.Element().Tpl)
+	assert.Equal(t, "slider", target.ref)
+	assert.Empty(t, target.path)
+	assert.Equal(t, "content.1", target.prefix)
+	assert.Equal(t, "slider", target.element().Tpl)
 
 	// child of the reference
 	target, err = resolveElementTarget(page, "content.1.slides.0", false)
 	assert.NoError(t, err)
-	assert.Equal(t, "slider", target.Ref)
-	assert.Equal(t, "slides.0", target.Path)
-	assert.Equal(t, "slide", target.Element().Tpl)
-	assert.Equal(t, "content.1.slides.0", target.FullPath(target.Path))
+	assert.Equal(t, "slider", target.ref)
+	assert.Equal(t, "slides.0", target.path)
+	assert.Equal(t, "slide", target.element().Tpl)
+	assert.Equal(t, "content.1.slides.0", target.fullPath(target.path))
 
 	// child of a nested reference
 	target, err = resolveElementTarget(page, "content.1.slides.1.content.0", true)
 	assert.NoError(t, err)
-	assert.Equal(t, "inner", target.Ref)
-	assert.Equal(t, "content.0", target.Path)
-	assert.Equal(t, "img", target.Element().Tpl)
+	assert.Equal(t, "inner", target.ref)
+	assert.Equal(t, "content.0", target.path)
+	assert.Equal(t, "img", target.element().Tpl)
 
 	// out of range
 	_, err = resolveElementTarget(page, "content.1.slides.5", false)

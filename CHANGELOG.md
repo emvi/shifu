@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.1
+
+* fixed editing child-elements if they are not part of a reference
+
 ## 1.5.0
 
 * improved admin UI design

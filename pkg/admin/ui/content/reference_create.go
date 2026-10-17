@@ -40,9 +40,9 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	element := target.Element()
+	element := target.element()
 
-	if element == nil || target.Path == "" {
+	if element == nil || target.path == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -85,8 +85,8 @@ func CreateReference(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if setElement(target.Root, target.Path, &cms.Content{Ref: name}) {
-			if err := target.Save(); err != nil {
+		if setElement(target.root, target.path, &cms.Content{Ref: name}) {
+			if err := target.save(); err != nil {
 				slog.Error("Error while saving page", "error", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return

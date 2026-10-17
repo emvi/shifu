@@ -13,65 +13,51 @@ import (
 const maxRefDepth = 16
 
 type elementTarget struct {
-	// Root is the document to modify (either the page or a reference).
-	Root *cms.Content
-
-	// File is the path to the file of Root.
-	File string
-
-	// Ref is the name of the reference if Root is a reference, empty for pages.
-	Ref string
-
-	// Prefix is the position of the reference element on the page (empty for pages).
-	Prefix string
-
-	// Path is the element path relative to Root (empty if the element is Root itself).
-	Path string
+	root   *cms.Content
+	file   string
+	ref    string
+	prefix string
+	path   string
 }
 
-// Element returns the element the target points to.
-func (t *elementTarget) Element() *cms.Content {
-	if t.Path == "" {
-		return t.Root
+func (t *elementTarget) element() *cms.Content {
+	if t.path == "" {
+		return t.root
 	}
 
-	return findElement(t.Root, t.Path)
+	return findElement(t.root, t.path)
 }
 
-// FullPath returns the position on the page for given path relative to Root.
-func (t *elementTarget) FullPath(path string) string {
-	return joinElementPath(t.Prefix, path)
+func (t *elementTarget) fullPath(path string) string {
+	return joinElementPath(t.prefix, path)
 }
 
-// IsRef returns true if the target document is a reference.
-func (t *elementTarget) IsRef() bool {
-	return t.Ref != ""
+func (t *elementTarget) isRef() bool {
+	return t.ref != ""
 }
 
-// Save writes the target document to disk.
-// References are updated in memory as well, so that they can be rendered right away.
-func (t *elementTarget) Save() error {
-	if t.IsRef() {
-		if err := shared.SavePage(t.Root, t.File); err != nil {
+func (t *elementTarget) save() error {
+	if t.isRef() {
+		if err := shared.SavePage(t.root, t.file); err != nil {
 			return err
 		}
 
-		content.SetReference(t.Ref, t.Root)
+		content.SetReference(t.ref, t.root)
 		return nil
 	}
 
-	if t.File == "" {
+	if t.file == "" {
 		return errors.New("the document cannot be saved")
 	}
 
-	return shared.SavePage(t.Root, t.File)
+	return shared.SavePage(t.root, t.file)
 }
 
 func resolveElementTarget(page *cms.Content, elementPath string, refRoot bool) (*elementTarget, error) {
 	target := &elementTarget{
-		Root: page,
-		File: page.File,
-		Path: elementPath,
+		root: page,
+		file: page.File,
+		path: elementPath,
 	}
 
 	if elementPath == "" {
@@ -84,7 +70,7 @@ func resolveElementTarget(page *cms.Content, elementPath string, refRoot bool) (
 		return nil, errors.New("invalid element path")
 	}
 
-	start := 0 // index into parts where the path relative to the current root starts
+	start := 0
 	depth := 0
 
 	for i := 0; i < len(parts); i += 2 {
@@ -94,7 +80,7 @@ func resolveElementTarget(page *cms.Content, elementPath string, refRoot bool) (
 			return nil, err
 		}
 
-		elements, found := target.Root.Content[parts[i]]
+		elements, found := target.root.Content[parts[i]]
 
 		if !found || index < 0 || index >= len(elements) {
 			return nil, errors.New("element not found")
@@ -116,15 +102,27 @@ func resolveElementTarget(page *cms.Content, elementPath string, refRoot bool) (
 				return nil, err
 			}
 
-			target.Root = ref
-			target.File = ref.File
-			target.Ref = element.Ref
+			target.root = ref
+			target.file = ref.File
+			target.ref = element.Ref
 			start = i + 2
-			target.Prefix = strings.Join(parts[:start], ".")
+			target.prefix = strings.Join(parts[:start], ".")
+			break
+		} else {
+			target.root = &element
 		}
 	}
 
-	target.Path = strings.Join(parts[start:], ".")
+	// reset target if we couldn't find a reference
+	if target.ref == "" {
+		return &elementTarget{
+			root: page,
+			file: page.File,
+			path: elementPath,
+		}, nil
+	}
+
+	target.path = strings.Join(parts[start:], ".")
 	return target, nil
 }
 
