@@ -14,14 +14,14 @@ func LoadPage(r *http.Request, path, language string) (*cms.Content, error) {
 	content, err := os.ReadFile(path)
 
 	if err != nil {
-		slog.Error("Error reading content file", "error", err)
+		slog.Error("Error reading content file", "path", path, "error", err)
 		return nil, err
 	}
 
 	var page cms.Content
 
 	if err := json.Unmarshal(content, &page); err != nil {
-		slog.Error("Error parsing content file", "error", err)
+		slog.Error("Error parsing content file", "path", path, "error", err)
 		return nil, err
 	}
 
@@ -54,12 +54,12 @@ func SavePage(page *cms.Content, path string) error {
 	pageJson, err := json.Marshal(page)
 
 	if err != nil {
-		slog.Error("Error marshalling page data", "error", err)
+		slog.Error("Error marshalling page data", "path", path, "error", err)
 		return err
 	}
 
 	if err := os.WriteFile(path, pageJson, 0644); err != nil {
-		slog.Error("Error writing page data", "error", err)
+		slog.Error("Error writing page data", "path", path, "error", err)
 		return err
 	}
 
