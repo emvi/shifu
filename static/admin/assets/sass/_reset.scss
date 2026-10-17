@@ -1,0 +1,101 @@
+@use "vars" as *;
+
+// Isolation from the website's CSS
+// ================================
+//
+// The admin UI is injected into arbitrary websites. Their stylesheets usually
+// contain element selectors (div, a, img, button, ul li::before, * { … }) that
+// would otherwise leak into the admin windows. Every element inside .shifu is
+// therefore reverted to the browser defaults first and then styled by the
+// rules below (which all have at least the same specificity and come later).
+//
+// :where() keeps the specificity of the reset at (0,1,0), so any component
+// rule in this stylesheet wins, while plain element/class selectors of the
+// website lose. Third-party widgets (Trix, JSONEditor) bring their own CSS
+// and are excluded so their styles still apply.
+
+$isolated: "*:not(trix-editor, trix-editor *, trix-toolbar, trix-toolbar *, .jsoneditor, .jsoneditor *, .jsoneditor-modal, .jsoneditor-modal *, svg *)";
+
+.shifu,
+.shifu :where(#{$isolated}),
+.shifu :where(#{$isolated})::before,
+.shifu :where(#{$isolated})::after {
+    all: revert;
+}
+
+.shifu {
+    @include tokens;
+
+    // re-establish inherited properties, which would otherwise be inherited
+    // from the website's <body>
+    font-family: $font-family;
+    font-size: $font-size;
+    font-weight: 400;
+    font-style: normal;
+    line-height: $line-height;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-align: left;
+    text-transform: none;
+    text-indent: 0;
+    text-shadow: none;
+    white-space: normal;
+    color: var(--shifu-text);
+    cursor: auto;
+    visibility: visible;
+    direction: ltr;
+    color-scheme: dark;
+    accent-color: var(--shifu-accent);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    box-sizing: border-box;
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    img,
+    svg,
+    video {
+        max-width: 100%;
+    }
+
+    [hidden] {
+        display: none;
+    }
+
+    ::selection {
+        background: var(--shifu-highlight);
+        color: var(--shifu-highlight-contrast);
+    }
+
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--shifu-border-strong) transparent;
+    }
+}
+
+// Standalone admin pages (login, default page)
+html.shifu {
+    min-height: 100%;
+    background: var(--shifu-bg);
+    scroll-behavior: smooth;
+}
+
+body.shifu {
+    margin: 0;
+    padding: 24px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background:
+        radial-gradient(1200px 600px at 50% -10%, rgba(183, 224, 230, 0.08), transparent 60%),
+        var(--shifu-bg);
+}

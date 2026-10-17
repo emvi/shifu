@@ -1,0 +1,83 @@
+@use "vars" as *;
+
+// Trix rich text editor and JSONEditor overrides.
+.shifu {
+    trix-toolbar {
+        margin: 0 0 6px;
+
+        .trix-button-row {
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .trix-button-group {
+            margin: 0;
+            border-color: var(--shifu-border-strong);
+            border-radius: $radius;
+            overflow: hidden;
+        }
+
+        .trix-button {
+            font-size: 0.75em;
+            background: #e6edf3;
+            border-color: #c5ced8;
+
+            &:hover {
+                background: #fff;
+            }
+
+            &.trix-active {
+                background: var(--shifu-accent);
+            }
+
+            &:disabled {
+                background: #9aa5b1;
+            }
+        }
+
+        .trix-dialog {
+            color: var(--shifu-text);
+            background: var(--shifu-surface-raised);
+            border: 1px solid var(--shifu-border-strong);
+            border-radius: $radius;
+            box-shadow: var(--shifu-shadow);
+        }
+    }
+
+    trix-editor {
+        display: block;
+        min-height: 20em;
+        max-width: 646px;
+        padding: 8px 10px;
+        color: var(--shifu-text);
+        background: var(--shifu-bg);
+        border: 1px solid var(--shifu-border);
+        border-radius: $radius;
+        outline: none;
+        transition: border-color $transition, box-shadow $transition;
+
+        &:focus {
+            border-color: var(--shifu-accent);
+            box-shadow: var(--shifu-focus);
+        }
+
+        a {
+            color: var(--shifu-accent);
+            text-decoration: underline;
+        }
+
+        blockquote {
+            border-left-color: var(--shifu-border-strong);
+        }
+
+        pre {
+            color: var(--shifu-text);
+            background: var(--shifu-surface-raised);
+        }
+    }
+
+    #shifu-json {
+        border-radius: $radius;
+        overflow: hidden;
+    }
+}

@@ -1,48 +1,46 @@
+@use "vars" as *;
+
 .shifu-fs {
     &-select {
+        margin: 0 0 12px;
+
         & > summary {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             list-style: none;
             cursor: pointer;
-            display: flex;
-            gap: 4px;
-            flex-direction: row;
-            align-items: center;
+            color: var(--shifu-accent);
+            user-select: none;
+
+            &::-webkit-details-marker {
+                display: none;
+            }
 
             &::before {
                 content: "";
                 display: block;
-                width: 12px;
-                height: 12px;
-                background: url("/shifu-admin/static/icons/chevron.svg");
-                transition: transform 0.1s;
+                width: 14px;
+                height: 14px;
+                background: url("icons/chevron.svg") center / contain no-repeat;
+                transform: rotate(90deg);
+                transition: transform $transition;
             }
         }
 
-        &[open] > summary {
-            &::before {
-                transform: rotate(180deg);
-            }
+        &[open] > summary::before {
+            transform: rotate(180deg);
         }
     }
 
     &-tree {
         min-width: 25%;
-        border: solid 1px var(--border-inner);
-        border-radius: 4px;
-        padding: 8px 8px 0 8px;
-        max-height: 100px;
-        overflow: scroll;
-    }
-
-    &-directory {
-        &-name {
-            padding: 0 2px;
-        }
-
-        &-selected {
-            background: var(--highlight);
-            color: var(--bg) !important;
-            border-radius: 4px;
-        }
+        max-height: 160px;
+        margin: 8px 0 0;
+        padding: 8px 8px 4px;
+        overflow: auto;
+        background: var(--shifu-bg);
+        border: 1px solid var(--shifu-border);
+        border-radius: $radius;
     }
 }

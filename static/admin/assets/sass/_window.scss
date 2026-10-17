@@ -1,81 +1,100 @@
+@use "vars" as *;
+
 .shifu {
-    &-box, &-window {
-        background: var(--bg90);
-        border: 2px solid var(--border);
-        border-radius: 4px;
-        box-shadow: 0 0 2px 0 var(--border);
-        backdrop-filter: blur(8px);
+    &-box,
+    &-window {
+        display: flex;
+        flex-direction: column;
         max-width: 80vw;
-        z-index: 999999;
+        margin: 0;
+        padding: 0;
+        color: var(--shifu-text);
+        background: var(--shifu-surface);
+        border: 1px solid var(--shifu-border-strong);
+        border-radius: $radius-large;
+        box-shadow: var(--shifu-shadow);
+        backdrop-filter: blur(12px) saturate(140%);
+        -webkit-backdrop-filter: blur(12px) saturate(140%);
+        overflow: hidden;
+        z-index: $z-index;
 
         &-title {
-            padding: 4px;
-            margin: 2px 2px 0 2px;
-            font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 64px;
+            gap: 32px;
+            min-height: 30px;
+            margin: 0;
+            padding: 4px 4px 4px 10px;
+            font-size: $font-size-tiny;
+            font-weight: 600;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
-            font-size: 12px;
-            border: 1px solid var(--border-inner);
-            border-radius: 1px 1px 0 0;
-            color: var(--text);
+            color: var(--shifu-text);
+            background: var(--shifu-accent-softer);
+            border-bottom: 1px solid var(--shifu-border);
 
             &-label {
                 display: flex;
-                justify-content: center;
                 align-items: center;
-                gap: 4px;
+                gap: 8px;
+                min-width: 0;
                 pointer-events: none;
 
                 img {
-                    width: 12px;
-                    height: 12px;
+                    @include icon(14px);
                 }
             }
 
             &-close {
                 display: flex;
                 align-items: center;
-                height: 100%;
+                justify-content: center;
+                width: 22px;
+                height: 22px;
+                border-radius: $radius-small;
+                cursor: pointer;
+                transition: background-color $transition;
+
+                &:hover {
+                    background: var(--shifu-surface-hover);
+                }
 
                 img {
-                    width: 16px;
-                    height: 16px;
-                    cursor: pointer;
+                    @include icon(14px);
+                    pointer-events: none;
                 }
             }
         }
 
         &-content {
-            padding: 12px;
-            margin: 0 2px 2px 2px;
+            flex: 1 1 auto;
+            min-height: 0;
+            margin: 0;
+            padding: 10px 12px;
             max-height: 80vh;
             overflow: auto;
-            border-style: solid;
-            border-color: var(--border-inner);
-            border-width: 0 1px 1px 1px;
-            border-radius: 0 0 1px 1px;
 
             &-flex {
                 display: flex;
-                gap: 8px;
+                gap: 12px;
+                align-items: stretch;
             }
         }
 
         &-overlay {
             position: fixed;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.25);
-            z-index: 999999;
+            inset: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(8px);
+            margin: 0;
+            padding: 0;
+            background: rgba(5, 8, 13, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: $z-index;
+            animation: shifu-fade-in 200ms ease-out forwards;
 
             .shifu-window {
                 top: auto;
@@ -86,26 +105,45 @@
 
     &-window {
         position: fixed;
-        z-index: 999999;
         top: 5vh;
         left: 5vh;
         opacity: 0;
-        animation: fadeIn 500ms forwards;
-        border-color: var(--border70);
+        animation: shifu-window-in 200ms ease-out forwards;
 
         &-title {
             cursor: grab;
             user-select: none;
-            background: var(--border5);
+
+            &:active {
+                cursor: grabbing;
+            }
         }
 
         &-active {
-            border-color: var(--border);
+            border-color: rgba(183, 224, 230, 0.45);
+            box-shadow: var(--shifu-shadow), 0 0 0 1px rgba(183, 224, 230, 0.15);
         }
     }
+}
 
-    @keyframes fadeIn {
-        0% { opacity: 0; }
-        100% { opacity: 1; }
+@keyframes shifu-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes shifu-window-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px) scale(0.99);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
     }
 }

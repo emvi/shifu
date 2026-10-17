@@ -1,152 +1,303 @@
+@use "vars" as *;
+
+$button: 'button:not([class*="jsoneditor"]):not([class*="trix"])';
+$input: 'input:not(.jsoneditor *):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="hidden"])';
+
 .shifu {
+    form {
+        margin: 0;
+    }
+
     fieldset {
-        margin: 8px 0;
+        margin: 0 0 10px;
         padding: 0;
-        border-width: 0;
+        border: 0;
+        min-width: 0;
 
         label {
-            display: inline-block;
-            font-size: 12px;
+            display: block;
+            margin: 0 0 4px;
+            padding: 0;
+            font-size: $font-size-tiny;
+            font-weight: 600;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
-            margin: 0 0 2px 0;
-            line-height: 1;
-            padding: 4px;
-            border-radius: 4px;
-            color: var(--text);
-            transition: all 0.3s;
+            line-height: 1.4;
+            color: var(--shifu-text-muted);
+            transition: color $transition;
         }
 
-        &:focus-within label {
-            background: var(--highlight);
-            color: var(--bg);
+        &:focus-within > label {
+            color: var(--shifu-accent);
         }
-    }
 
-    fieldset.checkbox {
-        display: flex;
-        align-items: center;
-        gap: 4px;
+        &.checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
 
-        label {
-            margin: 0;
-        }
-    }
-
-    input:not(.jsoneditor-frame > input),
-    button:not([class*="jsoneditor"]):not([class*="trix"]),
-    .button,
-    select {
-        width: 100%;
-        padding: 4px 8px;
-        font-size: 16px;
-        border: 1px solid var(--border-inner);
-        outline: none;
-        background: var(--bg);
-        border-radius: 4px;
-        color: var(--text);
-        opacity: 1;
-
-        &:focus {
-            border-color: var(--border);
-        }
-    }
-
-    input[type~="submit"]:not(.jsoneditor-frame > input),
-    button:not([class*="jsoneditor"]):not([class*="trix"]),
-    .button {
-        width: auto;
-        background: var(--submit);
-        color: var(--border);
-        text-transform: uppercase;
-        font-weight: bold;
-        font-size: 12px;
-        border: 1px solid var(--border);
-        cursor: pointer;
-        padding: 4px 6px;
-        display: flex;
-        gap: 4px;
-        align-items: center;
-        box-shadow: 0 0 2px 0 var(--border);
-        transition: all 0.3s;
-
-        &:hover, &:focus {
-            background: var(--border) !important;
-            color: var(--bg);
-
-            img {
-                filter: invert(1);
+            label {
+                margin: 0;
+                cursor: pointer;
             }
         }
+    }
+
+    label {
+        cursor: default;
+    }
+
+    #{$input},
+    select,
+    textarea {
+        display: block;
+        width: 100%;
+        min-height: 28px;
+        margin: 0;
+        padding: 4px 8px;
+        font: inherit;
+        font-size: $font-size;
+        line-height: 1.4;
+        color: var(--shifu-text);
+        background: var(--shifu-bg);
+        border: 1px solid var(--shifu-border);
+        border-radius: $radius;
+        outline: none;
+        box-shadow: none;
+        opacity: 1;
+        appearance: none;
+        transition: border-color $transition, box-shadow $transition;
+
+        &::placeholder {
+            color: var(--shifu-text-muted);
+            opacity: 0.7;
+        }
+
+        &:hover {
+            border-color: var(--shifu-border-strong);
+        }
+
+        &:focus {
+            border-color: var(--shifu-accent);
+            box-shadow: var(--shifu-focus);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    textarea {
+        min-height: 80px;
+        resize: vertical;
+    }
+
+    select {
+        padding-right: 30px;
+        cursor: pointer;
+        background: var(--shifu-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23b7e0e6'%3E%3Cpath fill-rule='evenodd' d='M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd'/%3E%3C/svg%3E") right 8px center / 16px no-repeat;
+
+        option {
+            color: var(--shifu-text);
+            background: var(--shifu-surface-raised);
+        }
+    }
+
+    input[type="color"] {
+        width: 64px;
+        padding: 2px;
+        cursor: pointer;
+    }
+
+    input[type="file"] {
+        padding: 4px;
+        cursor: pointer;
+
+        &::file-selector-button {
+            margin-right: 8px;
+            padding: 4px 10px;
+            font: inherit;
+            font-size: $font-size-small;
+            color: var(--shifu-accent);
+            background: var(--shifu-accent-soft);
+            border: 1px solid var(--shifu-border-strong);
+            border-radius: $radius-small;
+            cursor: pointer;
+        }
+    }
+
+    input[type="checkbox"]:not(.jsoneditor *),
+    input[type="radio"]:not(.jsoneditor *) {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        flex: none;
+        cursor: pointer;
+        accent-color: var(--shifu-accent);
+    }
+
+    #{$button},
+    input[type="submit"]:not(.jsoneditor *),
+    input[type="button"]:not(.jsoneditor *),
+    .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        width: auto;
+        min-height: 24px;
+        margin: 0;
+        padding: 3px 9px;
+        font: inherit;
+        font-size: $font-size-small;
+        font-weight: 600;
+        line-height: 1.2;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        text-decoration: none;
+        white-space: nowrap;
+        color: var(--shifu-accent-contrast);
+        background: var(--shifu-accent);
+        border: 1px solid var(--shifu-accent);
+        border-radius: $radius;
+        box-shadow: none;
+        outline: none;
+        opacity: 1;
+        cursor: pointer;
+        user-select: none;
+        appearance: none;
+        transition: background-color $transition, border-color $transition, color $transition, box-shadow $transition;
 
         img {
             width: 12px;
             height: 12px;
+            max-width: none;
+            max-height: none;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            background: none;
+            filter: brightness(0);
+            transition: filter $transition;
+        }
+
+        &:hover {
+            color: var(--shifu-accent-contrast);
+            background: var(--shifu-text);
+            border-color: var(--shifu-text);
+            text-decoration: none;
+        }
+
+        &:focus-visible {
+            box-shadow: var(--shifu-focus);
+        }
+
+        &:active {
+            transform: translateY(1px);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
     }
 
-    input[type~="checkbox"]:not(.jsoneditor-frame > input) {
-        width: auto;
-        margin: 0;
-        height: 10px;
+    // secondary actions: outlined
+    #{$button}.secondary,
+    .button.secondary,
+    input.secondary {
+        color: var(--shifu-text);
+        background: transparent;
+        border-color: var(--shifu-border-strong);
+
+        img {
+            filter: none;
+        }
+
+        &:hover {
+            color: var(--shifu-accent);
+            background: var(--shifu-accent-softer);
+            border-color: var(--shifu-accent);
+        }
     }
 
     progress {
+        display: block;
         width: 100%;
+        height: 6px;
+        margin: 8px 0;
+        border: 0;
+        border-radius: 3px;
+        overflow: hidden;
+        background: var(--shifu-border);
+        appearance: none;
+
+        &::-webkit-progress-bar {
+            background: var(--shifu-border);
+        }
+
+        &::-webkit-progress-value {
+            background: var(--shifu-accent);
+        }
+
+        &::-moz-progress-bar {
+            background: var(--shifu-accent);
+        }
     }
 
     .error {
-        color: #f00;
-        font-size: 12px;
+        display: block;
+        color: var(--shifu-danger);
+        font-size: $font-size-small;
+
+        &:empty {
+            display: none;
+        }
     }
 
     .edit {
         display: flex;
-        gap: 4px;
+        align-items: center;
+        gap: 6px;
 
-        button:not([class*="jsoneditor"]):not([class*="trix"]),
+        #{$button},
         .button {
-            padding: 4px;
+            padding: 3px 6px;
         }
-    }
-
-    .secondary {
-        background: var(--bg) !important;
-        border-color: var(--border-inner);
-        box-shadow: none;
-        color: var(--border-inner);
     }
 
     &-form-group {
-        margin: 8px 0;
-        padding: 8px;
-        border: 1px solid var(--border-inner);
-        border-radius: 4px;
+        margin: 10px 0;
+        padding: 8px 10px;
+        background: var(--shifu-accent-softer);
+        border: 1px solid var(--shifu-border);
+        border-radius: $radius;
     }
 
     &-saved {
-        background: var(--highlight);
-        color: var(--bg);
-        text-transform: uppercase;
-        font-weight: bold;
-        font-size: 12px;
-        border: 1px solid var(--highlight);
-        border-radius: 4px;
-        cursor: pointer;
-        padding: 4px 6px;
-        display: flex;
-        gap: 4px;
+        display: inline-flex;
         align-items: center;
-        box-shadow: 0 0 2px 0 var(--highlight);
-        animation: shifu-fade-out 3s forwards;
-        animation-iteration-count: 1;
+        gap: 5px;
+        padding: 3px 9px;
+        font-size: $font-size-small;
+        font-weight: 600;
+        color: var(--shifu-highlight-contrast);
+        background: var(--shifu-highlight);
+        border: 1px solid var(--shifu-highlight);
+        border-radius: $radius;
+        animation: shifu-fade-out 3s ease-in forwards;
+    }
+}
+
+@keyframes shifu-fade-out {
+    0%, 60% {
+        opacity: 1;
     }
 
-    @keyframes shifu-fade-out {
-        0% {
-            opacity: 1;
-        }
-        100% {
-            opacity: 0;
-        }
+    100% {
+        opacity: 0;
     }
 }

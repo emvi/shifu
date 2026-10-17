@@ -1,78 +1,16 @@
-@use "sass:meta";
 @use "vars";
 @use "fonts";
-
-html.shifu {
-    font-family: "Inter", "Roboto", sans-serif;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-    box-sizing: border-box;
-    line-height: 1.5;
-}
-
-body.shifu {
-    margin: 0;
-    padding: 0;
-    font-size: 16px;
-    min-height: 100vh;
-    background: var(--bg);
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.shifu {
-    @extend html, .shifu;
-
-    font-size: 16px;
-    color: var(--text);
-
-    *,
-    *::before,
-    *::after {
-        font-family: inherit;
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    trix-editor {
-        min-height: 20em;
-        max-width: 646px;
-        border-color: var(--border-inner);
-        border-radius: 4px;
-
-        &:focus {
-            border-color: var(--border);
-        }
-    }
-
-    .trix-button {
-        background: #fff;
-        font-size: 0.75em !important;
-    }
-
-    .trix-input {
-        color: #000;
-    }
-
-    span, li, label {
-        color: var(--text);
-    }
-}
-
-@include meta.load-css("html");
-@include meta.load-css("form");
-@include meta.load-css("window");
-@include meta.load-css("toolbar");
-@include meta.load-css("toolbelt");
-@include meta.load-css("tree");
-@include meta.load-css("tabs");
-@include meta.load-css("media");
-@include meta.load-css("pages");
-@include meta.load-css("page");
-@include meta.load-css("refs");
-@include meta.load-css("fs");
+@use "reset";
+@use "html";
+@use "form";
+@use "window";
+@use "toolbar";
+@use "toolbelt";
+@use "tree";
+@use "tabs";
+@use "media";
+@use "pages";
+@use "page";
+@use "refs";
+@use "fs";
+@use "editor";

@@ -1,11 +1,48 @@
-:root {
-    --bg: #05080d;
-    --bg90: rgba(5, 8, 13, 0.9);
-    --text: #f5f9ff;
-    --submit: rgba(183, 224, 230, 0.2);
-    --border: #b7e0e6;
-    --border70: rgba(183, 224, 230, 0.7);
-    --border5: rgba(183, 224, 230, 0.05);
-    --border-inner: #2f3942;
-    --highlight: #f4e669;
+// Sass-level design tokens. Everything that ends up in the CSS is exposed as
+// custom properties prefixed with --shifu- and scoped to .shifu, so they never
+// collide with (or get overridden by) variables of the website underneath.
+
+$font-family: "Shifu Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+$font-size: 14px;
+$font-size-small: 12px;
+$font-size-tiny: 11px;
+$line-height: 1.5;
+
+$radius-small: 4px;
+$radius: 6px;
+$radius-large: 10px;
+
+$transition: 0.15s ease;
+$z-index: 2147483000;
+
+@mixin tokens {
+    --shifu-bg: #0b0f14;
+    --shifu-surface: rgba(13, 17, 23, 0.94);
+    --shifu-surface-raised: #141a22;
+    --shifu-surface-hover: #1b232d;
+    --shifu-text: #e6edf3;
+    --shifu-text-muted: #8b98a8;
+    --shifu-border: #263039;
+    --shifu-border-strong: #3a4653;
+    --shifu-accent: #b7e0e6;
+    --shifu-accent-soft: rgba(183, 224, 230, 0.12);
+    --shifu-accent-softer: rgba(183, 224, 230, 0.05);
+    --shifu-accent-contrast: #05080d;
+    --shifu-highlight: #f4e669;
+    --shifu-highlight-contrast: #05080d;
+    --shifu-danger: #ff7b72;
+    --shifu-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+    --shifu-focus: 0 0 0 3px rgba(183, 224, 230, 0.25);
+}
+
+@mixin icon($size: 14px) {
+    display: inline-block;
+    flex: none;
+    width: $size;
+    height: $size;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    vertical-align: middle;
 }

@@ -4,7 +4,7 @@
 {{ $override := .Data.Override }}
 
 {{ if and (not $override) .Data.Element.Ref }}
-    <p style="color: var(--highlight);">
+    <p style="color: var(--shifu-highlight);">
         {{ i18n .Data.Lang "content_element_reference_warn" }}
     </p>
     <p>

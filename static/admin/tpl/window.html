@@ -5,8 +5,8 @@
 <div id="{{ .Data.WindowOptions.ID }}"
      class="shifu shifu-window"
      {{ if or .Data.WindowOptions.MinWidth .Data.WindowOptions.MaxWidth }}
-        style="{{ if or .Data.WindowOptions.MinWidth }}min-width: {{ .Data.WindowOptions.MinWidth }}px;{{ end }}
-            {{ if or .Data.WindowOptions.MaxWidth }}max-width: {{ .Data.WindowOptions.MaxWidth }}px;{{ end }}"
+        style="{{ if .Data.WindowOptions.MinWidth }}min-width: {{ .Data.WindowOptions.MinWidth }}px;{{ end }}
+            {{ if .Data.WindowOptions.MaxWidth }}max-width: {{ .Data.WindowOptions.MaxWidth }}px;{{ end }}"
      {{ end }}
      hx-ext="response-targets">
     <div class="shifu-window-title">
@@ -30,11 +30,13 @@
 
 <script>
     (function() {
-        let maxIndex = 0;
+        let maxIndex = 2147483000;
 
         document.querySelectorAll(".shifu-window").forEach(e => {
-            if (e.style.zIndex > maxIndex) {
-                maxIndex = e.style.zIndex;
+            const zIndex = parseInt(e.style.zIndex, 10) || 0;
+
+            if (zIndex > maxIndex) {
+                maxIndex = zIndex;
             }
         });
 

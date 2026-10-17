@@ -1,44 +1,39 @@
+@use "vars" as *;
+
 .shifu-media {
     &-tree {
+        flex: none;
         min-width: 25%;
-        border-style: solid;
-        border-width: 0 1px 0 0;
-        border-color: #000000;
-        padding: 0 8px 0 2px;
+        padding: 0 16px 0 2px;
+        border-right: 1px solid var(--shifu-border);
     }
 
-    &-files, &-files-selection {
+    &-files,
+    &-files-selection {
         flex: 1;
-        white-space: nowrap;
+        min-width: 0;
         max-height: 75vh;
-        overflow-y: scroll;
+        overflow-y: auto;
+        white-space: nowrap;
 
-        img {
+        // file previews only, not the icons inside buttons
+        td > img:not([src*="/icons/"]) {
+            display: block;
             max-width: 80px;
             max-height: 50px;
-        }
-    }
-
-    &-directory {
-        &-name {
-            padding: 0 2px;
-        }
-
-        &-selected {
-            background: var(--highlight);
-            color: var(--bg) !important;
-            border-radius: 4px;
+            border-radius: $radius-small;
+            background:
+                repeating-conic-gradient(var(--shifu-surface-raised) 0 25%, var(--shifu-bg) 0 50%) 0 0 / 12px 12px;
         }
     }
 
     &-file-selection {
         cursor: pointer;
     }
+}
 
-    &-file-selected {
-        td {
-            background: var(--highlight);
-            color: var(--bg) !important;
-        }
-    }
+.shifu .shifu-media-file-selected td,
+.shifu .shifu-media-file-selected:hover td {
+    color: var(--shifu-highlight-contrast);
+    background: var(--shifu-highlight);
 }

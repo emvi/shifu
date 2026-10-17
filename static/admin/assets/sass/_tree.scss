@@ -1,98 +1,47 @@
+@use "vars" as *;
+
 .shifu-tree {
     padding-left: 2px;
+    font-size: 13px;
 
     ul {
+        position: relative;
         list-style: none;
         margin: 0;
         padding: 0;
         user-select: none;
-        position: relative;
 
         li {
             position: static;
-            cursor: pointer;
+            margin: 0;
             padding: 0 0 0 10px;
+            cursor: pointer;
 
             &::before {
                 display: none;
             }
         }
 
-        ul {
-            margin: 0;
-            padding: 0;
+        ul li {
+            margin: 0 0 0 4px;
+            padding: 0 0 0 16px;
+            border-left: 1px solid var(--shifu-border);
 
-            li {
-                position: static;
-                cursor: pointer;
-                padding: 0 0 0 16px;
-                margin: 0 0 0 2px;
-                border-left: 1px solid var(--border-inner);
-
-                &::before {
-                    content: "";
-                    display: block;
-                    position: absolute;
-                    width: 4px;
-                    height: 10px;
-                    border: solid var(--border-inner);
-                    border-width: 0 0 1px 1px;
-                    left: 2px;
-                    margin: 0;
-                }
+            &::before {
+                content: "";
+                display: block;
+                position: absolute;
+                left: 4px;
+                width: 6px;
+                height: 11px;
+                margin: 0;
+                border: solid var(--shifu-border);
+                border-width: 0 0 1px 1px;
+                border-bottom-left-radius: 4px;
             }
 
-            li:last-child {
-                border-color: transparent;
-            }
-        }
-    }
-
-    summary {
-        display: flex;
-        justify-content: space-between;
-        cursor: pointer;
-        position: relative;
-        padding: 0 0 0 14px;
-        gap: 12px;
-
-        & > span {
-            display: flex;
-            gap: 2px;
-            align-items: center;
-
-            img {
-                width: 12px;
-                height: 12px;
-            }
-        }
-
-        & > span:last-child {
-            display: none;
-        }
-
-        &::marker {
-            display: none;
-            content: "";
-        }
-
-        &::before {
-            content: "";
-            display: block;
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            top: 6px;
-            left: -2px;
-            background-image: url("/shifu-admin/static/icons/folder-open.svg");
-            background-repeat: no-repeat;
-        }
-
-        &:hover {
-            color: var(--highlight);
-
-            & > span:last-child {
-                display: inline;
+            &:last-child {
+                border-left-color: transparent;
             }
         }
     }
@@ -100,24 +49,104 @@
     details {
         margin: 0 0 0 -10px;
 
-        &[open] > summary {
-            &::before {
-                background-image: url("/shifu-admin/static/icons/folder-close.svg");
-            }
-        }
+        & > summary {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            min-height: 22px;
+            margin: 0;
+            padding: 0 4px 0 20px;
+            list-style: none;
+            border-radius: $radius-small;
+            cursor: pointer;
+            transition: background-color $transition, color $transition;
 
-        &.empty {
-            summary {
-                &::before {
-                    background-image: url("/shifu-admin/static/icons/folder.svg");
+            &::-webkit-details-marker {
+                display: none;
+            }
+
+            &::marker {
+                content: "";
+            }
+
+            &::before {
+                content: "";
+                display: block;
+                position: absolute;
+                top: 50%;
+                left: 2px;
+                width: 14px;
+                height: 14px;
+                transform: translateY(-50%);
+                background: url("icons/folder-open.svg") center / contain no-repeat;
+            }
+
+            & > span {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                white-space: nowrap;
+
+                img {
+                    @include icon(14px);
+                    padding: 1px;
+                    border-radius: $radius-small;
+                    cursor: pointer;
+                    opacity: 0.75;
+                    transition: opacity $transition, background-color $transition;
+
+                    &:hover {
+                        opacity: 1;
+                        background: var(--shifu-accent-soft);
+                    }
+                }
+            }
+
+            & > span:last-child:not(:first-child) {
+                visibility: hidden;
+            }
+
+            &:hover {
+                color: var(--shifu-accent);
+                background: var(--shifu-accent-softer);
+
+                & > span:last-child {
+                    visibility: visible;
                 }
             }
         }
 
-        &.file > summary {
-            &::before {
-                background-image: url("/shifu-admin/static/icons/file.svg");
-            }
+        &[open] > summary::before {
+            background-image: url("icons/folder-close.svg");
+        }
+
+        &.empty > summary::before {
+            background-image: url("icons/folder.svg");
+        }
+
+        &.file > summary::before {
+            background-image: url("icons/file.svg");
         }
     }
+}
+
+// selected entries in the different trees
+.shifu-media-directory-name,
+.shifu-fs-directory-name,
+.shifu-pages-entry-name,
+.shifu-refs-entry-name {
+    padding: 1px 6px;
+    margin-left: -4px;
+    border-radius: $radius-small;
+    transition: background-color $transition, color $transition;
+}
+
+.shifu .shifu-media-directory-selected,
+.shifu .shifu-fs-directory-selected,
+.shifu .shifu-pages-entry-selected,
+.shifu .shifu-refs-entry-selected {
+    color: var(--shifu-highlight-contrast);
+    background: var(--shifu-highlight);
 }
