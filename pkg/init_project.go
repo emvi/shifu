@@ -7,8 +7,8 @@ import (
 )
 
 var starterFiles = map[string]string{
-	// Configuration and gitignore, ADMIN_PASSWORD is empty on purpose:
-	// a random password for the user "admin" is logged on the first start.
+	// Configuration and gitignore. ADMIN_PASSWORD is only used to create the user "admin" on the first start
+	// (when shifu.db is created), so it must be changed in the admin UI before going live.
 	"config.json": `{
     "dev": ${DEV},
     "log_level": "info",
@@ -50,7 +50,7 @@ HOST=localhost
 PORT=8080
 SECURE_COOKIES=false
 HOSTNAME=http://localhost:8080
-ADMIN_PASSWORD=
+ADMIN_PASSWORD=admin
 `,
 	".gitignore": `.secrets.env
 shifu.db
