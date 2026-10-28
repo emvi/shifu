@@ -27,8 +27,27 @@ func main() {
 		cmd = strings.ToLower(os.Args[1])
 	}
 
-	if len(os.Args) > 2 {
-		dir = os.Args[2]
+	// positional arguments and flags (--server, --module <name>) after the command
+	server := false
+	module := ""
+	args := make([]string, 0)
+
+	for i := 2; i < len(os.Args); i++ {
+		switch os.Args[i] {
+		case "--server":
+			server = true
+		case "--module":
+			if i+1 < len(os.Args) {
+				module = os.Args[i+1]
+				i++
+			}
+		default:
+			args = append(args, os.Args[i])
+		}
+	}
+
+	if len(args) > 0 {
+		dir = args[0]
 	}
 
 	switch cmd {
@@ -46,7 +65,11 @@ func main() {
 
 		break
 	case "init":
-		if err := shifu.Init(dir); err != nil {
+		if server {
+			if err := shifu.InitServer(dir, module); err != nil {
+				slog.Error("Error initializing new Shifu server project", "error", err)
+			}
+		} else if err := shifu.Init(dir); err != nil {
 			slog.Error("Error initializing new Shifu project", "error", err)
 		}
 		break
@@ -84,6 +107,6 @@ func main() {
 
 		break
 	default:
-		slog.Info("Command unknown. Usage: shifu run|init|version|pull|push <path>")
+		slog.Info("Command unknown. Usage: shifu run|init|version|pull|push <path> (init: --server [--module <name>])")
 	}
 }

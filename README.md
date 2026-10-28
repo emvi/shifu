@@ -36,6 +36,7 @@ After that you can run Shifu from the command line with the `shifu` command.
 
 * `shifu run <path>` will run Shifu in the given directory
 * `shifu init <path>` will initialize a new project in the given directory
+* `shifu init <path> --server [--module <name>]` will initialize a Go project for a custom server using Shifu as a library
 * `shifu version` will print the version number of Shifu
 * `shifu pull` will pull changed `static` and `content` files from a remote server if configured
 * `shifu push` will push changed `static` and `content` files to a remote server if configured

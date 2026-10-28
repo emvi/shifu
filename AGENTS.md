@@ -87,6 +87,9 @@ Use this layout for new sites (it matches `shifu init` and the admin UI's own pa
     └── partials/             # non-editable helpers used via {{ template }}
 ```
 
+If the project is a **custom Go server** (a `go.mod` and `cmd/server/main.go`
+exist in the root), this layout lives in `public/` and §10 applies.
+
 If you are editing an **existing** site, keep its structure, naming and file
 locations (check `config.json` for the real `sass`/`js` dirs, entrypoints and output
 paths) instead of migrating it to this layout.
@@ -253,7 +256,7 @@ Container with child elements — `tpl/sections/cards.html`:
     <div class="cards__grid">
         {{ .CMS.Render .Args .Page (fmt "%s.items" .Content.Position) (index .Content.Content "items") }}
 
-        {{ if loggedIn }}
+        {{ if loggedIn .Page }}
             <slot name="{{ .Content.Position }}/items"></slot>
         {{ end }}
     </div>
@@ -283,14 +286,14 @@ Multiple content areas (e.g. two columns) — `tpl/sections/columns.html`:
     <div class="columns__col">
         {{ .CMS.Render .Args .Page (fmt "%s.left" .Content.Position) (index .Content.Content "left") }}
 
-        {{ if loggedIn }}
+        {{ if loggedIn .Page }}
             <slot name="{{ .Content.Position }}/left"></slot>
         {{ end }}
     </div>
     <div class="columns__col">
         {{ .CMS.Render .Args .Page (fmt "%s.right" .Content.Position) (index .Content.Content "right") }}
 
-        {{ if loggedIn }}
+        {{ if loggedIn .Page }}
             <slot name="{{ .Content.Position }}/right"></slot>
         {{ end }}
     </div>
@@ -777,7 +780,154 @@ header ref if the page should be linked.
 
 ---
 
-## 10. Verification checklist
+## 10. Custom server (Shifu as a library)
+
+Shifu can be embedded in a Go application instead of running the `shifu` binary.
+Use this when the site needs things templates and content JSON can't do: custom
+template functions, extra HTTP routes/APIs, or page handlers that load data
+before rendering (blog articles from a database, forms, …). Everything in §1–§9
+still applies, but to the website inside `public/`.
+
+### 10.1 Create a project
+
+```sh
+shifu init <path> --server [--module example.com/site]
+cd <path>
+make deps   # resolves and vendors the dependencies (creates go.sum and vendor/)
+make run
+```
+
+`--module` sets the Go module path (default: the directory name). The command
+refuses to run in a directory that already contains a `go.mod`.
+
+### 10.2 Project structure
+
+```
+.
+├── go.mod / go.sum
+├── Makefile
+├── .gitignore            # binaries (server, server.exe), .vscode/, .idea/, secrets
+├── vendor/               # vendored dependencies — commit it, never edit by hand
+├── cmd/
+│   └── server/
+│       └── main.go       # sets up and starts Shifu, nothing else
+├── pkg/
+│   ├── handler/          # ALL route and page handlers (one file per feature)
+│   │   └── handler.go    # Register(): attaches routes + page handlers
+│   ├── funcmap/          # custom template functions (when needed)
+│   └── <feature>/        # any other logic (db, mail, blog, …)
+└── public/               # the Shifu website — the layout from §2
+    ├── config.json
+    ├── .secrets.env
+    ├── admin/ assets/ content/ static/ tpl/
+    └── shifu.db          # created at runtime
+```
+
+Rules:
+
+* `cmd/server/main.go` only wires things together. No business logic there.
+* Handlers go in `pkg/handler`. Other Go code goes in `pkg/<name>`. Don't
+  create `internal/`, `src/` or top-level Go packages.
+* The server reads the website from `public/` (relative to the working
+  directory). Run it from the project root (`make run`). When deploying, ship the
+  binary next to the `public/` directory.
+* Dependencies are vendored. After adding or changing an import, run `make deps`
+  (`go get -u -t ./...`, `go mod tidy`, `go mod vendor`). Builds then use
+  `vendor/` automatically.
+* Paths in `public/config.json` (`sass.dir`, `js.out`, …) stay relative to
+  `public/`, as in a standalone site.
+
+### 10.3 main.go
+
+```go
+package main
+
+import (
+	"html/template"
+	"log/slog"
+
+	"example.com/site/pkg/handler"
+	shifu "github.com/emvi/shifu/pkg"
+	"github.com/go-chi/chi/v5"
+)
+
+func main() {
+	router := chi.NewRouter() // custom routes are merged with Shifu's router
+
+	s, err := shifu.NewServer("public", shifu.ServerOptions{
+		Router:  router,
+		FuncMap: template.FuncMap{}, // merged with Shifu's template functions
+	})
+
+	if err != nil {
+		slog.Error("Error setting up server", "error", err)
+		return
+	}
+
+	handler.Register(s, router)
+
+	if err := s.Start(nil); err != nil {
+		slog.Error("Error starting server", "error", err)
+	}
+}
+```
+
+### 10.4 Extension points
+
+| Need | How |
+|---|---|
+| Custom template function | Add it to `ServerOptions.FuncMap` (define the functions in `pkg/funcmap`). Use it in `tpl/` like any built-in. Don't shadow Shifu or Sprig function names. |
+| Extra HTTP route / API | `router.Get("/api/…", handler.X)` in `handler.Register`. Don't use paths that pages, `/static/*` or the admin UI path already use. |
+| Load data before rendering a page | Page handler: `s.Content.SetHandler("blog", handler.Blog)`, then set `"handler": "blog"` in the page JSON. |
+
+Page handler signature and pattern (`pkg/handler/blog.go`):
+
+```go
+func Blog(c *cms.CMS, page cms.Content, args map[string]string, w http.ResponseWriter, r *http.Request) {
+	article, err := blog.Find(args["slug"]) // logic lives in pkg/blog
+
+	if err != nil {
+		c.Render404(w, r, r.URL.Path)
+		return
+	}
+
+	// pass data to templates via the page, e.g. page.Data / custom FuncMap lookups
+	_ = article
+	c.RenderPage(w, r, strings.ToLower(r.URL.Path), args, &page)
+}
+```
+
+* The handler name in the page JSON must match `SetHandler` exactly. A page
+  with an unregistered handler returns HTTP 500 ("Page handler not found" in the log).
+* Always end a page handler with `c.RenderPage(…)`, `c.Render404(…)` or your own
+  response. Otherwise, the client gets an empty page.
+* Keep content editable: data from Go code should *add* to pages. Text
+  editors should change stays in `copy`/`data` and admin configs (§5).
+
+### 10.5 Makefile
+
+Generated by `shifu init --server`. Keep these targets:
+
+| Target | Does |
+|---|---|
+| `make run` | `go run cmd/server/main.go` |
+| `make deps` | `go get -u -t ./...`, `go mod tidy`, `go mod vendor` |
+| `make test` | `go test -cover ./...` |
+| `make build` | Build for the current platform |
+| `make build_linux_amd64` / `build_linux_arm64` | Linux binaries (`server`) |
+| `make build_mac_amd64` / `build_mac_arm64` | macOS binaries (`server`) |
+| `make build_windows_amd64` / `build_windows_arm64` | Windows binaries (`server.exe`) |
+
+Builds use `-ldflags "-s -w"`. **Keep cgo enabled** (never set `CGO_ENABLED=0`):
+the admin UI stores users and sessions in SQLite (`go-sqlite3`), which needs cgo.
+Cross-compiling therefore needs a C cross-compiler for the target (e.g.
+`CC=aarch64-linux-gnu-gcc make build_linux_arm64`), or build on the target
+platform. The target machine also needs the `sass` CLI if Sass compilation is
+enabled in `config.json`.
+
+---
+
+## 11. Verification checklist
 
 Before finishing, confirm:
 
@@ -793,5 +943,6 @@ Before finishing, confirm:
 - [ ] No hand-written files in `static/` for CSS/JS output; no extra build tooling.
 - [ ] Every Sass partial is `@use`d by the entrypoint; every JS module is imported by the entrypoint.
 - [ ] JSON files are valid (e.g. `python3 -m json.tool file.json`).
-- [ ] `shifu run .` starts without "Error compiling sass", "Error compiling js", "Error rendering template" or "Error parsing website content file" in the log; no page shows `Reference "…" not found!` or `<nil>`.
+- [ ] Custom server only: `go vet ./...` passes, `make deps` was run after import changes (`vendor/` up to date), handlers are in `pkg/handler`, and every `"handler"` used in `public/content/` is registered via `SetHandler`.
+- [ ] `shifu run .` (custom server: `make run`) starts without "Error compiling sass", "Error compiling js", "Error rendering template" or "Error parsing website content file" in the log; no page shows `Reference "…" not found!` or `<nil>`.
 - [ ] Logged in at `/admin`, each element can be selected, edited, and new children can be added to every content area.

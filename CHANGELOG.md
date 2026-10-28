@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.6.0
+
+* added server project initialization command
+* improved regular project initialization
+* updated AGENTS.md
+* updated dependencies
+
 ## 1.5.1
 
 * fixed editing nested references
