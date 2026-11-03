@@ -44,9 +44,9 @@ var starterFiles = map[string]string{
         "admin_password": "${ADMIN_PASSWORD}"
     },
     "llms": {
-        "enabled": false,
-        "title": "",
-        "description": "",
+        "enabled": true,
+        "title": "Shifu Website",
+        "description": "A website built with Shifu.",
         "selector": "main"
     }
 }
@@ -269,6 +269,7 @@ static/main.js.map
     "path": {
         "en": "/not-found"
     },
+    "llms": { "exclude": true },
     "content": {
         "content": [
             {

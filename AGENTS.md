@@ -184,13 +184,14 @@ Notes:
 * Keys starting with `_` are treated as comments by convention (they are ignored).
 * Optional sections (`api`, `remote`, `git`, `analytics`, `cors`) are documented in
   the Shifu README — only modify them when asked.
-* `llms` (opt-in, only enable when asked): serves `/llms.txt` and a Markdown
+* `llms` (off by default; enabled in projects created by `shifu init`. On existing
+  sites only enable it when asked): serves `/llms.txt` and a Markdown
   version of each page (`/about.md`, `/index.md` for `/`). The Markdown is
   converted from the rendered `<main>` element (`selector`), title and
   description come from `<title>` and `<meta name="description">`. Navigation,
   scripts, forms and buttons are dropped. Without `<main>`, the `<body>` minus its
   top-level `<header>`/`<footer>` is used. Exclude a page with
-  `"llms": { "exclude": true }` in its JSON.
+  `"llms": { "exclude": true }` in its JSON (the generated 404 page does).
 * Run with `shifu run .` (requires the `sass` CLI: `npm i -g sass`). JS needs no
   Node.js, esbuild is built in.
 
