@@ -49,6 +49,11 @@ func TestHTMLToMarkdown(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "## Post\n\nText\n", string(page.Markdown))
 
+	// the description follows an existing h1
+	page, err = htmlToMarkdown([]byte(`<html><head><title>T</title><meta name="description" content="D" /></head><body><main><h1>Hello</h1><p>Text</p></main></body></html>`), "main", "")
+	assert.NoError(t, err)
+	assert.Equal(t, "# Hello\n\n> D\n\nText\n", string(page.Markdown))
+
 	// id and class selectors
 	page, err = htmlToMarkdown([]byte(`<body><div id="a">A</div><div class="x b">B</div></body>`), ".b", "")
 	assert.NoError(t, err)

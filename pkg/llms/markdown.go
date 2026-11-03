@@ -85,7 +85,13 @@ func htmlToMarkdown(data []byte, selector, domain string) (*markdownPage, error)
 	content = bytes.TrimSpace(content)
 	var buffer bytes.Buffer
 
-	if page.Title != "" && !bytes.HasPrefix(content, []byte("# ")) {
+	// the description follows the h1, which is either the page title or the first h1 of the content
+	if bytes.HasPrefix(content, []byte("# ")) {
+		headline, rest, _ := bytes.Cut(content, []byte("\n"))
+		buffer.Write(headline)
+		buffer.WriteString("\n\n")
+		content = bytes.TrimSpace(rest)
+	} else if page.Title != "" {
 		buffer.WriteString(fmt.Sprintf("# %s\n\n", oneLine(page.Title)))
 	}
 
@@ -94,8 +100,7 @@ func htmlToMarkdown(data []byte, selector, domain string) (*markdownPage, error)
 	}
 
 	buffer.Write(content)
-	buffer.WriteString("\n")
-	page.Markdown = buffer.Bytes()
+	page.Markdown = append(bytes.TrimSpace(buffer.Bytes()), '\n')
 	return page, nil
 }
 
