@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.0
+
+* added support for llms.txt
+* added support for generating Markdown version of pages with a static path
+
 ## 1.6.0
 
 * added server project initialization command

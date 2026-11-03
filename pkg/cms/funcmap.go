@@ -17,6 +17,7 @@ import (
 	"github.com/emvi/shifu/pkg/admin/db"
 	"github.com/emvi/shifu/pkg/admin/model"
 	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/emvi/shifu/pkg/llms"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
@@ -321,6 +322,6 @@ func llmsLink(page *Content) template.HTML {
 		path = page.Request.URL.Path
 	}
 
-	href := template.HTMLEscapeString(cfg.Get().Server.Hostname + markdownPath(path))
+	href := template.HTMLEscapeString(cfg.Get().Server.Hostname + llms.MarkdownPath(path))
 	return template.HTML(fmt.Sprintf(`<link rel="alternate" type="text/markdown" href="%s" />`, href))
 }

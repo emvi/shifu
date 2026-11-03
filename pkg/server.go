@@ -25,6 +25,7 @@ import (
 	"github.com/emvi/shifu/pkg/cfg"
 	"github.com/emvi/shifu/pkg/cms"
 	"github.com/emvi/shifu/pkg/js"
+	"github.com/emvi/shifu/pkg/llms"
 	"github.com/emvi/shifu/pkg/middleware"
 	"github.com/emvi/shifu/pkg/sass"
 	"github.com/emvi/shifu/pkg/sitemap"
@@ -51,6 +52,9 @@ type Server struct {
 
 	// Sitemap is the sitemap generated from the content.
 	Sitemap *sitemap.Sitemap
+
+	// LLMs serves the llms.txt and Markdown versions of the pages generated from the content.
+	LLMs *llms.LLMs
 
 	router  chi.Router
 	funcMap template.FuncMap
@@ -107,6 +111,7 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 	}
 
 	sm := sitemap.New()
+	l := llms.New()
 	ctx, cancel := context.WithCancel(context.Background())
 	c := cms.NewCMS(cms.Options{
 		Ctx:       ctx,
@@ -116,10 +121,12 @@ func NewServer(dir string, options ServerOptions) (*Server, error) {
 		FuncMap:   options.FuncMap,
 		Source:    provider,
 		Sitemap:   sm,
+		LLMs:      l,
 	})
 	return &Server{
 		Content: c,
 		Sitemap: sm,
+		LLMs:    l,
 		router:  options.Router,
 		funcMap: options.FuncMap,
 		ctx:     ctx,
