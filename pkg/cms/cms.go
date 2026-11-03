@@ -22,6 +22,7 @@ import (
 
 	"github.com/emvi/shifu/pkg/analytics"
 	"github.com/emvi/shifu/pkg/cfg"
+	"github.com/emvi/shifu/pkg/llms"
 	"github.com/emvi/shifu/pkg/sitemap"
 	"github.com/emvi/shifu/pkg/source"
 )
@@ -38,6 +39,7 @@ type CMS struct {
 	notFound        map[string]string
 	source          source.Provider
 	sitemap         *sitemap.Sitemap
+	llms            *llms.LLMs
 	tpl             *Cache
 	pages           []Route
 	refs            map[string]Content
@@ -56,6 +58,7 @@ type Options struct {
 	FuncMap   template.FuncMap
 	Source    source.Provider
 	Sitemap   *sitemap.Sitemap
+	LLMs      *llms.LLMs
 }
 
 // NewCMS sets up a new CMS instance for the given configuration.
@@ -64,18 +67,24 @@ func NewCMS(options Options) *CMS {
 		options.NotFound = map[string]string{"en": notFoundPath}
 	}
 
+	if options.LLMs == nil {
+		options.LLMs = llms.New()
+	}
+
 	cms := &CMS{
 		baseDir:         options.BaseDir,
 		hotReload:       options.HotReload,
 		notFound:        options.NotFound,
 		source:          options.Source,
 		sitemap:         options.Sitemap,
+		llms:            options.LLMs,
 		pages:           make([]Route, 0),
 		refs:            make(map[string]Content),
 		handler:         make(map[string]Handler),
 		pageExperiments: make(map[string][]string),
 		pageCache:       make(map[string][]byte),
 	}
+	cms.llms.SetRenderer(cms.renderLLMs)
 	cms.tpl = NewCache(filepath.Join(options.BaseDir, "tpl"), options.FuncMap, options.HotReload)
 	cms.source.Watch(options.Ctx, func() {
 		slog.Info("Updating website templates, content, and sitemap...")
@@ -96,6 +105,12 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 
 	start := time.Now()
 	path := r.URL.Path
+
+	if cfg.Get().LLMs.Enabled && llms.IsMarkdownPath(path) {
+		cms.llms.ServeMarkdown(w, r)
+		return
+	}
+
 	page, args, ok := cms.getPage(path)
 
 	if !ok {
@@ -126,17 +141,29 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 	slog.Debug("Served page", "time_ms", time.Now().Sub(start).Milliseconds())
 }
 
+// ServeLLMs serves the llms.txt listing all pages with a link to their Markdown version.
+func (cms *CMS) ServeLLMs(w http.ResponseWriter, r *http.Request) {
+	if cms.hotReload {
+		cms.updateContent()
+	}
+
+	cms.llms.ServeTxt(w, r)
+}
+
 // RenderPage renders the given page and returns it to the client.
 // If no content is present, a default head and body section are served.
 func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, args map[string]string, page *Content) {
 	page.Request = r
 	cms.selectExperiments(w, r, page)
+	markdown := llms.IsMarkdownRequest(r)
 
-	if cms.redirectExperiment(w, r, page) {
+	if !markdown && cms.redirectExperiment(w, r, page) {
 		return
 	}
 
-	cms.pageView(r, page)
+	if !markdown {
+		cms.pageView(r, page)
+	}
 
 	for k, v := range page.Header {
 		w.Header().Add(k, v)
@@ -615,11 +642,12 @@ func (cms *CMS) updateContent() {
 	}
 
 	cms.m.Lock()
-	defer cms.m.Unlock()
 	cms.pages = pages
 	cms.refs = refs
 	cms.pageExperiments = pageExperiments
 	cms.pageCache = make(map[string][]byte)
+	cms.m.Unlock()
+	cms.updateLLMsPages(pages)
 }
 
 func (cms *CMS) getContent(path string) (*Content, error) {
@@ -748,4 +776,49 @@ func (cms *CMS) isZeroValue(v any) bool {
 func (cms *CMS) isLoggedIn(r *http.Request) bool {
 	session, err := r.Cookie("session")
 	return err == nil && session.Value != ""
+}
+
+func (cms *CMS) isNotFoundPath(path string) bool {
+	for _, p := range cms.notFound {
+		if p == path {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (cms *CMS) renderLLMs(w http.ResponseWriter, r *http.Request, path string) (bool, bool) {
+	page, args, ok := cms.getPage(path)
+
+	if !ok || page.LLMs.Exclude {
+		return false, false
+	}
+
+	if page.Handler != "" {
+		handler, found := cms.getHandler(page.Handler)
+
+		if !found {
+			slog.Error("Page handler not found", "path", path, "handler", page.Handler)
+			return false, false
+		}
+
+		handler(cms, page, args, w, r)
+	} else {
+		cms.RenderPage(w, r, path, args, &page)
+	}
+
+	return true, !page.DisableCache && !cms.isLoggedIn(r)
+}
+
+func (cms *CMS) updateLLMsPages(pages []Route) {
+	updatePages := make([]llms.Page, 0, len(pages))
+
+	for _, route := range pages {
+		if route.isRaw && !route.content.LLMs.Exclude && !cms.isNotFoundPath(route.raw) {
+			updatePages = append(updatePages, llms.Page{Language: route.content.Language, Path: route.raw})
+		}
+	}
+
+	cms.llms.Update(updatePages)
 }

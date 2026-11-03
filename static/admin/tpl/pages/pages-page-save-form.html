@@ -77,6 +77,14 @@
             <input type="checkbox" name="cache" id="cache" {{ if .Data.Cache }}checked{{ end }} />
             <label for="cache">{{ i18n .Data.Lang "pages_create_page_cache" }}</label>
         </fieldset>
+
+        {{ if config.LLMs.Enabled }}
+            <fieldset class="checkbox">
+                <input type="checkbox" name="llms_exclude" id="llms_exclude" {{ if .Data.LLMsExclude }}checked{{ end }} />
+                <label for="llms_exclude">{{ i18n .Data.Lang "pages_create_page_llms_exclude" }}</label>
+            </fieldset>
+        {{ end }}
+
         <fieldset>
             <label for="sitemap">{{ i18n .Data.Lang "pages_create_page_sitemap" }}</label>
             <input type="number" name="sitemap" id="sitemap" value="{{ .Data.Sitemap }}" step="0.01" />

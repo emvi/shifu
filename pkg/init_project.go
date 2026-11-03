@@ -42,6 +42,12 @@ var starterFiles = map[string]string{
     "ui": {
         "path": "/admin",
         "admin_password": "${ADMIN_PASSWORD}"
+    },
+    "llms": {
+        "enabled": true,
+        "title": "Shifu Website",
+        "description": "A website built with Shifu.",
+        "selector": "main"
     }
 }
 `,
@@ -77,6 +83,7 @@ static/main.js.map
     {{- end }}
     <link rel="stylesheet" href="/static/main.css?v={{ .CMS.LastUpdate }}" />
     <script defer src="/static/main.js?v={{ .CMS.LastUpdate }}"></script>
+    {{ llms .Page }}
     {{ adminHead .Page }}
 </head>
 <body>
@@ -262,6 +269,7 @@ static/main.js.map
     "path": {
         "en": "/not-found"
     },
+    "llms": { "exclude": true },
     "content": {
         "content": [
             {

@@ -33,6 +33,7 @@ func Page(w http.ResponseWriter, r *http.Request) {
 		Name:           strings.TrimSuffix(filepath.Base(path), ".json"),
 		PagePath:       page.Path,
 		Cache:          page.DisableCache,
+		LLMsExclude:    page.LLMs.Exclude,
 		Sitemap:        sitemapPriority,
 		Handler:        page.Handler,
 		Selected:       getDirectory(filepath.Dir(path)),
