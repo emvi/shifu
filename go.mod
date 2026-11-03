@@ -3,6 +3,7 @@ module github.com/emvi/shifu
 go 1.27.0
 
 require (
+	github.com/JohannesKaufmann/html-to-markdown/v2 v2.5.2
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/emvi/iso-639-1 v1.1.1
 	github.com/evanw/esbuild v0.28.2
@@ -16,10 +17,12 @@ require (
 	github.com/stretchr/testify v1.12.1
 	github.com/yuin/goldmark v1.8.6
 	golang.org/x/crypto v0.58.0
+	golang.org/x/net v0.60.0
 )
 
 require (
 	dario.cat/mergo v1.0.2 // indirect
+	github.com/JohannesKaufmann/dom v0.3.1 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
 	github.com/emvi/null v1.3.1 // indirect

@@ -47,6 +47,7 @@ var (
 		"loggedIn":      isLoggedIn,
 		"adminHead":     adminHead,
 		"adminBody":     adminBody,
+		"llms":          llmsLink,
 	}
 )
 
@@ -307,4 +308,19 @@ func adminBody(page *Content) template.HTML {
 	}
 
 	return ""
+}
+
+func llmsLink(page *Content) template.HTML {
+	if !cfg.Get().LLMs.Enabled || page == nil || page.LLMs.Exclude {
+		return ""
+	}
+
+	path := page.Path[page.Language]
+
+	if page.Request != nil {
+		path = page.Request.URL.Path
+	}
+
+	href := template.HTMLEscapeString(cfg.Get().Server.Hostname + markdownPath(path))
+	return template.HTML(fmt.Sprintf(`<link rel="alternate" type="text/markdown" href="%s" />`, href))
 }

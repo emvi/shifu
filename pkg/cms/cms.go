@@ -44,6 +44,8 @@ type CMS struct {
 	handler         map[string]Handler
 	pageExperiments map[string][]string
 	pageCache       map[string][]byte
+	markdownCache   map[string]*markdownPage
+	llmsTxt         []byte
 	m               sync.RWMutex
 }
 
@@ -75,6 +77,7 @@ func NewCMS(options Options) *CMS {
 		handler:         make(map[string]Handler),
 		pageExperiments: make(map[string][]string),
 		pageCache:       make(map[string][]byte),
+		markdownCache:   make(map[string]*markdownPage),
 	}
 	cms.tpl = NewCache(filepath.Join(options.BaseDir, "tpl"), options.FuncMap, options.HotReload)
 	cms.source.Watch(options.Ctx, func() {
@@ -96,6 +99,12 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 
 	start := time.Now()
 	path := r.URL.Path
+
+	if cfg.Get().LLMs.Enabled && strings.HasSuffix(path, markdownExt) {
+		cms.serveMarkdown(w, r)
+		return
+	}
+
 	page, args, ok := cms.getPage(path)
 
 	if !ok {
@@ -126,17 +135,44 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 	slog.Debug("Served page", "time_ms", time.Now().Sub(start).Milliseconds())
 }
 
+// ServeLLMs serves the llms.txt listing all pages with a link to their Markdown version.
+func (cms *CMS) ServeLLMs(w http.ResponseWriter, r *http.Request) {
+	if cms.hotReload {
+		cms.updateContent()
+	}
+
+	cms.m.RLock()
+	data := cms.llmsTxt
+	cms.m.RUnlock()
+
+	if data == nil {
+		data = cms.generateLLMs(r)
+		cms.m.Lock()
+		cms.llmsTxt = data
+		cms.m.Unlock()
+	}
+
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+
+	if _, err := w.Write(data); err != nil {
+		slog.Debug("Error sending llms.txt", "error", err)
+	}
+}
+
 // RenderPage renders the given page and returns it to the client.
 // If no content is present, a default head and body section are served.
 func (cms *CMS) RenderPage(w http.ResponseWriter, r *http.Request, path string, args map[string]string, page *Content) {
 	page.Request = r
 	cms.selectExperiments(w, r, page)
+	markdown := isMarkdownRequest(r)
 
-	if cms.redirectExperiment(w, r, page) {
+	if !markdown && cms.redirectExperiment(w, r, page) {
 		return
 	}
 
-	cms.pageView(r, page)
+	if !markdown {
+		cms.pageView(r, page)
+	}
 
 	for k, v := range page.Header {
 		w.Header().Add(k, v)
@@ -620,6 +656,8 @@ func (cms *CMS) updateContent() {
 	cms.refs = refs
 	cms.pageExperiments = pageExperiments
 	cms.pageCache = make(map[string][]byte)
+	cms.markdownCache = make(map[string]*markdownPage)
+	cms.llmsTxt = nil
 }
 
 func (cms *CMS) getContent(path string) (*Content, error) {

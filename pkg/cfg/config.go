@@ -36,6 +36,7 @@ type Config struct {
 	JS        JS        `json:"js"`
 	Analytics Analytics `json:"analytics"`
 	UI        UI        `json:"ui"`
+	LLMs      LLMs      `json:"llms"`
 }
 
 // Server is the HTTP server configuration.
@@ -115,6 +116,14 @@ type UI struct {
 	AdminPassword string `json:"admin_password"`
 }
 
+// LLMs is the configuration for AI/LLM support (llms.txt and Markdown versions of pages).
+type LLMs struct {
+	Enabled     bool   `json:"enabled"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Selector    string `json:"selector"`
+}
+
 // Load loads the configuration from config.json.
 func Load(dir string, funcMap template.FuncMap) error {
 	content, err := os.ReadFile(filepath.Join(dir, configFile))
@@ -162,6 +171,10 @@ func Load(dir string, funcMap template.FuncMap) error {
 
 	if cfg.Content.Provider == "" {
 		cfg.Content.Provider = "fs"
+	}
+
+	if cfg.LLMs.Selector == "" {
+		cfg.LLMs.Selector = "main"
 	}
 
 	cfg.BaseDir = dir

@@ -17,6 +17,7 @@ Shifu can also be used as a library in your Go application to add template funct
 * Static content cache
 * Configurable 404 error fallback page
 * Automatic sitemap generation
+* AI/LLM support: `llms.txt` and Markdown versions of pages
 * Integrated analytics using [Pirsch](https://pirsch.io)
   * Track page views
   * Track custom events
@@ -162,6 +163,16 @@ Below is the entire configuration. Keys starting with `_` are comments.
         "path": "/admin",
         "_admin_password": "The default admin user password.",
         "admin_password": "${ADMIN_PASSWORD}"
+    },
+    "llms": {
+        "_enabled": "Serve /llms.txt and a Markdown version of each page (/about.md, /index.md for /).",
+        "enabled": false,
+        "_title": "The title of the llms.txt. Defaults to the title of the / page.",
+        "title": "Acme",
+        "_description": "A short summary of the website for the llms.txt.",
+        "description": "Acme builds things.",
+        "_selector": "The element converted to Markdown (tag name, #id, or .class).",
+        "selector": "main"
     }
 }
 ```
@@ -339,8 +350,35 @@ Shifu comes with a number of template functions that can be used within template
 | loggedIn      | Returns true if the visitor is signed in as admin.                                                                 | `{{ loggedIn .Page }}`                                       |
 | adminHead     | Returns the HTML for the `<head>` section for the admin UI.                                                        | `{{ adminHead .Page }}`                                      |
 | adminBody     | Returns the HTML for the `<body>` section for the admin UI.                                                        | `{{ adminBody .Page }}`                                      |
+| llms          | Returns a link to the Markdown version of the page for the `<head>` (if `llms` is enabled).                        | `{{ llms .Page }}`                                           |
 
 For more template functions, see the [Sprig documentation](https://github.com/Masterminds/sprig).
+
+## AI/LLM Support
+
+When `llms.enabled` is set in the `config.json`, Shifu serves:
+
+* `/llms.txt`: an index of all pages following [llmstxt.org](https://llmstxt.org), grouped by language, with the title and meta description of each page
+* `<path>.md`: a Markdown version of every page (`/about.md`, `/de.md`, `/index.md` for `/`), including dynamic routes (`/blog/my-article.md`)
+
+The Markdown is created from the rendered page: the `<main>` element (see `llms.selector`) is converted, the title and meta description are taken from the `<head>`. Navigation, scripts, forms, and buttons are removed. Without a `<main>` element, the `<body>` is converted without its top-level `<header>` and `<footer>`.
+
+Add `{{ llms .Page }}` to the `<head>` to link the Markdown version. Markdown responses aren't indexed by search engines (`X-Robots-Tag: noindex`) and link to the HTML page as canonical. Page views aren't tracked for them.
+
+Pages can be excluded from both (also available in the admin UI page settings):
+
+```json
+{
+    "path": {
+        "en": "/internal"
+    },
+    "llms": {
+        "exclude": true
+    }
+}
+```
+
+The 404 page and dynamic routes are never listed in the `llms.txt`.
 
 ## Admin UI
 

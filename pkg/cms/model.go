@@ -15,6 +15,12 @@ type Sitemap struct {
 	Priority string `json:"priority,omitempty"`
 }
 
+// LLMs is the AI/LLM configuration for the Content.
+type LLMs struct {
+	// Exclude removes the page from the llms.txt and disables its Markdown version.
+	Exclude bool `json:"exclude,omitempty"`
+}
+
 // Experiment is an A/B testing experiment.
 type Experiment struct {
 	Name    string `json:"name"`
@@ -33,6 +39,7 @@ type Content struct {
 	DisableCache bool                 `json:"disable_cache,omitempty"`
 	Path         map[string]string    `json:"path,omitempty"`
 	Sitemap      Sitemap              `json:"sitemap"`
+	LLMs         LLMs                 `json:"llms,omitzero"`
 	Header       map[string]string    `json:"header,omitempty"`
 	Handler      string               `json:"handler,omitempty"`
 	Analytics    Analytics            `json:"analytics"`
@@ -115,6 +122,7 @@ func (content *Content) Clone() Content {
 		Sitemap: Sitemap{
 			Priority: content.Sitemap.Priority,
 		},
+		LLMs:    content.LLMs,
 		Header:  header,
 		Handler: content.Handler,
 		Analytics: Analytics{

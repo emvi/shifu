@@ -149,6 +149,12 @@ Minimal configuration for local development:
         "path": "/admin",
         "admin_password": "${ADMIN_PASSWORD}"
     },
+    "llms": {
+        "enabled": false,
+        "title": "",
+        "description": "",
+        "selector": "main"
+    },
     "_analytics": {
         "provider": "pirsch",
         "client_secret": "${PIRSCH_CLIENT_SECRET}"
@@ -178,6 +184,13 @@ Notes:
 * Keys starting with `_` are treated as comments by convention (they are ignored).
 * Optional sections (`api`, `remote`, `git`, `analytics`, `cors`) are documented in
   the Shifu README — only modify them when asked.
+* `llms` (opt-in, only enable when asked): serves `/llms.txt` and a Markdown
+  version of each page (`/about.md`, `/index.md` for `/`). The Markdown is
+  converted from the rendered `<main>` element (`selector`), title and
+  description come from `<title>` and `<meta name="description">`. Navigation,
+  scripts, forms and buttons are dropped. Without `<main>`, the `<body>` minus its
+  top-level `<header>`/`<footer>` is used. Exclude a page with
+  `"llms": { "exclude": true }` in its JSON.
 * Run with `shifu run .` (requires the `sass` CLI: `npm i -g sass`). JS needs no
   Node.js, esbuild is built in.
 
@@ -212,6 +225,7 @@ Go `html/template` syntax plus Shifu functions and all
 | `markdown "static/x.md" .`, `markdownBlock "static/x.md" "block" .` | Render a Markdown file (path relative to project root). |
 | `hostname`, `config` | `server.hostname`, full config. |
 | `adminHead .Page`, `adminBody .Page`, `loggedIn .Page` | Admin UI hooks (see §4.4). |
+| `llms .Page` | `<link>` to the page's Markdown version (only if `llms.enabled`, see §3). |
 
 ### 4.3 Element template contract (REQUIRED for admin editing)
 
@@ -339,6 +353,7 @@ regular visitors.
     {{- end }}
     <link rel="stylesheet" href="/static/main.css?v={{ .CMS.LastUpdate }}" />
     <script defer src="/static/main.js?v={{ .CMS.LastUpdate }}"></script>
+    {{ llms .Page }}
     {{ adminHead .Page }}
 </head>
 <body>
@@ -937,6 +952,7 @@ Before finishing, confirm:
 - [ ] Every `copy`/`data` key read in a template is declared in the admin config with the right `type`.
 - [ ] No arrays/objects in `data`; all `copy`/`data` values are strings.
 - [ ] `html` values are wrapped in `{{ with }}`; no `<nil>` can appear.
+- [ ] If `llms` is enabled: `head.html` contains `{{ llms .Page }}`, page content uses semantic HTML (headings, lists, `<nav>` for menus) inside `<main>` or between a top-level `<header>`/`<footer>`, `/llms.txt` lists every page and each `<path>.md` reads well.
 - [ ] `head.html` contains `{{ adminHead .Page }}`, `end.html` contains `{{ adminBody .Page }}`, and the CSS/JS URLs match `sass.out`/`js.out`.
 - [ ] Pages: root area named `content`, start with `head`, end with `end`, `copy` for all languages in `path`, paths unique and starting with `/`.
 - [ ] Refs live in `content/refs/`, names don't collide with any other file name in `content/`.

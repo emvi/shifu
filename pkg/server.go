@@ -197,6 +197,7 @@ func (server *Server) setupRouter(dir string) {
 
 	server.Sitemap.Serve(router)
 	server.serveRobotsTxt(router)
+	server.serveLLMsTxt(router)
 	server.serveStaticDir(router, dir)
 	router.HandleFunc("/*", server.Content.Serve)
 	server.router = router
@@ -341,6 +342,12 @@ func (server *Server) serveRobotsTxt(router chi.Router) {
 			slog.Debug("Error serving robots.txt", "error", err)
 		}
 	}))
+}
+
+func (server *Server) serveLLMsTxt(router chi.Router) {
+	if cfg.Get().LLMs.Enabled {
+		router.Get("/llms.txt", server.Content.ServeLLMs)
+	}
 }
 
 func (server *Server) serveStaticDir(router chi.Router, dir string) {

@@ -32,6 +32,7 @@ type SavePageData struct {
 	Name           string
 	PagePath       map[string]string
 	Cache          bool
+	LLMsExclude    bool
 	Sitemap        float64
 	Handler        string
 	Path           string
@@ -53,6 +54,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 		parent := strings.TrimSpace(r.FormValue("parent"))
 		name := strings.TrimSpace(r.FormValue("name"))
 		cache := strings.ToLower(strings.TrimSpace(r.FormValue("cache"))) == "on"
+		llmsExclude := strings.ToLower(strings.TrimSpace(r.FormValue("llms_exclude"))) == "on"
 		sitemap := strings.TrimSpace(r.FormValue("sitemap"))
 		handler := strings.TrimSpace(r.FormValue("handler"))
 		languages := make([]string, 0)
@@ -159,6 +161,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 				Name:           name,
 				PagePath:       pagePath,
 				Cache:          cache,
+				LLMsExclude:    llmsExclude,
 				Sitemap:        sitemapFloat,
 				Handler:        handler,
 				Path:           path,
@@ -182,6 +185,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 				}
 
 				page.DisableCache = cache
+				page.LLMs.Exclude = llmsExclude
 				page.Path = pagePath
 				page.Sitemap = cms.Sitemap{
 					Priority: fmt.Sprintf("%f", sitemapFloat),
@@ -191,6 +195,7 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 			} else {
 				page = &cms.Content{
 					DisableCache: cache,
+					LLMs:         cms.LLMs{Exclude: llmsExclude},
 					Path:         pagePath,
 					Sitemap: cms.Sitemap{
 						Priority: fmt.Sprintf("%f", sitemapFloat),
@@ -233,24 +238,23 @@ func SavePage(w http.ResponseWriter, r *http.Request) {
 				MinWidth:   520,
 				Lang:       lang,
 			},
-			SavePageData: SavePageData{
-				Admin:          middleware.IsAdmin(r),
-				Lang:           lang,
-				Directories:    shared.ListDirectories(w, contentDir, true),
-				SelectionField: "parent",
-				SelectionID:    "page-save",
-				Name:           name,
-				PagePath:       pagePath,
-				Cache:          cache,
-				Sitemap:        sitemapFloat,
-				Handler:        handler,
-				Selected:       getDirectory(filepath.Dir(path)),
-				Path:           path,
-				Header:         header,
-				Saved:          true,
-				Languages:      iso6391.Languages,
-			},
-			Entries: listEntries(w),
+			Admin:          middleware.IsAdmin(r),
+			Lang:           lang,
+			Directories:    shared.ListDirectories(w, contentDir, true),
+			SelectionField: "parent",
+			SelectionID:    "page-save",
+			Name:           name,
+			PagePath:       pagePath,
+			Cache:          cache,
+			LLMsExclude:    llmsExclude,
+			Sitemap:        sitemapFloat,
+			Handler:        handler,
+			Selected:       getDirectory(filepath.Dir(path)),
+			Path:           path,
+			Header:         header,
+			Saved:          true,
+			Languages:      iso6391.Languages,
+			Entries:        listEntries(w),
 		})
 		go content.Update()
 		return
