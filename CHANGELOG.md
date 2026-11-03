@@ -4,6 +4,8 @@
 
 * added support for llms.txt
 * added support for generating Markdown version of pages with a static path
+* updated AGENTS.md
+* updated dependencies
 
 ## 1.6.0
 
