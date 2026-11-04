@@ -73,14 +73,14 @@ func (llms *LLMs) ServeMarkdown(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// ServeTxt serves the llms.txt listing all pages with a link to their Markdown version.
-func (llms *LLMs) ServeTxt(w http.ResponseWriter, r *http.Request) {
+// ServeLLMsTxt serves the llms.txt listing all pages with a link to their Markdown version.
+func (llms *LLMs) ServeLLMsTxt(w http.ResponseWriter, r *http.Request) {
 	llms.m.RLock()
 	data := llms.txt
 	llms.m.RUnlock()
 
 	if data == nil {
-		data = llms.generate(r)
+		data = llms.generateLLMsTxt(r)
 		llms.m.Lock()
 		llms.txt = data
 		llms.m.Unlock()
@@ -93,7 +93,8 @@ func (llms *LLMs) ServeTxt(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (llms *LLMs) generate(r *http.Request) []byte {
+func (llms *LLMs) generateLLMsTxt(r *http.Request) []byte {
+	slog.Debug("Generating llms.txt...")
 	type entry struct {
 		path string
 		page *markdownPage
@@ -170,6 +171,7 @@ func (llms *LLMs) generate(r *http.Request) []byte {
 		}
 	}
 
+	slog.Debug("Done generating llms.txt")
 	return buffer.Bytes()
 }
 

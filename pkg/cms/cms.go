@@ -84,7 +84,7 @@ func NewCMS(options Options) *CMS {
 		pageExperiments: make(map[string][]string),
 		pageCache:       make(map[string][]byte),
 	}
-	cms.llms.SetRenderer(cms.renderLLMs)
+	cms.llms.SetRenderer(cms.renderMarkdown)
 	cms.tpl = NewCache(filepath.Join(options.BaseDir, "tpl"), options.FuncMap, options.HotReload)
 	cms.source.Watch(options.Ctx, func() {
 		slog.Info("Updating website templates, content, and sitemap...")
@@ -147,7 +147,7 @@ func (cms *CMS) ServeLLMs(w http.ResponseWriter, r *http.Request) {
 		cms.updateContent()
 	}
 
-	cms.llms.ServeTxt(w, r)
+	cms.llms.ServeLLMsTxt(w, r)
 }
 
 // RenderPage renders the given page and returns it to the client.
@@ -264,11 +264,11 @@ func (cms *CMS) SetHandler(name string, handler Handler) {
 func (cms *CMS) Update() {
 	slog.Info("Updating CMS")
 	cms.source.Update(func() {
-		slog.Info("Updating website templates, content, and sitemap...")
+		slog.Info("Updating website templates, content, sitemap, and llms.txt...")
 		cms.tpl.Clear()
 		cms.updateContent()
 		cms.sitemap.Update()
-		slog.Info("Done updating website templates, content, and sitemap")
+		slog.Info("Done updating website templates, content, sitemap, and llms.txt")
 	})
 }
 
@@ -628,26 +628,13 @@ func (cms *CMS) updateContent() {
 		return 1
 	})
 
-	if len(pages) == 0 {
-		pages = append(pages, Route{
-			raw:    "/",
-			isRaw:  true,
-			length: 1,
-			content: Content{
-				Path: map[string]string{
-					"en": "/",
-				},
-			},
-		})
-	}
-
 	cms.m.Lock()
 	cms.pages = pages
 	cms.refs = refs
 	cms.pageExperiments = pageExperiments
 	cms.pageCache = make(map[string][]byte)
+	cms.updateLLMsTxt()
 	cms.m.Unlock()
-	cms.updateLLMsPages(pages)
 }
 
 func (cms *CMS) getContent(path string) (*Content, error) {
@@ -788,7 +775,7 @@ func (cms *CMS) isNotFoundPath(path string) bool {
 	return false
 }
 
-func (cms *CMS) renderLLMs(w http.ResponseWriter, r *http.Request, path string) (bool, bool) {
+func (cms *CMS) renderMarkdown(w http.ResponseWriter, r *http.Request, path string) (bool, bool) {
 	page, args, ok := cms.getPage(path)
 
 	if !ok || page.LLMs.Exclude {
@@ -799,7 +786,7 @@ func (cms *CMS) renderLLMs(w http.ResponseWriter, r *http.Request, path string) 
 		handler, found := cms.getHandler(page.Handler)
 
 		if !found {
-			slog.Error("Page handler not found", "path", path, "handler", page.Handler)
+			slog.Error("Page handler not found to render markdown", "path", path, "handler", page.Handler)
 			return false, false
 		}
 
@@ -811,10 +798,10 @@ func (cms *CMS) renderLLMs(w http.ResponseWriter, r *http.Request, path string) 
 	return true, !page.DisableCache && !cms.isLoggedIn(r)
 }
 
-func (cms *CMS) updateLLMsPages(pages []Route) {
-	updatePages := make([]llms.Page, 0, len(pages))
+func (cms *CMS) updateLLMsTxt() {
+	updatePages := make([]llms.Page, 0, len(cms.pages))
 
-	for _, route := range pages {
+	for _, route := range cms.pages {
 		if route.isRaw && !route.content.LLMs.Exclude && !cms.isNotFoundPath(route.raw) {
 			updatePages = append(updatePages, llms.Page{Language: route.content.Language, Path: route.raw})
 		}
