@@ -179,3 +179,65 @@ func attr(n *html.Node, key string) string {
 func oneLine(str string) string {
 	return strings.Join(strings.Fields(str), " ")
 }
+
+func extractMeta(data []byte) (string, string) {
+	var title, description strings.Builder
+	inTitle, foundTitle, foundDescription := false, false, false
+	tokenizer := html.NewTokenizer(bytes.NewReader(data))
+
+	for {
+		switch tokenizer.Next() {
+		case html.ErrorToken:
+			return strings.TrimSpace(title.String()), strings.TrimSpace(description.String())
+		case html.TextToken:
+			if inTitle {
+				title.Write(tokenizer.Text())
+			}
+		case html.EndTagToken:
+			name, _ := tokenizer.TagName()
+
+			if atom.Lookup(name) == atom.Title {
+				inTitle = false
+				foundTitle = true
+			} else if atom.Lookup(name) == atom.Head {
+				return strings.TrimSpace(title.String()), strings.TrimSpace(description.String())
+			}
+		case html.StartTagToken, html.SelfClosingTagToken:
+			name, hasAttr := tokenizer.TagName()
+
+			switch atom.Lookup(name) {
+			case atom.Body:
+				return strings.TrimSpace(title.String()), strings.TrimSpace(description.String())
+			case atom.Title:
+				inTitle = !foundTitle
+			case atom.Meta:
+				if foundDescription {
+					break
+				}
+
+				var metaName, content string
+
+				for hasAttr {
+					var key, val []byte
+					key, val, hasAttr = tokenizer.TagAttr()
+
+					if strings.EqualFold(string(key), "name") {
+						metaName = string(val)
+					} else if strings.EqualFold(string(key), "content") {
+						content = string(val)
+					}
+				}
+
+				if strings.EqualFold(metaName, "description") {
+					description.WriteString(content)
+					foundDescription = true
+				}
+			}
+		default: // do nothing
+		}
+
+		if foundTitle && foundDescription {
+			return strings.TrimSpace(title.String()), strings.TrimSpace(description.String())
+		}
+	}
+}

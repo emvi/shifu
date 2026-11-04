@@ -4,7 +4,7 @@ pkg/js/out/
 pkg/sass/in/
 pkg/sass/out/
 pkg/cfg/config.json
-pkg/cms/test/
+pkg/cms/_test/
 pkg/content/content/
 pkg/static/static/
 test/

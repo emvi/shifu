@@ -87,11 +87,12 @@ func NewCMS(options Options) *CMS {
 	cms.llms.SetRenderer(cms.renderMarkdown)
 	cms.tpl = NewCache(filepath.Join(options.BaseDir, "tpl"), options.FuncMap, options.HotReload)
 	cms.source.Watch(options.Ctx, func() {
-		slog.Info("Updating website templates, content, and sitemap...")
+		slog.Info("Updating website templates, content, sitemap, and llms.txt...")
 		cms.tpl.Clear()
 		cms.updateContent()
 		cms.sitemap.Update()
-		slog.Info("Done updating website templates, content, and sitemap")
+		cms.updateLLMsTxt()
+		slog.Info("Done updating website templates, content, sitemap, and llms.txt")
 	})
 	return cms
 }
@@ -143,10 +144,6 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 
 // ServeLLMs serves the llms.txt listing all pages with a link to their Markdown version.
 func (cms *CMS) ServeLLMs(w http.ResponseWriter, r *http.Request) {
-	if cms.hotReload {
-		cms.updateContent()
-	}
-
 	cms.llms.ServeLLMsTxt(w, r)
 }
 
@@ -268,6 +265,7 @@ func (cms *CMS) Update() {
 		cms.tpl.Clear()
 		cms.updateContent()
 		cms.sitemap.Update()
+		cms.updateLLMsTxt()
 		slog.Info("Done updating website templates, content, sitemap, and llms.txt")
 	})
 }
@@ -633,7 +631,6 @@ func (cms *CMS) updateContent() {
 	cms.refs = refs
 	cms.pageExperiments = pageExperiments
 	cms.pageCache = make(map[string][]byte)
-	cms.updateLLMsTxt()
 	cms.m.Unlock()
 }
 
@@ -786,7 +783,7 @@ func (cms *CMS) renderMarkdown(w http.ResponseWriter, r *http.Request, path stri
 		handler, found := cms.getHandler(page.Handler)
 
 		if !found {
-			slog.Error("Page handler not found to render markdown", "path", path, "handler", page.Handler)
+			slog.Warn("Page handler not found to render markdown", "path", path, "handler", page.Handler)
 			return false, false
 		}
 
@@ -799,9 +796,12 @@ func (cms *CMS) renderMarkdown(w http.ResponseWriter, r *http.Request, path stri
 }
 
 func (cms *CMS) updateLLMsTxt() {
-	updatePages := make([]llms.Page, 0, len(cms.pages))
+	cms.m.RLock()
+	pages := cms.pages
+	cms.m.RUnlock()
+	updatePages := make([]llms.Page, 0, len(pages))
 
-	for _, route := range cms.pages {
+	for _, route := range pages {
 		if route.isRaw && !route.content.LLMs.Exclude && !cms.isNotFoundPath(route.raw) {
 			updatePages = append(updatePages, llms.Page{Language: route.content.Language, Path: route.raw})
 		}

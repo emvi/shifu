@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"runtime"
 	"slices"
 	"sync"
+	"time"
 
 	"github.com/emvi/shifu/pkg/cfg"
 )
@@ -21,11 +23,18 @@ type Page struct {
 // It returns false if the page does not exist (or is excluded) and whether the result can be cached.
 type RenderFunc func(w http.ResponseWriter, r *http.Request, path string) (found bool, cache bool)
 
+// pageMeta is the title and description of a page listed in the llms.txt.
+type pageMeta struct {
+	title       string
+	description string
+}
+
 // LLMs builds and serves the llms.txt and the Markdown versions of pages.
 type LLMs struct {
 	render RenderFunc
 	pages  []Page
 	cache  map[string]*markdownPage
+	meta   map[string]pageMeta
 	txt    []byte
 	m      sync.RWMutex
 }
@@ -34,6 +43,7 @@ type LLMs struct {
 func New() *LLMs {
 	return &LLMs{
 		cache: make(map[string]*markdownPage),
+		meta:  make(map[string]pageMeta),
 	}
 }
 
@@ -50,6 +60,7 @@ func (llms *LLMs) Update(pages []Page) {
 	defer llms.m.Unlock()
 	llms.pages = pages
 	llms.cache = make(map[string]*markdownPage)
+	llms.meta = make(map[string]pageMeta)
 	llms.txt = nil
 }
 
@@ -95,9 +106,11 @@ func (llms *LLMs) ServeLLMsTxt(w http.ResponseWriter, r *http.Request) {
 
 func (llms *LLMs) generateLLMsTxt(r *http.Request) []byte {
 	slog.Debug("Generating llms.txt...")
+	now := time.Now()
 	type entry struct {
 		path string
-		page *markdownPage
+		meta pageMeta
+		ok   bool
 	}
 
 	llms.m.RLock()
@@ -110,24 +123,44 @@ func (llms *LLMs) generateLLMsTxt(r *http.Request) []byte {
 	llms.m.RUnlock()
 	languages := make([]string, 0, len(paths))
 	entries := make(map[string][]entry)
-	title := cfg.Get().LLMs.Title
+	jobs := make(chan *entry)
+	var wg sync.WaitGroup
+
+	for range runtime.NumCPU() / 2 { // FIXME
+		wg.Go(func() {
+			for e := range jobs {
+				e.meta, e.ok = llms.getMeta(r, e.path)
+			}
+		})
+	}
 
 	for language, list := range paths {
 		slices.Sort(list)
+		entries[language] = make([]entry, len(list))
 
-		for _, path := range list {
-			md, ok := llms.getPage(r, path)
+		for i, path := range list {
+			entries[language][i].path = path
+			jobs <- &entries[language][i]
+		}
+	}
 
-			if ok {
-				entries[language] = append(entries[language], entry{path, md})
+	close(jobs)
+	wg.Wait()
+	title := cfg.Get().LLMs.Title
 
-				if title == "" && path == "/" {
-					title = md.Title
-				}
+	for language, list := range entries {
+		list = slices.DeleteFunc(list, func(e entry) bool {
+			return !e.ok
+		})
+		entries[language] = list
+
+		for _, e := range list {
+			if title == "" && e.path == "/" {
+				title = e.meta.title
 			}
 		}
 
-		if len(entries[language]) > 0 {
+		if len(list) > 0 {
 			languages = append(languages, language)
 		}
 	}
@@ -155,7 +188,7 @@ func (llms *LLMs) generateLLMsTxt(r *http.Request) []byte {
 		}
 
 		for _, e := range entries[language] {
-			label := e.page.Title
+			label := e.meta.title
 
 			if label == "" {
 				label = e.path
@@ -163,21 +196,20 @@ func (llms *LLMs) generateLLMsTxt(r *http.Request) []byte {
 
 			buffer.WriteString(fmt.Sprintf("- [%s](%s%s)", oneLine(label), hostname, MarkdownPath(e.path)))
 
-			if e.page.Description != "" {
-				buffer.WriteString(": " + oneLine(e.page.Description))
+			if e.meta.description != "" {
+				buffer.WriteString(": " + oneLine(e.meta.description))
 			}
 
 			buffer.WriteString("\n")
 		}
 	}
 
-	slog.Debug("Done generating llms.txt")
+	slog.Debug("Done generating llms.txt", "time_ms", time.Since(now).Milliseconds())
 	return buffer.Bytes()
 }
 
 func (llms *LLMs) getPage(r *http.Request, path string) (*markdownPage, bool) {
 	llms.m.RLock()
-	render := llms.render
 	md, found := llms.cache[path]
 	llms.m.RUnlock()
 
@@ -185,18 +217,13 @@ func (llms *LLMs) getPage(r *http.Request, path string) (*markdownPage, bool) {
 		return md, true
 	}
 
-	if render == nil {
+	data, cache, ok := llms.renderHTML(r, path)
+
+	if !ok {
 		return nil, false
 	}
 
-	out := newBufferResponseWriter()
-	ok, cache := render(out, markdownRequest(r, path), path)
-
-	if !ok || out.status >= http.StatusMultipleChoices {
-		return nil, false
-	}
-
-	md, err := htmlToMarkdown(out.buffer.Bytes(), cfg.Get().LLMs.Selector, cfg.Get().Server.Hostname)
+	md, err := htmlToMarkdown(data, cfg.Get().LLMs.Selector, cfg.Get().Server.Hostname)
 
 	if err != nil {
 		slog.Error("Error converting page to markdown", "path", path, "error", err)
@@ -210,4 +237,54 @@ func (llms *LLMs) getPage(r *http.Request, path string) (*markdownPage, bool) {
 	}
 
 	return md, true
+}
+
+func (llms *LLMs) getMeta(r *http.Request, path string) (pageMeta, bool) {
+	llms.m.RLock()
+	meta, found := llms.meta[path]
+	md, foundMarkdown := llms.cache[path]
+	llms.m.RUnlock()
+
+	if found {
+		return meta, true
+	}
+
+	if foundMarkdown {
+		return pageMeta{md.Title, md.Description}, true
+	}
+
+	data, cache, ok := llms.renderHTML(r, path)
+
+	if !ok {
+		return pageMeta{}, false
+	}
+
+	meta.title, meta.description = extractMeta(data)
+
+	if cache {
+		llms.m.Lock()
+		llms.meta[path] = meta
+		llms.m.Unlock()
+	}
+
+	return meta, true
+}
+
+func (llms *LLMs) renderHTML(r *http.Request, path string) ([]byte, bool, bool) {
+	llms.m.RLock()
+	render := llms.render
+	llms.m.RUnlock()
+
+	if render == nil {
+		return nil, false, false
+	}
+
+	out := newBufferResponseWriter()
+	ok, cache := render(out, markdownRequest(r, path), path)
+
+	if !ok || out.status >= http.StatusMultipleChoices {
+		return nil, false, false
+	}
+
+	return out.buffer.Bytes(), cache, true
 }

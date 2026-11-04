@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.1
+
+* fixed generating llms.txt on large sites
+
 ## 1.7.0
 
 * added support for llms.txt

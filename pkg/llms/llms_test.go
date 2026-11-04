@@ -63,6 +63,26 @@ func TestHTMLToMarkdown(t *testing.T) {
 	assert.Equal(t, "A\n", string(page.Markdown))
 }
 
+func TestExtractMeta(t *testing.T) {
+	title, description := extractMeta([]byte(`<!DOCTYPE html><html><head>
+		<meta charset="UTF-8" />
+		<title> Caf&eacute; &amp; Bar </title>
+		<META NAME="Description" CONTENT="Coffee &amp; drinks." />
+		<meta name="description" content="second" />
+	</head><body><title>Ignored</title></body></html>`))
+	assert.Equal(t, "Café & Bar", title)
+	assert.Equal(t, "Coffee & drinks.", description)
+
+	// stops at the body
+	title, description = extractMeta([]byte(`<html><head></head><body><title>T</title><meta name="description" content="D" /></body></html>`))
+	assert.Empty(t, title)
+	assert.Empty(t, description)
+
+	title, description = extractMeta([]byte(`<title>Only title</title>`))
+	assert.Equal(t, "Only title", title)
+	assert.Empty(t, description)
+}
+
 func TestLLMsCache(t *testing.T) {
 	selector := cfg.Get().LLMs.Selector
 	cfg.Get().LLMs.Selector = "main"
