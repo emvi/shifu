@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"hash/fnv"
 	"html/template"
 	"io/fs"
 	"log/slog"
@@ -16,6 +17,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"slices"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -91,7 +93,6 @@ func NewCMS(options Options) *CMS {
 		cms.tpl.Clear()
 		cms.updateContent()
 		cms.sitemap.Update()
-		cms.updateLLMsTxt()
 		slog.Info("Done updating website templates, content, sitemap, and llms.txt")
 	})
 	return cms
@@ -144,6 +145,10 @@ func (cms *CMS) Serve(w http.ResponseWriter, r *http.Request) {
 
 // ServeLLMs serves the llms.txt listing all pages with a link to their Markdown version.
 func (cms *CMS) ServeLLMs(w http.ResponseWriter, r *http.Request) {
+	if cms.hotReload {
+		cms.updateContent()
+	}
+
 	cms.llms.ServeLLMsTxt(w, r)
 }
 
@@ -253,8 +258,13 @@ func (cms *CMS) RenderElement(w http.ResponseWriter, r *http.Request, page *Cont
 // SetHandler sets the handler function for the given name.
 func (cms *CMS) SetHandler(name string, handler Handler) {
 	cms.m.Lock()
-	defer cms.m.Unlock()
 	cms.handler[name] = handler
+	cms.m.Unlock()
+
+	// pages using the handler are rendered differently now
+	if cfg.Get().LLMs.Enabled {
+		cms.llms.Refresh()
+	}
 }
 
 // Update updates the templates, content, and sitemap.
@@ -265,7 +275,6 @@ func (cms *CMS) Update() {
 		cms.tpl.Clear()
 		cms.updateContent()
 		cms.sitemap.Update()
-		cms.updateLLMsTxt()
 		slog.Info("Done updating website templates, content, sitemap, and llms.txt")
 	})
 }
@@ -632,6 +641,7 @@ func (cms *CMS) updateContent() {
 	cms.pageExperiments = pageExperiments
 	cms.pageCache = make(map[string][]byte)
 	cms.m.Unlock()
+	cms.updateLLMsTxt()
 }
 
 func (cms *CMS) getContent(path string) (*Content, error) {
@@ -796,6 +806,10 @@ func (cms *CMS) renderMarkdown(w http.ResponseWriter, r *http.Request, path stri
 }
 
 func (cms *CMS) updateLLMsTxt() {
+	if !cfg.Get().LLMs.Enabled {
+		return
+	}
+
 	cms.m.RLock()
 	pages := cms.pages
 	cms.m.RUnlock()
@@ -807,5 +821,31 @@ func (cms *CMS) updateLLMsTxt() {
 		}
 	}
 
-	cms.llms.Update(updatePages)
+	cms.llms.Update(updatePages, cms.contentVersion())
+}
+
+func (cms *CMS) contentVersion() string {
+	hash := fnv.New64a()
+
+	for _, dir := range []string{"content", "tpl"} {
+		if err := filepath.WalkDir(filepath.Join(cms.baseDir, dir), func(path string, d fs.DirEntry, err error) error {
+			if err != nil || d.IsDir() {
+				return err
+			}
+
+			info, err := d.Info()
+
+			if err != nil {
+				return err
+			}
+
+			_, _ = fmt.Fprintf(hash, "%s:%d:%d\n", path, info.Size(), info.ModTime().UnixNano())
+			return nil
+		}); err != nil && !errors.Is(err, fs.ErrNotExist) {
+			slog.Error("Error reading content version", "error", err)
+			return ""
+		}
+	}
+
+	return strconv.FormatUint(hash.Sum64(), 16)
 }

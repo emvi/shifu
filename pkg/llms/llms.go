@@ -13,6 +13,18 @@ import (
 	"github.com/emvi/shifu/pkg/cfg"
 )
 
+var (
+	// generateDelay is the time to wait after an update before the llms.txt is generated,
+	// so that multiple updates in a short period of time only generate it once.
+	generateDelay = time.Second
+)
+
+// pageMeta is the title and description of a page listed in the llms.txt.
+type pageMeta struct {
+	title       string
+	description string
+}
+
 // Page is a page listed in the llms.txt.
 type Page struct {
 	Language string
@@ -23,20 +35,19 @@ type Page struct {
 // It returns false if the page does not exist (or is excluded) and whether the result can be cached.
 type RenderFunc func(w http.ResponseWriter, r *http.Request, path string) (found bool, cache bool)
 
-// pageMeta is the title and description of a page listed in the llms.txt.
-type pageMeta struct {
-	title       string
-	description string
-}
-
 // LLMs builds and serves the llms.txt and the Markdown versions of pages.
+// The llms.txt is generated in the background after the content has changed.
 type LLMs struct {
-	render RenderFunc
-	pages  []Page
-	cache  map[string]*markdownPage
-	meta   map[string]pageMeta
-	txt    []byte
-	m      sync.RWMutex
+	render     RenderFunc
+	pages      []Page
+	version    string
+	cache      map[string]*markdownPage
+	meta       map[string]pageMeta
+	txt        []byte
+	ready      chan struct{}
+	generation uint64
+	timer      *time.Timer
+	m          sync.RWMutex
 }
 
 // New creates a new LLMs instance.
@@ -44,6 +55,7 @@ func New() *LLMs {
 	return &LLMs{
 		cache: make(map[string]*markdownPage),
 		meta:  make(map[string]pageMeta),
+		ready: make(chan struct{}),
 	}
 }
 
@@ -54,14 +66,46 @@ func (llms *LLMs) SetRenderer(render RenderFunc) {
 	llms.render = render
 }
 
-// Update sets the pages listed in the llms.txt and clears the cache.
-func (llms *LLMs) Update(pages []Page) {
+// Update sets the pages listed in the llms.txt for given content version.
+// If the version has changed, the cache is cleared and the llms.txt is generated in the background.
+// The previous llms.txt is served until the new one is ready.
+func (llms *LLMs) Update(pages []Page, version string) {
 	llms.m.Lock()
 	defer llms.m.Unlock()
+
+	if version != "" && version == llms.version {
+		return
+	}
+
+	llms.version = version
 	llms.pages = pages
 	llms.cache = make(map[string]*markdownPage)
 	llms.meta = make(map[string]pageMeta)
-	llms.txt = nil
+	llms.schedule()
+}
+
+// Refresh clears the cache and generates the llms.txt in the background, even if the content hasn't changed.
+// This is required if the output of pages changes without changing the content (e.g. by adding a page handler).
+func (llms *LLMs) Refresh() {
+	llms.m.Lock()
+	defer llms.m.Unlock()
+	llms.cache = make(map[string]*markdownPage)
+	llms.meta = make(map[string]pageMeta)
+	llms.schedule()
+}
+
+// Generate generates the llms.txt immediately and blocks until it's done.
+func (llms *LLMs) Generate() {
+	llms.m.Lock()
+	llms.generation++
+	generation := llms.generation
+
+	if llms.timer != nil {
+		llms.timer.Stop()
+	}
+
+	llms.m.Unlock()
+	llms.generate(generation)
 }
 
 // ServeMarkdown serves the Markdown version of the page requested by the Markdown path.
@@ -88,13 +132,20 @@ func (llms *LLMs) ServeMarkdown(w http.ResponseWriter, r *http.Request) {
 func (llms *LLMs) ServeLLMsTxt(w http.ResponseWriter, r *http.Request) {
 	llms.m.RLock()
 	data := llms.txt
+	ready := llms.ready
 	llms.m.RUnlock()
 
+	// only the first request after startup has to wait, later requests get the previous version while a new one is generated
 	if data == nil {
-		data = llms.generateLLMsTxt(r)
-		llms.m.Lock()
-		llms.txt = data
-		llms.m.Unlock()
+		select {
+		case <-ready:
+		case <-r.Context().Done():
+			return
+		}
+
+		llms.m.RLock()
+		data = llms.txt
+		llms.m.RUnlock()
 	}
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
@@ -104,7 +155,53 @@ func (llms *LLMs) ServeLLMsTxt(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (llms *LLMs) generateLLMsTxt(r *http.Request) []byte {
+func (llms *LLMs) schedule() {
+	llms.generation++
+	generation := llms.generation
+
+	if llms.timer != nil {
+		llms.timer.Stop()
+	}
+
+	llms.timer = time.AfterFunc(generateDelay, func() {
+		llms.generate(generation)
+	})
+}
+
+func (llms *LLMs) generate(generation uint64) {
+	r, err := http.NewRequest(http.MethodGet, "/", nil)
+
+	if err != nil {
+		slog.Error("Error creating request to generate llms.txt", "error", err)
+		return
+	}
+
+	data := llms.generateLLMsTxt(r, generation)
+
+	if data == nil {
+		return
+	}
+
+	llms.m.Lock()
+	defer llms.m.Unlock()
+
+	if generation == llms.generation {
+		if llms.txt == nil {
+			close(llms.ready)
+		}
+
+		llms.txt = data
+	}
+}
+
+func (llms *LLMs) isCurrent(generation uint64) bool {
+	llms.m.RLock()
+	defer llms.m.RUnlock()
+	return generation == llms.generation
+}
+
+// generateLLMsTxt generates the llms.txt. It returns nil if a newer generation has been started in the meantime.
+func (llms *LLMs) generateLLMsTxt(r *http.Request, generation uint64) []byte {
 	slog.Debug("Generating llms.txt...")
 	now := time.Now()
 	type entry struct {
@@ -126,10 +223,13 @@ func (llms *LLMs) generateLLMsTxt(r *http.Request) []byte {
 	jobs := make(chan *entry)
 	var wg sync.WaitGroup
 
-	for range runtime.NumCPU() {
+	// leave half of the CPUs to serve regular page views
+	for range max(1, runtime.NumCPU()/2) {
 		wg.Go(func() {
 			for e := range jobs {
-				e.meta, e.ok = llms.getMeta(r, e.path)
+				if llms.isCurrent(generation) {
+					e.meta, e.ok = llms.getMeta(r, e.path)
+				}
 			}
 		})
 	}
@@ -146,6 +246,12 @@ func (llms *LLMs) generateLLMsTxt(r *http.Request) []byte {
 
 	close(jobs)
 	wg.Wait()
+
+	if !llms.isCurrent(generation) {
+		slog.Debug("Canceled generating llms.txt, because a newer version is being generated")
+		return nil
+	}
+
 	title := cfg.Get().LLMs.Title
 
 	for language, list := range entries {

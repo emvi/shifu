@@ -1,9 +1,14 @@
 package llms
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
+	"sync"
+	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/emvi/shifu/pkg/cfg"
 	"github.com/stretchr/testify/assert"
@@ -84,6 +89,12 @@ func TestExtractMeta(t *testing.T) {
 }
 
 func TestLLMsCache(t *testing.T) {
+	// no background generation of the llms.txt during this test
+	delay := generateDelay
+	generateDelay = time.Hour
+	defer func() {
+		generateDelay = delay
+	}()
 	selector := cfg.Get().LLMs.Selector
 	cfg.Get().LLMs.Selector = "main"
 	defer func() {
@@ -102,7 +113,7 @@ func TestLLMsCache(t *testing.T) {
 		_, _ = w.Write([]byte("<title>Page</title><main><p>Text</p></main>"))
 		return true, path != "/nocache"
 	})
-	l.Update([]Page{{Language: "en", Path: "/"}, {Language: "en", Path: "/nocache"}})
+	l.Update([]Page{{Language: "en", Path: "/"}, {Language: "en", Path: "/nocache"}}, "1")
 	get := func(path string) *httptest.ResponseRecorder {
 		w := httptest.NewRecorder()
 		l.ServeMarkdown(w, httptest.NewRequest(http.MethodGet, path, nil))
@@ -117,9 +128,74 @@ func TestLLMsCache(t *testing.T) {
 	assert.Equal(t, 3, renders)
 	assert.Equal(t, http.StatusNotFound, get("/missing.md").Code)
 
-	// the cache is cleared on update
-	l.Update(nil)
+	// the cache is kept if the content version didn't change, and cleared otherwise
+	l.Update(nil, "1")
+	get("/index.md")
+	assert.Equal(t, 3, renders)
+	l.Update(nil, "2")
 	get("/index.md")
 	assert.Equal(t, 4, renders)
 	assert.False(t, IsMarkdownRequest(httptest.NewRequest(http.MethodGet, "/", nil)))
+}
+
+func TestLLMsBackground(t *testing.T) {
+	delay := generateDelay
+	generateDelay = time.Millisecond
+	defer func() {
+		generateDelay = delay
+	}()
+	var renders atomic.Int32
+	var title atomic.Value
+	title.Store("One")
+	block := make(chan struct{})
+	close(block)
+	var blockM sync.Mutex
+	l := New()
+	l.SetRenderer(func(w http.ResponseWriter, r *http.Request, path string) (bool, bool) {
+		blockM.Lock()
+		b := block
+		blockM.Unlock()
+		<-b
+		renders.Add(1)
+		_, _ = fmt.Fprintf(w, "<title>%s</title><main>Text</main>", title.Load())
+		return true, true
+	})
+	get := func() string {
+		w := httptest.NewRecorder()
+		l.ServeLLMsTxt(w, httptest.NewRequest(http.MethodGet, "/llms.txt", nil))
+		return w.Body.String()
+	}
+
+	// the first request waits for the llms.txt to be generated
+	l.Update([]Page{{Language: "en", Path: "/"}}, "1")
+	assert.Contains(t, get(), "- [One](/index.md)")
+	assert.Equal(t, int32(1), renders.Load())
+
+	// unchanged content isn't generated again
+	l.Update([]Page{{Language: "en", Path: "/"}}, "1")
+	time.Sleep(time.Millisecond * 20)
+	assert.Contains(t, get(), "- [One](/index.md)")
+	assert.Equal(t, int32(1), renders.Load())
+
+	// while a new version is generated, the previous one is served without waiting
+	blockM.Lock()
+	block = make(chan struct{})
+	blockM.Unlock()
+	title.Store("Two")
+	l.Update([]Page{{Language: "en", Path: "/"}}, "2")
+	time.Sleep(time.Millisecond * 20)
+	assert.Contains(t, get(), "- [One](/index.md)")
+	blockM.Lock()
+	close(block)
+	blockM.Unlock()
+	assert.Eventually(t, func() bool {
+		return strings.Contains(get(), "- [Two](/index.md)")
+	}, time.Second, time.Millisecond*5)
+
+	// refresh generates it again without changing the content
+	title.Store("Three")
+	l.Refresh()
+	assert.Eventually(t, func() bool {
+		return strings.Contains(get(), "- [Three](/index.md)")
+	}, time.Second, time.Millisecond*5)
 }

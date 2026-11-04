@@ -3,8 +3,6 @@ package cms
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
@@ -15,7 +13,19 @@ import (
 	"github.com/emvi/shifu/pkg/source"
 )
 
+var benchPages = 500
+
 func BenchmarkLLMsTxt(b *testing.B) {
+	benchmarkLLMsTxt(b, false)
+}
+
+func BenchmarkLLMsTxtHotReload(b *testing.B) {
+	benchPages = 50
+	defer func() { benchPages = 500 }()
+	benchmarkLLMsTxt(b, true)
+}
+
+func benchmarkLLMsTxt(b *testing.B, hotReload bool) {
 	dir := b.TempDir()
 	write := func(name, content string) {
 		_ = os.MkdirAll(filepath.Join(dir, filepath.Dir(name)), 0755)
@@ -31,7 +41,7 @@ func BenchmarkLLMsTxt(b *testing.B) {
 		sections[i] = fmt.Sprintf(`{"tpl":"text","copy":{"en":{"headline":"Section %d","text":%q}}}`, i, text)
 	}
 
-	for i := range 500 {
+	for i := range benchPages {
 		write(fmt.Sprintf("content/page%d.json", i), fmt.Sprintf(`{"path":{"en":"/page-%d"},"content":{"content":[{"tpl":"head","copy":{"en":{"title":"Page %d","description":"Description %d"}}},%s,{"tpl":"end"}]}}`, i, i, i, strings.Join(sections, ",")))
 	}
 
@@ -41,18 +51,18 @@ func BenchmarkLLMsTxt(b *testing.B) {
 		cfg.Get().LLMs = llms
 	}()
 	c := NewCMS(Options{
-		Ctx:     context.Background(),
-		BaseDir: dir,
-		FuncMap: Merge(),
-		Source:  source.NewFileSystem(dir, 0),
-		Sitemap: sitemap.New(),
+		Ctx:       context.Background(),
+		BaseDir:   dir,
+		HotReload: hotReload,
+		FuncMap:   Merge(),
+		Source:    source.NewFileSystem(dir, 0),
+		Sitemap:   sitemap.New(),
 	})
 	c.updateContent()
 	b.ResetTimer()
 
 	for b.Loop() {
-		c.updateLLMsTxt() // clears the cache, like a content update
-		w := httptest.NewRecorder()
-		c.ServeLLMs(w, httptest.NewRequest(http.MethodGet, "/llms.txt", nil))
+		c.llms.Refresh() // clears the cache, like a content update
+		c.llms.Generate()
 	}
 }
