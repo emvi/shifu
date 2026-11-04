@@ -412,5 +412,10 @@ func (server *Server) startServer(handler http.Handler, cancel context.CancelFun
 	}()
 
 	slog.Info("Server started!", "address", addr)
+
+	if config.LLMs.Enabled {
+		go server.LLMs.Generate()
+	}
+
 	return done
 }

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"runtime"
 	"slices"
 	"sync"
 	"time"
@@ -220,32 +219,20 @@ func (llms *LLMs) generateLLMsTxt(r *http.Request, generation uint64) []byte {
 	llms.m.RUnlock()
 	languages := make([]string, 0, len(paths))
 	entries := make(map[string][]entry)
-	jobs := make(chan *entry)
-	var wg sync.WaitGroup
-
-	// leave half of the CPUs to serve regular page views
-	for range max(1, runtime.NumCPU()/2) {
-		wg.Go(func() {
-			for e := range jobs {
-				if llms.isCurrent(generation) {
-					e.meta, e.ok = llms.getMeta(r, e.path)
-				}
-			}
-		})
-	}
 
 	for language, list := range paths {
 		slices.Sort(list)
 		entries[language] = make([]entry, len(list))
 
 		for i, path := range list {
+			if !llms.isCurrent(generation) {
+				break
+			}
+
 			entries[language][i].path = path
-			jobs <- &entries[language][i]
+			entries[language][i].meta, entries[language][i].ok = llms.getMeta(r, path)
 		}
 	}
-
-	close(jobs)
-	wg.Wait()
 
 	if !llms.isCurrent(generation) {
 		slog.Debug("Canceled generating llms.txt, because a newer version is being generated")
