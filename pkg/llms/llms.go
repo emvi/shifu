@@ -126,7 +126,7 @@ func (llms *LLMs) generateLLMsTxt(r *http.Request) []byte {
 	jobs := make(chan *entry)
 	var wg sync.WaitGroup
 
-	for range runtime.NumCPU() / 2 { // FIXME
+	for range runtime.NumCPU() {
 		wg.Go(func() {
 			for e := range jobs {
 				e.meta, e.ok = llms.getMeta(r, e.path)
