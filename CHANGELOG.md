@@ -5,6 +5,7 @@
 * allow all users to edit references
 * allow extracting zip files on upload
 * existing files are not rejected if the overwrite option isn't set
+* updated dependencies
 
 ## 1.7.1
 

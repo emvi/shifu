@@ -77,7 +77,7 @@ github.com/huandu/xstrings
 ## explicit; go 1.10
 github.com/jmoiron/sqlx
 github.com/jmoiron/sqlx/reflectx
-# github.com/klauspost/compress v1.20.3
+# github.com/klauspost/compress v1.20.4
 ## explicit; go 1.25
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
@@ -94,7 +94,7 @@ github.com/klauspost/compress/internal/regmask
 github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
-# github.com/mattn/go-sqlite3 v1.14.52
+# github.com/mattn/go-sqlite3 v1.14.53
 ## explicit; go 1.21
 github.com/mattn/go-sqlite3
 # github.com/mitchellh/copystructure v1.2.0
@@ -145,7 +145,7 @@ golang.org/x/crypto/scrypt
 ## explicit; go 1.26.0
 golang.org/x/net/html
 golang.org/x/net/html/atom
-# golang.org/x/sys v0.49.0
+# golang.org/x/sys v0.50.0
 ## explicit; go 1.26.0
 golang.org/x/sys/unix
 golang.org/x/sys/windows
