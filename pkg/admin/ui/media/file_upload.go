@@ -19,6 +19,10 @@ const (
 	maxSize = 100_000_000 // 100 MB
 )
 
+var (
+	validFilenameChars = regexp.MustCompile(`[^a-zA-Z0-9._-]`)
+)
+
 // UploadFiles uploads one or more files.
 func UploadFiles(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimSpace(r.URL.Query().Get("path"))
@@ -26,7 +30,7 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 		reader, err := r.MultipartReader()
-		overwrite := strings.ToLower(r.FormValue("overwrite")) == "on"
+		overwrite, unpack := false, false
 		errs := make(map[string]string)
 
 		if err != nil {
@@ -45,9 +49,41 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 					break
 				}
 
-				if err := uploadFile(part, path, overwrite, errs, existingFiles); err != nil {
-					errs["files"] = "error uploading file"
-					break
+				// the options are sent before the files, because they come first in the form
+				if part.FileName() == "" {
+					switch part.FormName() {
+					case "overwrite":
+						overwrite = readCheckbox(part)
+					case "unzip":
+						unpack = readCheckbox(part)
+					}
+				} else if unpack && isZip(part.FileName()) {
+					existing, err := unzipUpload(part, getDirectoryPath(path), overwrite)
+					existingFiles = append(existingFiles, existing...)
+
+					if err != nil {
+						slog.Error("Error extracting zip file", "error", err, "file", part.FileName())
+
+						if errors.Is(err, errUnzipSize) || errors.Is(err, errUnzipFiles) {
+							errs["files"] = err.Error()
+						} else {
+							errs["files"] = "error extracting zip file"
+						}
+
+						break
+					}
+				} else {
+					existing, err := uploadFile(part, path, overwrite)
+
+					if err != nil {
+						slog.Error("Error uploading file", "error", err, "file", part.FileName())
+						errs["files"] = "error uploading file"
+						break
+					}
+
+					if existing != "" {
+						existingFiles = append(existingFiles, existing)
+					}
 				}
 
 				if err := part.Close(); err != nil {
@@ -56,18 +92,25 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		// existing files are skipped unless they should be overwritten, the other files are uploaded anyway
+		if len(existingFiles) > 0 && errs["files"] == "" {
+			errs["files"] = "file already exists"
+		}
+
 		if len(errs) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			tpl.Get().Execute(w, "media-file-upload-form.html", struct {
 				Lang          string
 				Path          string
 				Overwrite     bool
+				Unzip         bool
 				Errors        map[string]string
 				ExistingFiles []string
 			}{
 				Lang:          tpl.GetUILanguage(r),
 				Path:          path,
 				Overwrite:     overwrite,
+				Unzip:         unpack,
 				Errors:        errs,
 				ExistingFiles: existingFiles,
 			})
@@ -96,6 +139,7 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 		Lang          string
 		Path          string
 		Overwrite     bool
+		Unzip         bool
 		Errors        map[string]string
 		ExistingFiles []string
 	}{
@@ -112,67 +156,53 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func uploadFile(part *multipart.Part, path string, overwrite bool, errs map[string]string, existingFiles []string) error {
-	filename := part.FileName()
-
-	if filename == "" {
-		return nil
-	}
-
-	filename = sanitizeFilename(path, filename, overwrite)
+func uploadFile(part *multipart.Part, path string, overwrite bool) (string, error) {
+	filename := cleanFilename(part.FileName())
 	p := filepath.Join(getDirectoryPath(path), filename)
 
-	if !overwrite {
-		if _, err := os.Stat(p); !os.IsNotExist(err) {
-			errs["files"] = "file already exists"
-			existingFiles = append(existingFiles, filename)
-			return nil
-		}
+	if !overwrite && fileExists(p) {
+		return filename, nil
 	}
 
 	f, err := os.Create(p)
 
 	if err != nil {
-		slog.Error("Error opening file to upload", "error", err, "path", p)
-		errs["files"] = "error uploading file"
-		return err
+		return "", err
 	}
 
 	written, err := io.CopyN(f, part, maxSize+1)
+	_ = f.Close()
 
 	if err != nil && err != io.EOF {
-		_ = f.Close()
 		_ = os.Remove(p)
-		return err
+		return "", err
 	}
 
 	if written > maxSize {
-		_ = f.Close()
 		_ = os.Remove(p)
-		return errors.New("max file upload size exceeded")
+		return "", errors.New("max file upload size exceeded")
 	}
 
-	_ = f.Close()
-	return nil
+	return "", nil
 }
 
-func sanitizeFilename(path, filename string, overwrite bool) string {
-	validChars := regexp.MustCompile(`[^a-zA-Z0-9._-]`)
-	filename = validChars.ReplaceAllString(filename, "_")
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
+}
+
+func cleanFilename(filename string) string {
+	filename = validFilenameChars.ReplaceAllString(filename, "_")
 	filename = strings.Trim(filename, "._")
 
 	if filename == "" {
 		filename = "untitled"
 	}
 
-	if !overwrite {
-		_, err := os.Stat(filepath.Join(getDirectoryPath(path), filename))
-
-		for !os.IsNotExist(err) {
-			filename = "_" + filename
-			_, err = os.Stat(filepath.Join(getDirectoryPath(path), filename))
-		}
-	}
-
 	return filename
+}
+
+func readCheckbox(part *multipart.Part) bool {
+	value, err := io.ReadAll(io.LimitReader(part, 16))
+	return err == nil && strings.ToLower(strings.TrimSpace(string(value))) == "on"
 }

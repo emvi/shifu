@@ -7,6 +7,15 @@
       hx-target-4*="this"
       data-window="#shifu-media-file-upload">
     <div id="pirsch-upload-progress-fields">
+        {{/* the options must come before the files, because the upload is processed as a stream */}}
+        <fieldset class="checkbox">
+            <input type="checkbox" name="overwrite" id="overwrite" {{ if .Data.Overwrite }}checked{{ end }} />
+            <label for="overwrite">{{ i18n .Data.Lang "media_upload_file_overwrite" }}</label>
+        </fieldset>
+        <fieldset class="checkbox">
+            <input type="checkbox" name="unzip" id="unzip" {{ if .Data.Unzip }}checked{{ end }} />
+            <label for="unzip">{{ i18n .Data.Lang "media_upload_file_unzip" }}</label>
+        </fieldset>
         <fieldset>
             <label for="files">{{ i18n .Data.Lang "media_upload_file_files" }}</label>
             <input type="file" name="files" id="files" multiple />
@@ -23,10 +32,6 @@
                     {{ end }}
                 </ul>
             {{ end }}
-        </fieldset>
-        <fieldset>
-            <label for="overwrite">{{ i18n .Data.Lang "media_upload_file_overwrite" }}</label>
-            <input type="checkbox" name="overwrite" id="overwrite" {{ if .Data.Overwrite }}checked{{ end }} />
         </fieldset>
     </div>
     <fieldset id="pirsch-upload-progress-fieldset" style="display: none;width: 100%;">
