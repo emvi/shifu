@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.2
+
+* allow all users to edit references
+
 ## 1.7.1
 
 * fixed generating llms.txt on large sites
