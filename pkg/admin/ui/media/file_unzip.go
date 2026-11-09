@@ -44,7 +44,7 @@ func unzipUpload(r io.Reader, dir string, overwrite bool) ([]string, error) {
 	}
 
 	if written > maxSize {
-		return nil, errors.New("max file upload size exceeded")
+		return nil, errFileTooLarge
 	}
 
 	return unzip(tmp, written, dir, overwrite)

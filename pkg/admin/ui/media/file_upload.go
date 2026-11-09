@@ -16,10 +16,13 @@ import (
 )
 
 const (
-	maxSize = 100_000_000 // 100 MB
+	maxSize      = 100_000_000   // 100 MB per file
+	maxDrainSize = 1_000_000_000 // 1 GB
 )
 
 var (
+	errFileTooLarge = errors.New("the file exceeds the maximum upload size")
+
 	validFilenameChars = regexp.MustCompile(`[^a-zA-Z0-9._-]`)
 )
 
@@ -64,7 +67,7 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 					if err != nil {
 						slog.Error("Error extracting zip file", "error", err, "file", part.FileName())
 
-						if errors.Is(err, errUnzipSize) || errors.Is(err, errUnzipFiles) {
+						if errors.Is(err, errFileTooLarge) || errors.Is(err, errUnzipSize) || errors.Is(err, errUnzipFiles) {
 							errs["files"] = err.Error()
 						} else {
 							errs["files"] = "error extracting zip file"
@@ -77,7 +80,13 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 
 					if err != nil {
 						slog.Error("Error uploading file", "error", err, "file", part.FileName())
-						errs["files"] = "error uploading file"
+
+						if errors.Is(err, errFileTooLarge) {
+							errs["files"] = err.Error()
+						} else {
+							errs["files"] = "error uploading file"
+						}
+
 						break
 					}
 
@@ -89,6 +98,13 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 				if err := part.Close(); err != nil {
 					slog.Warn("Error closing multipart file", "error", err)
 				}
+			}
+		}
+
+		// drain the connection before replying to the client
+		if len(errs) > 0 {
+			if _, err := io.Copy(io.Discard, io.LimitReader(r.Body, maxDrainSize)); err != nil {
+				slog.Debug("Error reading the rest of the upload request", "error", err)
 			}
 		}
 
@@ -106,6 +122,7 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 				Unzip         bool
 				Errors        map[string]string
 				ExistingFiles []string
+				MaxSize       int64
 			}{
 				Lang:          tpl.GetUILanguage(r),
 				Path:          path,
@@ -113,6 +130,7 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 				Unzip:         unpack,
 				Errors:        errs,
 				ExistingFiles: existingFiles,
+				MaxSize:       maxSize,
 			})
 			return
 		}
@@ -142,6 +160,7 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 		Unzip         bool
 		Errors        map[string]string
 		ExistingFiles []string
+		MaxSize       int64
 	}{
 		WindowOptions: ui.WindowOptions{
 			ID:         "shifu-media-file-upload",
@@ -151,8 +170,9 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 			MinWidth:   460,
 			Lang:       lang,
 		},
-		Lang: lang,
-		Path: path,
+		Lang:    lang,
+		Path:    path,
+		MaxSize: maxSize,
 	})
 }
 
@@ -180,7 +200,7 @@ func uploadFile(part *multipart.Part, path string, overwrite bool) (string, erro
 
 	if written > maxSize {
 		_ = os.Remove(p)
-		return "", errors.New("max file upload size exceeded")
+		return "", errFileTooLarge
 	}
 
 	return "", nil

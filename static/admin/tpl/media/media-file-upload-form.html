@@ -20,9 +20,7 @@
             <label for="files">{{ i18n .Data.Lang "media_upload_file_files" }}</label>
             <input type="file" name="files" id="files" multiple />
 
-            {{ if index .Data.Errors "files" }}
-                <span class="error">{{ i18n .Data.Lang (index .Data.Errors "files") }}</span>
-            {{ end }}
+            <span class="error" id="shifu-upload-error">{{ with index .Data.Errors "files" }}{{ i18n $.Data.Lang . }}{{ end }}</span>
 
             {{ if len .Data.ExistingFiles }}
                 <p>{{ i18n .Data.Lang "media_upload_file_existing_files" }}</p>
@@ -44,10 +42,25 @@
         </button>
     </div>
     <script>
-        document.getElementById("shifu-upload-form").addEventListener("submit", () => {
-            document.getElementById("pirsch-upload-progress-fields").style.display = "none";
-            document.getElementById("pirsch-upload-progress-fieldset").style.display = "initial";
-        });
-        htmx.on("#shifu-upload-form", "htmx:xhr:progress", e => htmx.find("#pirsch-upload-progress").setAttribute("value", e.detail.loaded/e.detail.total * 100));
+        (function() {
+            const form = document.getElementById("shifu-upload-form");
+            const maxSize = {{ .Data.MaxSize }};
+            const tooLargeMessage = {{ i18n .Data.Lang "the file exceeds the maximum upload size" }};
+
+            // files that are too large are rejected before they are uploaded
+            form.addEventListener("htmx:beforeRequest", e => {
+                const tooLarge = Array.from(document.getElementById("files").files).filter(f => f.size > maxSize);
+
+                if (tooLarge.length) {
+                    e.preventDefault();
+                    document.getElementById("shifu-upload-error").textContent = `${tooLargeMessage} (${tooLarge.map(f => f.name).join(", ")})`;
+                    return;
+                }
+
+                document.getElementById("pirsch-upload-progress-fields").style.display = "none";
+                document.getElementById("pirsch-upload-progress-fieldset").style.display = "initial";
+            });
+            htmx.on(form, "htmx:xhr:progress", e => htmx.find("#pirsch-upload-progress").setAttribute("value", e.detail.loaded/e.detail.total * 100));
+        })();
     </script>
 </form>
