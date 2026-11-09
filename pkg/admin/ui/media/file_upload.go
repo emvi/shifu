@@ -13,6 +13,7 @@ import (
 
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
+	"github.com/emvi/shifu/pkg/admin/ui/shared"
 )
 
 const (
@@ -33,7 +34,7 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 		reader, err := r.MultipartReader()
-		overwrite, unpack := false, false
+		overwrite, unpack, updateTree := false, false, false
 		errs := make(map[string]string)
 
 		if err != nil {
@@ -61,7 +62,8 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 						unpack = readCheckbox(part)
 					}
 				} else if unpack && isZip(part.FileName()) {
-					existing, err := unzipUpload(part, getDirectoryPath(path), overwrite)
+					existing, dirs, err := unzipUpload(part, getDirectoryPath(path), overwrite)
+					updateTree = updateTree || dirs
 					existingFiles = append(existingFiles, existing...)
 
 					if err != nil {
@@ -132,6 +134,11 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 				ExistingFiles: existingFiles,
 				MaxSize:       maxSize,
 			})
+
+			if updateTree {
+				renderTreeUpdate(w, r)
+			}
+
 			return
 		}
 
@@ -148,6 +155,11 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 			Path:  path,
 			Files: listFiles(path),
 		})
+
+		if updateTree {
+			renderTreeUpdate(w, r)
+		}
+
 		return
 	}
 
@@ -220,6 +232,21 @@ func cleanFilename(filename string) string {
 	}
 
 	return filename
+}
+
+func renderTreeUpdate(w http.ResponseWriter, r *http.Request) {
+	tpl.Get().Execute(w, "media-tree-oob.html", struct {
+		Lang            string
+		Directories     []shared.Directory
+		Interactive     bool
+		Selection       bool
+		SelectionTarget string
+		SelectionField  SelectionField
+	}{
+		Lang:        tpl.GetUILanguage(r),
+		Directories: shared.ListDirectories(w, mediaDir, false),
+		Interactive: true,
+	})
 }
 
 func readCheckbox(part *multipart.Part) bool {

@@ -27,9 +27,10 @@ func TestUnzip(t *testing.T) {
 		"Bilder/.DS_Store":        "junk",
 		"windows\\path\\file.txt": "win",
 	})
-	existing, err := unzip(bytes.NewReader(data), int64(len(data)), dir, false)
+	existing, dirs, err := unzip(bytes.NewReader(data), int64(len(data)), dir, false)
 	assert.NoError(t, err)
 	assert.Empty(t, existing)
+	assert.True(t, dirs)
 	assert.Equal(t, "logo", readFile(t, filepath.Join(dir, "logo.svg")))
 	assert.Equal(t, "photo", readFile(t, filepath.Join(dir, "Bilder", "Foto_1.jpg")))
 	assert.Equal(t, "a", readFile(t, filepath.Join(dir, "Bilder", "Sub", "a.png")))
@@ -43,25 +44,27 @@ func TestUnzip(t *testing.T) {
 
 	// nothing is extracted if a file exists already, unless it should be overwritten
 	data = createZip(t, map[string]string{"logo.svg": "new", "Bilder/Foto 1.jpg": "new", "new.txt": "new"})
-	existing, err = unzip(bytes.NewReader(data), int64(len(data)), dir, false)
+	existing, dirs, err = unzip(bytes.NewReader(data), int64(len(data)), dir, false)
 	assert.NoError(t, err)
 	assert.ElementsMatch(t, []string{"logo.svg", "Bilder/Foto_1.jpg"}, existing)
 	assert.Equal(t, "logo", readFile(t, filepath.Join(dir, "logo.svg")))
 	assert.NoFileExists(t, filepath.Join(dir, "new.txt"))
-	existing, err = unzip(bytes.NewReader(data), int64(len(data)), dir, true)
+	existing, dirs, err = unzip(bytes.NewReader(data), int64(len(data)), dir, true)
 	assert.NoError(t, err)
 	assert.Empty(t, existing)
+	assert.False(t, dirs)
 	assert.Equal(t, "new", readFile(t, filepath.Join(dir, "logo.svg")))
 	assert.Equal(t, "new", readFile(t, filepath.Join(dir, "new.txt")))
 
 	// existing directories are fine
 	data = createZip(t, map[string]string{"Bilder/": "", "Bilder/other.jpg": "other"})
-	existing, err = unzip(bytes.NewReader(data), int64(len(data)), dir, false)
+	existing, dirs, err = unzip(bytes.NewReader(data), int64(len(data)), dir, false)
 	assert.NoError(t, err)
 	assert.Empty(t, existing)
+	assert.False(t, dirs)
 
 	// invalid zip
-	_, err = unzip(bytes.NewReader([]byte("no zip")), 6, dir, false)
+	_, _, err = unzip(bytes.NewReader([]byte("no zip")), 6, dir, false)
 	assert.Error(t, err)
 }
 
@@ -76,7 +79,7 @@ func TestUnzipLimits(t *testing.T) {
 	}
 
 	assert.NoError(t, w.Close())
-	_, err := unzip(bytes.NewReader(buffer.Bytes()), int64(buffer.Len()), dir, false)
+	_, _, err := unzip(bytes.NewReader(buffer.Bytes()), int64(buffer.Len()), dir, false)
 	assert.ErrorIs(t, err, errUnzipFiles)
 
 	// the uncompressed size is limited
@@ -86,7 +89,7 @@ func TestUnzipLimits(t *testing.T) {
 		maxUnzipSize = limit
 	}()
 	data := createZip(t, map[string]string{"big.txt": "more than ten bytes"})
-	_, err = unzip(bytes.NewReader(data), int64(len(data)), dir, false)
+	_, _, err = unzip(bytes.NewReader(data), int64(len(data)), dir, false)
 	assert.ErrorIs(t, err, errUnzipSize)
 	assert.NoFileExists(t, filepath.Join(dir, "big.txt"))
 
@@ -126,21 +129,27 @@ func TestUploadFilesUnzip(t *testing.T) {
 		return rec
 	}
 
-	assert.Equal(t, http.StatusOK, upload(true).Code)
+	// the directory tree is updated, because the zip file created a directory
+	rec := upload(true)
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.Contains(t, rec.Body.String(), `hx-swap-oob="innerHTML:#shifu-media .shifu-media-tree"`)
+	assert.Contains(t, rec.Body.String(), `data-entry="/target/sub"`)
 	assert.Equal(t, "content", readFile(t, filepath.Join(getDirectoryPath("/target"), "sub", "file.txt")))
 	assert.Equal(t, "plain", readFile(t, filepath.Join(getDirectoryPath("/target"), "plain.txt")))
 	assert.NoFileExists(t, filepath.Join(getDirectoryPath("/target"), "archive.zip"))
 
 	// without the checkbox, the zip file is uploaded as is (plain.txt exists already and is skipped)
-	rec := upload(false)
+	rec = upload(false)
 	assert.Equal(t, http.StatusBadRequest, rec.Code)
 	assert.Contains(t, rec.Body.String(), "<li>plain.txt</li>")
+	assert.NotContains(t, rec.Body.String(), "hx-swap-oob")
 	assert.FileExists(t, filepath.Join(getDirectoryPath("/target"), "archive.zip"))
 
 	// unpacking again lists the existing files from the zip file
 	rec = upload(true)
 	assert.Equal(t, http.StatusBadRequest, rec.Code)
 	assert.Contains(t, rec.Body.String(), "<li>sub/file.txt</li>")
+	assert.NotContains(t, rec.Body.String(), "hx-swap-oob")
 }
 
 func TestUploadFilesOverwrite(t *testing.T) {

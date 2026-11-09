@@ -26,11 +26,11 @@ func isZip(filename string) bool {
 	return strings.ToLower(filepath.Ext(filename)) == ".zip"
 }
 
-func unzipUpload(r io.Reader, dir string, overwrite bool) ([]string, error) {
+func unzipUpload(r io.Reader, dir string, overwrite bool) ([]string, bool, error) {
 	tmp, err := os.CreateTemp("", "shifu-upload-*.zip")
 
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	defer func() {
@@ -40,25 +40,25 @@ func unzipUpload(r io.Reader, dir string, overwrite bool) ([]string, error) {
 	written, err := io.CopyN(tmp, r, maxSize+1)
 
 	if err != nil && err != io.EOF {
-		return nil, err
+		return nil, false, err
 	}
 
 	if written > maxSize {
-		return nil, errFileTooLarge
+		return nil, false, errFileTooLarge
 	}
 
 	return unzip(tmp, written, dir, overwrite)
 }
 
-func unzip(r io.ReaderAt, size int64, dir string, overwrite bool) ([]string, error) {
+func unzip(r io.ReaderAt, size int64, dir string, overwrite bool) ([]string, bool, error) {
 	archive, err := zip.NewReader(r, size)
 
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	if len(archive.File) > maxUnzipFiles {
-		return nil, errUnzipFiles
+		return nil, false, errUnzipFiles
 	}
 
 	var total uint64
@@ -67,14 +67,14 @@ func unzip(r io.ReaderAt, size int64, dir string, overwrite bool) ([]string, err
 		total += file.UncompressedSize64
 
 		if total > uint64(maxUnzipSize) {
-			return nil, errUnzipSize
+			return nil, false, errUnzipSize
 		}
 	}
 
 	root, err := filepath.Abs(dir)
 
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	type entry struct {
@@ -96,7 +96,7 @@ func unzip(r io.ReaderAt, size int64, dir string, overwrite bool) ([]string, err
 		target := filepath.Join(append([]string{root}, parts...)...)
 
 		if target != root && !strings.HasPrefix(target, root+string(filepath.Separator)) {
-			return nil, fmt.Errorf("invalid path in zip file: %s", file.Name)
+			return nil, false, fmt.Errorf("invalid path in zip file: %s", file.Name)
 		}
 
 		if !file.FileInfo().IsDir() && !overwrite && fileExists(target) {
@@ -107,33 +107,41 @@ func unzip(r io.ReaderAt, size int64, dir string, overwrite bool) ([]string, err
 	}
 
 	if len(existing) > 0 {
-		return existing, nil
+		return existing, false, nil
 	}
 
 	var extracted int64
+	dirs := false
+	mkdir := func(path string) error {
+		if !fileExists(path) {
+			dirs = true
+		}
+
+		return os.MkdirAll(path, 0755)
+	}
 
 	for _, e := range entries {
 		if e.file.FileInfo().IsDir() {
-			if err := os.MkdirAll(e.target, 0755); err != nil {
-				return nil, err
+			if err := mkdir(e.target); err != nil {
+				return nil, dirs, err
 			}
 
 			continue
 		}
 
-		if err := os.MkdirAll(filepath.Dir(e.target), 0755); err != nil {
-			return nil, err
+		if err := mkdir(filepath.Dir(e.target)); err != nil {
+			return nil, dirs, err
 		}
 
 		n, err := extractFile(e.file, e.target, maxUnzipSize-extracted)
 		extracted += n
 
 		if err != nil {
-			return nil, err
+			return nil, dirs, err
 		}
 	}
 
-	return nil, nil
+	return nil, dirs, nil
 }
 
 func extractFile(file *zip.File, target string, limit int64) (int64, error) {
