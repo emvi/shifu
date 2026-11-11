@@ -47,11 +47,64 @@ systemd sample configuration:
 ```ini
 [Unit]
 Description=Shifu Website
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/root/example.com/shifu
-WorkingDirectory=/root/example.com
+WorkingDirectory=/opt/shifu-website
+ExecStart=shifu
+Restart=on-failure
+RestartSec=5
+User=shifu
+Group=shifu
+
+# New files not readable for others
+UMask=0027
+
+# No privilege escalation
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictSUIDSGID=yes
+
+# No write access where needed
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ReadWritePaths=/opt/shifu-website
+
+# Protect system and Kernel
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+ProcSubset=pid
+
+# Process isolation
+PrivateUsers=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RemoveIPC=yes
+
+# Networking only on IPv4, IPv6, and sockets
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+# Protect system calls
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+SystemCallErrorNumber=EPERM
+
+# Protect resources
+MemoryMax=512M
+TasksMax=256
 
 [Install]
 WantedBy=multi-user.target
