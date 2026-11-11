@@ -42,7 +42,22 @@ After that you can run Shifu from the command line with the `shifu` command.
 * `shifu pull` will pull changed `static` and `content` files from a remote server if configured
 * `shifu push` will push changed `static` and `content` files to a remote server if configured
 
-systemd sample configuration:
+### systemd Configuration
+
+A simple way to use Shifu on a production server is through systemd. You should create one unit file and user per website.
+
+Place the project in `/opt/shifu-website` and create a new user called `shifu`. You can change the location and name of course.
+
+```
+sudo useradd --system --user-group --home-dir /opt/shifu-website --shell /usr/sbin/nologin shifu
+sudo chown -R shifu:shifu /opt/shifu-website
+
+# Check the new user and permissions
+id shifu
+ls -la /opt/shifu-website
+```
+
+Create a new unit file in `/etc/systemd/system/shifu-website.service`.
 
 ```ini
 [Unit]
@@ -108,6 +123,14 @@ TasksMax=256
 
 [Install]
 WantedBy=multi-user.target
+```
+
+Reload systemd and start the service.
+
+```
+sudo systemctl daemon-reload
+sudo systemctl start shifu-website
+sudo systemctl status shifu-website
 ```
 
 ## Configuration
