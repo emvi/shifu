@@ -105,7 +105,7 @@ PrivateUsers=yes
 RestrictNamespaces=yes
 RestrictRealtime=yes
 LockPersonality=yes
-MemoryDenyWriteExecute=yes
+MemoryDenyWriteExecute=no
 RemoveIPC=yes
 
 # Networking only on IPv4, IPv6, and sockets
