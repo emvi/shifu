@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.3
+
+* added HTML editor button
+
 ## 1.7.2
 
 * allow all users to edit references

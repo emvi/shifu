@@ -14,6 +14,7 @@ const lang = {
     outdent: "Decrease Level",
     quote: "Quote",
     redo: "Redo",
+    source: "HTML",
     remove: "Remove",
     strike: "Strikethrough",
     undo: "Undo",
@@ -48,6 +49,10 @@ document.addEventListener("trix-before-initialize", () => {
           </span>
         
           <span class="trix-button-group-spacer"></span>
+
+          <span class="trix-button-group trix-button-group--source-tools">
+            <button type="button" class="trix-button shifu-trix-source" data-shifu-trix-source title="${lang.source}" tabindex="-1">${lang.source}</button>
+          </span>
         
           <span class="trix-button-group trix-button-group--history-tools" data-trix-button-group="history-tools">
             <button type="button" class="trix-button trix-button--icon trix-button--icon-undo" data-trix-action="undo" data-trix-key="z" title="${lang.undo}" tabindex="-1">${lang.undo}</button>
@@ -67,4 +72,44 @@ document.addEventListener("trix-before-initialize", () => {
           </div>
         </div>`
     };
+});
+
+document.addEventListener("click", e => {
+    const button = e.target.closest("[data-shifu-trix-source]");
+
+    if (!button) {
+        return;
+    }
+
+    e.preventDefault();
+    const toolbar = button.closest("trix-toolbar");
+    const editor = document.querySelector(`trix-editor[toolbar='${toolbar.id}']`);
+
+    if (!editor) {
+        return;
+    }
+
+    const input = editor.inputElement;
+    let source = editor.nextElementSibling;
+
+    if (source && source.hasAttribute("data-shifu-trix-source-area")) {
+        editor.editor.loadHTML(source.value);
+        source.remove();
+        editor.style.display = "";
+        button.classList.remove("trix-active");
+        toolbar.querySelectorAll(".trix-button:not([data-shifu-trix-source])").forEach(b => b.disabled = false);
+        editor.focus();
+    } else {
+        source = document.createElement("textarea");
+        source.setAttribute("data-shifu-trix-source-area", "");
+        source.className = "shifu-trix-source-area";
+        source.spellcheck = false;
+        source.value = input.value;
+        source.addEventListener("input", () => input.value = source.value);
+        editor.style.display = "none";
+        editor.after(source);
+        button.classList.add("trix-active");
+        toolbar.querySelectorAll(".trix-button:not([data-shifu-trix-source])").forEach(b => b.disabled = true);
+        source.focus();
+    }
 });

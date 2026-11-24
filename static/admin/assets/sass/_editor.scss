@@ -44,6 +44,17 @@
         }
     }
 
+    .shifu-trix-source-area {
+        display: block;
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 20em;
+        max-width: 646px;
+        font-family: monospace;
+        font-size: 0.85em;
+        resize: vertical;
+    }
+
     trix-editor {
         display: block;
         min-height: 20em;
