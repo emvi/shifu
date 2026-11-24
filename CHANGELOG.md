@@ -3,6 +3,7 @@
 ## 1.7.3
 
 * added HTML editor button
+* updated dependencies
 
 ## 1.7.2
 

@@ -11,13 +11,13 @@ require (
 	github.com/go-chi/chi/v5 v5.5.0
 	github.com/go-chi/cors v1.2.2
 	github.com/jmoiron/sqlx v1.4.0
-	github.com/klauspost/compress v1.20.4
+	github.com/klauspost/compress v1.20.5
 	github.com/mattn/go-sqlite3 v1.14.53
 	github.com/pirsch-analytics/pirsch-go-sdk/v2 v2.6.1
 	github.com/stretchr/testify v1.12.1
 	github.com/yuin/goldmark v1.8.7
-	golang.org/x/crypto v0.58.0
-	golang.org/x/net v0.62.0
+	golang.org/x/crypto v0.59.0
+	golang.org/x/net v0.63.0
 )
 
 require (
@@ -27,7 +27,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
 	github.com/emvi/null v1.3.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/huandu/xstrings v1.6.3 // indirect
+	github.com/huandu/xstrings v1.6.4 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
