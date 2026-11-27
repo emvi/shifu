@@ -3,6 +3,7 @@ package media
 import (
 	"archive/zip"
 	"bytes"
+	"fmt"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -194,6 +195,16 @@ func TestUploadFilesOverwrite(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, upload(true, map[string]string{"file.txt": "3"}).Code)
 	assert.Equal(t, "3", readFile(t, filepath.Join(getDirectoryPath("/"), "file.txt")))
+
+	// the link contains the modification time, so that the browser does not show a cached version
+	info, err := os.Stat(filepath.Join(getDirectoryPath("/"), "file.txt"))
+	assert.NoError(t, err)
+	rec = upload(true, map[string]string{"file.txt": "4"})
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.NotContains(t, rec.Body.String(), fmt.Sprintf("file.txt?v=%d", info.ModTime().UnixNano()))
+	info, err = os.Stat(filepath.Join(getDirectoryPath("/"), "file.txt"))
+	assert.NoError(t, err)
+	assert.Contains(t, rec.Body.String(), fmt.Sprintf("file.txt?v=%d", info.ModTime().UnixNano()))
 }
 
 func createZip(t *testing.T, files map[string]string) []byte {

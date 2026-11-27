@@ -29,6 +29,7 @@ type File struct {
 	Path    string
 	Preview string
 	Size    int64
+	Version int64
 }
 
 // DirectoryContent returns all files inside a media directory.
@@ -82,6 +83,7 @@ func listFiles(path string) []File {
 				Path:    p,
 				Preview: getFilePreview(p),
 				Size:    info.Size(),
+				Version: info.ModTime().UnixNano(),
 			})
 		}
 	}

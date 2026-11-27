@@ -83,7 +83,7 @@
 
                         <td style="text-align: center;">
                             {{ if $file.Preview }}
-                                <img src="{{ $file.Preview }}" alt="{{ $file.Name }}" />
+                                <img src="{{ $file.Preview }}?v={{ $file.Version }}" alt="{{ $file.Name }}" />
                             {{ else }}
                                 <img src="{{ config.UI.Path }}/static/icons/file.svg" alt="" style="width: 20px;height: 20px;margin-top: 4px;" />
                             {{ end }}
@@ -94,7 +94,7 @@
                         {{ if not $selection }}
                             <td>
                                 <div class="edit">
-                                    <a href="{{ if $file.Preview }}{{ $file.Preview }}{{ else }}{{ $file.Path }}{{ end }}" target="_blank" class="button" title="Datei öffnen">
+                                    <a href="{{ if $file.Preview }}{{ $file.Preview }}{{ else }}{{ $file.Path }}{{ end }}?v={{ $file.Version }}" target="_blank" class="button" title="Datei öffnen">
                                         <img src="{{ config.UI.Path }}/static/icons/view.svg" alt="" style="width: 12px;height: 12px;" />
                                     </a>
                                     <button title="{{ i18n $lang "media_files_rename_file" }}"

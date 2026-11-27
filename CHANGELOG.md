@@ -4,6 +4,7 @@
 
 * sync references on startup and pull
 * delete reference from database on startup, pull, and on deletion
+* fixed caching media files after overwriting an existing file
 
 ## 1.7.3
 
