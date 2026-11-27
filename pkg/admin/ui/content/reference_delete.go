@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/emvi/shifu/pkg/admin/db"
 	"github.com/emvi/shifu/pkg/admin/tpl"
 	"github.com/emvi/shifu/pkg/admin/ui"
 )
@@ -27,6 +28,12 @@ func DeleteReference(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodDelete {
 		if err := os.Remove(fullPath); err != nil {
 			slog.Error("Error while deleting reference", "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if _, err := db.Get().Exec(`DELETE FROM "reference" WHERE "name" = ?`, strings.ToLower(getReferenceName(path))); err != nil {
+			slog.Error("Error while deleting reference from database", "error", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

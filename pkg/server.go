@@ -142,6 +142,10 @@ func (server *Server) Start(cancel context.CancelFunc) error {
 	if cfg.Get().UI.Path != "" {
 		db.Connect()
 		defer db.Disconnect()
+
+		if err := content.SyncReferences(); err != nil {
+			slog.Error("Error registering references", "error", err)
+		}
 	}
 
 	stop := func() {

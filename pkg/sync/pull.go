@@ -12,6 +12,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/emvi/shifu/pkg/admin/db"
+	content2 "github.com/emvi/shifu/pkg/admin/ui/content"
 	"github.com/emvi/shifu/pkg/cfg"
 	"github.com/emvi/shifu/pkg/content"
 	"github.com/emvi/shifu/pkg/static"
@@ -35,6 +37,16 @@ func Pull(dir string) error {
 
 	if err := pullStatic(); err != nil {
 		return err
+	}
+
+	if cfg.Get().UI.Path != "" {
+		slog.Info("Registering references")
+		db.Connect()
+		defer db.Disconnect()
+
+		if err := content2.SyncReferences(); err != nil {
+			return err
+		}
 	}
 
 	slog.Info("Done")
