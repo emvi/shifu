@@ -4,8 +4,18 @@ import {debounce} from "./debounce";
     const save = debounce(target => {
         localStorage.setItem(target.id, JSON.stringify({
             top: target.style.top,
-            left: target.style.left
+            left: target.style.left,
+            width: target.style.width,
+            height: target.style.height
         }));
+    });
+    const resizeObserver = new ResizeObserver(entries => {
+        entries.forEach(entry => {
+            // the size is only set inline once the user resized the window
+            if (entry.target.isConnected && (entry.target.style.width || entry.target.style.height)) {
+                save(entry.target);
+            }
+        });
     });
     let dragging = null;
     let mouseX, mouseY, zIndex = 100_000;
@@ -43,6 +53,20 @@ import {debounce} from "./debounce";
                     const position = JSON.parse(settings);
                     target.style.top = position.top;
                     target.style.left = position.left;
+
+                    if (target.classList.contains("shifu-window-resizable")) {
+                        if (position.width) {
+                            target.style.width = position.width;
+                        }
+
+                        if (position.height) {
+                            target.style.height = position.height;
+                        }
+                    }
+                }
+
+                if (target.classList.contains("shifu-window-resizable")) {
+                    resizeObserver.observe(target);
                 }
 
                 title.addEventListener("mousedown", startDrag);
@@ -133,6 +157,8 @@ import {debounce} from "./debounce";
                 title.removeEventListener("mousedown", startDrag);
                 title.removeEventListener("mouseup", endDrag);
             }
+
+            resizeObserver.unobserve(details.target);
         }
     }
 
@@ -193,3 +219,4 @@ import {debounce} from "./debounce";
 import "./trix";
 import "./tree";
 import "./page";
+import "./media";

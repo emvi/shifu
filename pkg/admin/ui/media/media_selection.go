@@ -79,6 +79,7 @@ func Selection(w http.ResponseWriter, r *http.Request) {
 			TitleTpl:   "media-window-title",
 			ContentTpl: "media-window-content",
 			MinWidth:   800,
+			Resizable:  true,
 			Overlay:    true,
 			Lang:       lang,
 		},

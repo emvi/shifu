@@ -31,6 +31,7 @@ func Media(w http.ResponseWriter, r *http.Request) {
 			TitleTpl:   "media-window-title",
 			ContentTpl: "media-window-content",
 			MinWidth:   800,
+			Resizable:  true,
 			Lang:       lang,
 		},
 		Lang:        lang,

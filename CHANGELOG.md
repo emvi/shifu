@@ -2,6 +2,8 @@
 
 ## 1.8.0
 
+* added resizing to media window
+* added alternative file view and selection in media window
 * sync references on startup and pull
 * delete reference from database on startup, pull, and on deletion
 * fixed caching media files after overwriting an existing file

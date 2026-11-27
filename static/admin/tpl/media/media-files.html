@@ -12,6 +12,10 @@
 
     {{ if not $selection }}
         <div class="shifu-toolbelt" style="margin-top: 0;">
+            {{ if len .Data.Files }}
+                {{ template "media-files-view.html" . }}
+            {{ end }}
+
             <button hx-get="{{ config.UI.Path }}/media/file/upload?path={{ $path }}"
                     hx-target="body"
                     hx-swap="beforeend">
@@ -50,11 +54,12 @@
                     <button class="secondary shifu-window-close" hx-trigger="click">
                         {{ i18n .Data.Lang "cancel" }}
                     </button>
+                    {{ template "media-files-view.html" . }}
                     <button>{{ i18n .Data.Lang "media_files_select" }}</button>
                 </div>
         {{ end }}
 
-        <table>
+        <table class="shifu-media-table">
             <thead>
                 <tr>
                     {{ if not $selection }}
@@ -76,20 +81,20 @@
                 {{ range $file := .Data.Files }}
                     <tr {{ if $selection }}class="shifu-media-file-selection"{{ end }} data-path="{{ $file.Path }}">
                         {{ if not $selection }}
-                            <td>
+                            <td class="shifu-media-file-check">
                                 <input type="checkbox" name="name[]" value="{{ $file.Name }}" class="shifu-multi-file-select" />
                             </td>
                         {{ end }}
 
-                        <td style="text-align: center;">
+                        <td class="shifu-media-file-preview" style="text-align: center;">
                             {{ if $file.Preview }}
                                 <img src="{{ $file.Preview }}?v={{ $file.Version }}" alt="{{ $file.Name }}" />
                             {{ else }}
                                 <img src="{{ config.UI.Path }}/static/icons/file.svg" alt="" style="width: 20px;height: 20px;margin-top: 4px;" />
                             {{ end }}
                         </td>
-                        <td>{{ $file.Name }}</td>
-                        <td>{{ formatFileSize $file.Size }}</td>
+                        <td class="shifu-media-file-name" title="{{ $file.Name }}">{{ $file.Name }}</td>
+                        <td class="shifu-media-file-size">{{ formatFileSize $file.Size }}</td>
 
                         {{ if not $selection }}
                             <td>

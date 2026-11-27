@@ -8,5 +8,6 @@ type WindowOptions struct {
 	MinWidth   int
 	MaxWidth   int
 	Overlay    bool
+	Resizable  bool
 	Lang       string
 }

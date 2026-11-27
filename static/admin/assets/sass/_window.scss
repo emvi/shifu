@@ -119,6 +119,29 @@
             }
         }
 
+        // the window can be resized by dragging the bottom right corner
+        &-resizable {
+            resize: both;
+            max-width: 95vw;
+            max-height: 95vh;
+
+            .shifu-window-content {
+                display: flex;
+                flex-direction: column;
+                max-height: none;
+            }
+
+            .shifu-window-content-flex {
+                flex: 1 1 auto;
+                min-height: 0;
+
+                > * {
+                    max-height: none;
+                    overflow-y: auto;
+                }
+            }
+        }
+
         &-active {
             border-color: rgba(183, 224, 230, 0.45);
             box-shadow: var(--shifu-shadow), 0 0 0 1px rgba(183, 224, 230, 0.15);

@@ -3,7 +3,7 @@
 {{ end }}
 
 <div id="{{ .Data.WindowOptions.ID }}"
-     class="shifu shifu-window"
+     class="shifu shifu-window{{ if .Data.WindowOptions.Resizable }} shifu-window-resizable{{ end }}"
      {{ if or .Data.WindowOptions.MinWidth .Data.WindowOptions.MaxWidth }}
         style="{{ if .Data.WindowOptions.MinWidth }}min-width: {{ .Data.WindowOptions.MinWidth }}px;{{ end }}
             {{ if .Data.WindowOptions.MaxWidth }}max-width: {{ .Data.WindowOptions.MaxWidth }}px;{{ end }}"

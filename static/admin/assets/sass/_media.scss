@@ -30,6 +30,117 @@
     &-file-selection {
         cursor: pointer;
     }
+
+    &-view-switch {
+        display: flex;
+        gap: 2px;
+
+        .shifu-toolbelt > &:first-child {
+            margin-right: auto;
+        }
+    }
+}
+
+:root:not([data-shifu-media-tiles]) .shifu-media-view-switch [data-shifu-media-view="list"],
+:root[data-shifu-media-tiles] .shifu-media-view-switch [data-shifu-media-view="tiles"] {
+    background: var(--shifu-accent-softer);
+    border-color: var(--shifu-accent);
+}
+
+// tile view: the table rows are displayed as a grid of cards
+:root[data-shifu-media-tiles] .shifu .shifu-media-table {
+    display: block;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+
+    thead {
+        display: none;
+    }
+
+    tbody {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 8px;
+    }
+
+    tr {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        border: 1px solid var(--shifu-border);
+        border-radius: $radius;
+        overflow: hidden;
+        cursor: pointer;
+
+        &:has(.shifu-multi-file-select:checked) {
+            border-color: var(--shifu-accent);
+            box-shadow: 0 0 0 1px var(--shifu-accent);
+        }
+    }
+
+    td {
+        display: block;
+        width: auto !important;
+        padding: 2px 8px;
+        border-bottom: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .shifu-media-file-check {
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        z-index: 1;
+        padding: 0;
+        line-height: 0;
+        background: none !important;
+    }
+
+    .shifu-media-file-preview {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 200px;
+        padding: 0;
+        background:
+            repeating-conic-gradient(var(--shifu-surface-raised) 0 25%, var(--shifu-bg) 0 50%) 0 0 / 12px 12px;
+
+        > img:not([src*="/icons/"]) {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 0;
+            background: none;
+        }
+
+        > img[src*="/icons/"] {
+            width: 40px !important;
+            height: 40px !important;
+            margin: 0 !important;
+        }
+    }
+
+    .shifu-media-file-name {
+        padding-top: 6px;
+    }
+
+    .shifu-media-file-size {
+        padding-bottom: 6px;
+        color: var(--shifu-text-muted);
+        font-size: $font-size-tiny;
+    }
+
+    .shifu-media-file-selected .shifu-media-file-size {
+        color: inherit;
+    }
+
+    .edit {
+        justify-content: flex-end;
+        padding-bottom: 6px;
+    }
 }
 
 .shifu .shifu-media-file-selected td,
